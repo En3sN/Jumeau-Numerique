@@ -25,14 +25,15 @@ export class AuthService {
       return null;
     }
   }
-
   async login(user: any) {
+    if (!user.sessionCode) {
+      throw new Error('Session code is missing in the user object');
+    }
     const payload = { sessionCode: user.sessionCode };
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
-
   private async getUserSessionCode(manager: any, username: string, password: string): Promise<string> {
     const query = `SELECT security.get_user_code($1, $2) AS session_code`;
     const params = [username, password];

@@ -20,6 +20,6 @@ export class LocalAuthGuard extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
     return user;
-  } 
+  }
 }
 
