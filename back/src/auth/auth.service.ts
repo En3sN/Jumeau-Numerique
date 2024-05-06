@@ -10,18 +10,16 @@ export class AuthService {
     private dataSource: DataSource,
     private jwtService: JwtService,
     private transactionManager: TransactionManager
-  ) {}
+  ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
-    // Vérifie d'abord l'utilisateur sans aucune transaction spécifique à l'utilisateur
     const user = await this.dataSource.getRepository(User).findOne({ where: { email: email, activated: true } });
     if (user && user.pwd === pass) {
-      // L'utilisateur est validé, exécutez maintenant des opérations dans une transaction avec user.id
       return await this.transactionManager.executeInTransaction(async manager => {
         console.log("User validated, proceeding with user-specific transaction:", user.id);
-        const { pwd, ...result } = user;
-        return result;
-      }, user.id.toString());  // Passe user.id comme argument pour la transaction
+        const sessionCode = await this.getUserSessionCode(manager, user.nom, user.pwd);
+        return { ...user, sessionCode };
+      }, user.id.toString());
     } else {
       console.log("No user found or password mismatch in AuthService");
       return null;
@@ -29,9 +27,16 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id };
+    const payload = { sessionCode: user.sessionCode };
     return {
       access_token: this.jwtService.sign(payload),
     };
-  }  
+  }
+
+  private async getUserSessionCode(manager: any, username: string, password: string): Promise<string> {
+    const query = `SELECT security.get_user_code($1, $2) AS session_code`;
+    const params = [username, password];
+    const result = await manager.query(query, params);
+    return result[0].session_code;
+  }
 }
