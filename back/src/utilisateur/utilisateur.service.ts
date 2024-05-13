@@ -9,7 +9,7 @@ export class UtilisateurService {
   async findAllUserInfo(sessionCode: string): Promise<any> {
     // Passer sessionCode au TransactionManager
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      return manager.query(`SELECT id, nom, pseudo, email, tel, pwd, adresse, cp, commune, statut, organisation, infos FROM security.user_all_my_infos`);
+      return manager.query(`SELECT id, nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated FROM security.user_my_infos`);
     }, sessionCode);
   }
 }
