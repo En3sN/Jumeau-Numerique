@@ -3,22 +3,33 @@ import { DataSource, EntityManager } from 'typeorm';
 
 @Injectable()
 export class TransactionManager {
-  constructor(private dataSource: DataSource) { }
+  constructor(private dataSource: DataSource) {}
 
-  async executeInTransaction<T>(callback: (manager: EntityManager) => Promise<T>, userId: string): Promise<T> {
+  async executeInTransaction<T>(
+    callback: (manager: EntityManager) => Promise<T>,
+    sessionCode?: string // Utilisation optionnelle de sessionCode
+  ): Promise<T> {
     return this.dataSource.transaction(async (transactionalEntityManager) => {
-      // Récupération et affichage du numéro de la transaction
-      const txId = await transactionalEntityManager.query('SELECT txid_current()');
-      console.log("Transaction ID:", txId[0].txid_current);
-
-      await transactionalEntityManager.query(`SET LOCAL jumeau.security_code = '${userId}'`);
-
       try {
+        // Si un code de session est fourni, définir la variable de session correspondante
+        if (sessionCode) {
+          const txId = await transactionalEntityManager.query('SELECT txid_current()');
+          console.log("Transaction ID for session code", sessionCode, ":", txId[0].txid_current);
+          await transactionalEntityManager.query(`SET LOCAL jumeau.security_code = '${sessionCode}'`);
+        }
+
+        // Exécute la fonction de rappel qui réalise les opérations de la transaction
         const result = await callback(transactionalEntityManager);
         return result;
+      } catch (error) {
+        // En cas d'erreur, logger l'erreur et effectuer un rollback explicitement
+        console.error('Transaction failed with error:', error);
+        await transactionalEntityManager.query('ROLLBACK'); 
+        throw error; 
       } finally {
-        // Réinitialisation de la variable de session après la transaction
+        // Réinitialiser la variable de session après la transaction pour nettoyer l'état
         await transactionalEntityManager.query('RESET jumeau.security_code');
+        console.log("Security code reset successfully.");
       }
     });
   }
