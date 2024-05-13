@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import typeorm from './typeorm';
 import { UtilisateurModule } from './utilisateur/utilisateur.module';
+import { JwtModule } from '@nestjs/jwt';
 
 
 @Module({
@@ -17,6 +18,11 @@ import { UtilisateurModule } from './utilisateur/utilisateur.module';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
+    }),
+    JwtModule.register({
+      global: true,
+      secret: 'SECRET_KEY',
+      signOptions: { expiresIn: '60s' },
     }),
     AuthModule,
     UtilisateurModule,
