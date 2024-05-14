@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { UtilisateurController } from './utilisateur.controller';
 import { UtilisateurService } from './utilisateur.service';
 import { SharedModule } from 'src/shared/shared.module';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
+import { Utilisateur } from 'src/Entity/utilisateur.entity';
 
 @Module({
-  imports: [SharedModule],
+  imports: [
+    SharedModule,
+    TypeOrmModule.forFeature([Utilisateur]) 
+  ],
   controllers: [UtilisateurController],
   providers: [UtilisateurService, TransactionManager]
 })

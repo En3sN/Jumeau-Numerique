@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource } from 'typeorm';
-import { User } from '../Entity/user.entity';
+import { Utilisateur } from '../Entity/utilisateur.entity';
 import { TransactionManager } from '../Shared/TransactionManager/TransactionManager';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class AuthService {
   ) { }
 
   async validateUser(pseudo: string, pass: string): Promise<any> {
-    const user = await this.dataSource.getRepository(User).findOne({ where: { pseudo: pseudo, activated: true } });
+    const user = await this.dataSource.getRepository(Utilisateur).findOne({ where: { pseudo: pseudo, activated: true } });
     if (user && user.pwd === pass) {
       return await this.transactionManager.executeInTransaction(async manager => {
         const sessionCode = await this.getUserSessionCode(manager, user.pseudo, user.pwd);

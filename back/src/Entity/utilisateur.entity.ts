@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ schema: 'security', name: 'users_table' })
-export class User {
+export class Utilisateur {
   @PrimaryGeneratedColumn()
   id: number;
 

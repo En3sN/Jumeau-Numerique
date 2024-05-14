@@ -1,30 +1,51 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 import { CreateUtilisateurDto } from './DTO/Create-utilisateur.dto';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { Utilisateur } from 'src/Entity/utilisateur.entity';
+
 
 @Injectable()
 export class UtilisateurService {
-  constructor(private transactionManager: TransactionManager) {}
+  constructor(private transactionManager: TransactionManager,
+    @InjectRepository(Utilisateur)
+    private userRepository: Repository<Utilisateur>,
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager
+  ) {}
 
   async findAllUserInfo(sessionCode: string): Promise<any> {
-    // Passer sessionCode au TransactionManager
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       return manager.query(`SELECT id, nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated FROM security.user_my_infos`);
     }, sessionCode);
   }
 
-  async createUser(createUtilisateurDto: CreateUtilisateurDto, sessionCode: string): Promise<any> {
-    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      const { nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated, statut, organisation } = createUtilisateurDto;
-      const query = `
-        INSERT INTO security.users_table (nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated, statut, organisation)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-        RETURNING id, nom, pseudo, email, tel, adresse, cp, commune, roles, activated, statut, organisation;
-      `;
-      const params = [nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated, statut, organisation];
-      const result = await manager.query(query, params);
-      return result.rows[0];
-    }, sessionCode);
+  async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
+    const query = `
+      INSERT INTO security.user_my_infos (
+        nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated, statut, organisation
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+      ) RETURNING *;
+    `;
+
+    const values = [
+      createUtilisateurDto.nom,
+      createUtilisateurDto.pseudo,
+      createUtilisateurDto.email,
+      createUtilisateurDto.tel || null,
+      createUtilisateurDto.pwd,
+      createUtilisateurDto.adresse || null,
+      createUtilisateurDto.cp || null,
+      createUtilisateurDto.commune || null,
+      createUtilisateurDto.roles || null,
+      createUtilisateurDto.activated ?? false,
+      createUtilisateurDto.statut || 'Particulier',
+      createUtilisateurDto.organisation || null
+    ];
+
+    const result = await this.entityManager.query(query, values);
+    return result[0]; 
   }
 }

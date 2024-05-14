@@ -2,13 +2,14 @@ import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus }
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UtilisateurService } from './utilisateur.service';
 import { CreateUtilisateurDto } from './DTO/Create-utilisateur.dto';
+import { Utilisateur } from 'src/Entity/utilisateur.entity';
 
 @Controller('utilisateur')
 export class UtilisateurController {
   constructor(private utilisateurService: UtilisateurService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('Utilisateurinfos')
+  @Get('infos')
   async getUserInfo(@Request() req): Promise<any> {
     const sessionCode = req.user.sessionCode;
     if (!sessionCode) {
@@ -17,14 +18,9 @@ export class UtilisateurController {
     return await this.utilisateurService.findAllUserInfo(sessionCode);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
-  async createUser(@Request() req, @Body() createUtilisateurDto: CreateUtilisateurDto) {
-    const sessionCode = req.user.sessionCode;  
-    if (!sessionCode) {
-      throw new Error('Session code is missing from the JWT payload.');
-    }
-    return await this.utilisateurService.createUser(createUtilisateurDto, sessionCode);
+  async createUser(@Body() createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
+    return await this.utilisateurService.createUser(createUtilisateurDto);
   }
 }

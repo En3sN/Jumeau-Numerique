@@ -44,6 +44,7 @@ export class CreateUtilisateurDto {
   activated?: boolean;
 
   @IsString()
+  @IsNotEmpty()
   statut: string;
 
   @IsInt()

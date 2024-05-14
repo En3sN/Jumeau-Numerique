@@ -8,17 +8,18 @@ export class LocalAuthGuard extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
       usernameField: 'pseudo',  
-      passwordField: 'pwd'      
+      passwordField: 'pwd'
     });
   }
 
   async validate(pseudo: string, pwd: string): Promise<any> {
-    console.log("Received in LocalAuthGuard - Pseudo:", pseudo, "Password:", pwd);
+    console.log("LocalAuthGuard validate called with pseudo:", pseudo);
     const user = await this.authService.validateUser(pseudo, pwd);
-    console.log("User found in LocalAuthGuard:", user);
     if (!user) {
-      throw new UnauthorizedException('User not found or incorrect password.');
+      console.log("No user found in LocalAuthGuard for pseudo:", pseudo);
+      throw new UnauthorizedException();
     }
+    console.log("User authenticated in LocalAuthGuard:", user);
     return user;
   }
 }

@@ -7,7 +7,7 @@ export class TransactionManager {
 
   async executeInTransaction<T>(
     callback: (manager: EntityManager) => Promise<T>,
-    sessionCode?: string // Utilisation optionnelle de sessionCode
+    sessionCode?: string 
   ): Promise<T> {
     return this.dataSource.transaction(async (transactionalEntityManager) => {
       try {

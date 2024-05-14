@@ -6,4 +6,6 @@ import { TransactionManager } from './TransactionManager/TransactionManager';
   providers: [TransactionManager],
   exports: [TransactionManager]  
 })
-export class SharedModule {}
+export class SharedModule {
+  static TypeOrmModule: any;
+}
