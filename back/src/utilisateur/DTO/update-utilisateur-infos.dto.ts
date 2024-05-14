@@ -1,26 +1,26 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsArray, IsBoolean, IsInt, IsDefined } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsArray, IsBoolean, IsInt } from 'class-validator';
 
-export class CreateUtilisateurDto {
+export class UpdateUtilisateurDto {
   @IsString()
-  @IsNotEmpty()
-  nom: string;
+  @IsOptional()
+  nom?: string;
 
   @IsString()
-  @IsNotEmpty()
-  pseudo: string;
+  @IsOptional()
+  pseudo?: string;
 
   @IsEmail()
-  @IsNotEmpty()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @IsString()
   @IsOptional()
   tel?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MinLength(6)
-  pwd: string;
+  pwd?: string;
 
   @IsString()
   @IsOptional()
@@ -40,12 +40,12 @@ export class CreateUtilisateurDto {
   roles?: string[];
 
   @IsBoolean()
-  @IsDefined()
-  activated: boolean;
+  @IsOptional()
+  activated?: boolean;
 
   @IsString()
-  @IsNotEmpty()
-  statut: string;
+  @IsOptional()
+  statut?: string;
 
   @IsInt()
   @IsOptional()

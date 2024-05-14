@@ -4,6 +4,7 @@ import { TransactionManager } from 'src/Shared/TransactionManager/TransactionMan
 import { CreateUtilisateurDto } from './DTO/Create-utilisateur.dto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Utilisateur } from 'src/Entity/utilisateur.entity';
+import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';
 
 
 @Injectable()
@@ -47,5 +48,25 @@ export class UtilisateurService {
 
     const result = await this.entityManager.query(query, values);
     return result[0]; 
+  }
+
+  async updateUser(id: number, updateUtilisateurDto: UpdateUtilisateurDto, sessionCode: string): Promise<any> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const setClause = Object.entries(updateUtilisateurDto)
+        .map(([key, value], index) => `${key} = $${index + 1}`)
+        .join(', ');
+
+      const values = Object.values(updateUtilisateurDto);
+
+      const query = `
+        UPDATE security.user_my_infos
+        SET ${setClause}
+        WHERE id = ${id}
+        RETURNING *;
+      `;
+
+      const result = await manager.query(query, values);
+      return result[0]; 
+    }, sessionCode);
   }
 }

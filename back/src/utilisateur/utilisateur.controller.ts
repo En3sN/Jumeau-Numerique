@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UtilisateurService } from './utilisateur.service';
 import { CreateUtilisateurDto } from './DTO/Create-utilisateur.dto';
-import { Utilisateur } from 'src/Entity/utilisateur.entity';
+import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';
 
 @Controller('utilisateur')
 export class UtilisateurController {
@@ -22,5 +22,16 @@ export class UtilisateurController {
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     return await this.utilisateurService.createUser(createUtilisateurDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('update/:id')
+  @HttpCode(HttpStatus.OK)
+  async updateUser(@Param('id') id: number, @Body() updateUtilisateurDto: UpdateUtilisateurDto, @Request() req): Promise<any> {
+    const sessionCode = req.user.sessionCode;
+    if (!sessionCode) {
+      throw new Error('Session code is missing from the JWT payload.');
+    }
+    return await this.utilisateurService.updateUser(id, updateUtilisateurDto, sessionCode);
   }
 }

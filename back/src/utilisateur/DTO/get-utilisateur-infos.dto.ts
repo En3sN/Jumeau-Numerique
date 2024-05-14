@@ -1,6 +1,9 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsArray, IsBoolean, IsInt, IsDefined } from 'class-validator';
+import { IsBoolean, IsEmail, IsInt, IsOptional, IsString, IsArray, IsNotEmpty, IsDefined } from 'class-validator';
 
-export class CreateUtilisateurDto {
+export class GetUtilisateurInfoDto {
+  @IsInt()
+  id: number;
+
   @IsString()
   @IsNotEmpty()
   nom: string;
@@ -16,11 +19,6 @@ export class CreateUtilisateurDto {
   @IsString()
   @IsOptional()
   tel?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(6)
-  pwd: string;
 
   @IsString()
   @IsOptional()
