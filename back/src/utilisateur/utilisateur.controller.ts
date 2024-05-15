@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../authentification/jwt-auth.guard';
 import { UtilisateurService } from './utilisateur.service';
 import { CreateUtilisateurDto } from './DTO/Create-utilisateur.dto';
 import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';

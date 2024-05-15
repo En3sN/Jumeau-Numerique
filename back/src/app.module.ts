@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './authentification/auth.module';
 import typeorm from './typeorm';
 import { UtilisateurModule } from './utilisateur/utilisateur.module';
 import { JwtModule } from '@nestjs/jwt';

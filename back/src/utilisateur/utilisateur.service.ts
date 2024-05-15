@@ -5,11 +5,12 @@ import { CreateUtilisateurDto } from './DTO/Create-utilisateur.dto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Utilisateur } from 'src/Entity/utilisateur.entity';
 import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';
-
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UtilisateurService {
-  constructor(private transactionManager: TransactionManager,
+  constructor(
+    private transactionManager: TransactionManager,
     @InjectRepository(Utilisateur)
     private userRepository: Repository<Utilisateur>,
     @InjectEntityManager()
@@ -23,6 +24,9 @@ export class UtilisateurService {
   }
 
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(createUtilisateurDto.pwd, saltRounds);
+
     const query = `
       INSERT INTO security.user_my_infos (
         nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated, statut, organisation
@@ -36,7 +40,7 @@ export class UtilisateurService {
       createUtilisateurDto.pseudo,
       createUtilisateurDto.email,
       createUtilisateurDto.tel || null,
-      createUtilisateurDto.pwd,
+      hashedPassword, 
       createUtilisateurDto.adresse || null,
       createUtilisateurDto.cp || null,
       createUtilisateurDto.commune || null,

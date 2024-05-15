@@ -40,7 +40,7 @@ export class CreateUtilisateurDto {
   roles?: string[];
 
   @IsBoolean()
-  @IsDefined()
+  @IsOptional()
   activated: boolean;
 
   @IsString()
