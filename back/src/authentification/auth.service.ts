@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { Utilisateur } from '../Entity/utilisateur.entity';
 import { TransactionManager } from '../Shared/TransactionManager/TransactionManager';
 import * as bcrypt from 'bcrypt';
+import { format } from 'date-fns';
 
 @Injectable()
 export class AuthService {
@@ -39,9 +40,12 @@ export class AuthService {
       return { ...user, sessionCode };
     });
   }
-
+  
   async login(user: any) {
-    const payload = { sessionCode: user.sessionCode };
+    const payload = {
+      sessionCode: user.sessionCode,
+      issuedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'), 
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };
