@@ -18,14 +18,14 @@ export class UtilisateurController {
     return await this.utilisateurService.findAllUserInfo(sessionCode);
   }
 
-  @Post('create')
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     return await this.utilisateurService.createUser(createUtilisateurDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('update/:id')
+  @Put('/:id')
   @HttpCode(HttpStatus.OK)
   async updateUser(@Param('id') id: number, @Body() updateUtilisateurDto: UpdateUtilisateurDto, @Request() req): Promise<any> {
     const sessionCode = req.user.sessionCode;
