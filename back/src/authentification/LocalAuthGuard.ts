@@ -7,16 +7,16 @@ import { AuthService } from './auth.service';
 export class LocalAuthGuard extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
-      usernameField: 'pseudo',  
+      usernameField: 'email',  
       passwordField: 'pwd'
     });
   }
 
-  async validate(pseudo: string, pwd: string): Promise<any> {
-    console.log("LocalAuthGuard validate called with pseudo:", pseudo);
-    const user = await this.authService.validateUser(pseudo, pwd);
+  async validate(email: string, pwd: string): Promise<any> {
+    console.log("LocalAuthGuard validate called with email:", email);
+    const user = await this.authService.validateUser(email, pwd);
     if (!user) {
-      console.log("No user found in LocalAuthGuard for pseudo:", pseudo);
+      console.log("No user found in LocalAuthGuard for email:", email);
       throw new UnauthorizedException();
     }
     console.log("User authenticated in LocalAuthGuard:", user);

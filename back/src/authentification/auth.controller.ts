@@ -8,9 +8,9 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @UseGuards(LocalAuthGuard)
-    @Post('login')
+    @Post()
     async login(@Body() loginDto: LoginDto) { 
-        const user = await this.authService.validateUser(loginDto.pseudo, loginDto.pwd);
+        const user = await this.authService.validateUser(loginDto.email, loginDto.pwd);
         if (!user) {
             return { message: 'Authentication failed. User not found or incorrect password.' };
         }

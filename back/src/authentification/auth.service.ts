@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource } from 'typeorm';
-import { Utilisateur } from '../Entity/utilisateur.entity';
+import { Utilisateur } from '../utilisateur/Entities/utilisateur.entity';
 import { TransactionManager } from '../Shared/TransactionManager/TransactionManager';
 import * as bcrypt from 'bcrypt';
 import { format } from 'date-fns';
@@ -14,8 +14,8 @@ export class AuthService {
     private transactionManager: TransactionManager
   ) { }
 
-  async validateUser(pseudo: string, pass: string): Promise<any> {
-    const user = await this.dataSource.getRepository(Utilisateur).findOne({ where: { pseudo: pseudo, activated: true } });
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.dataSource.getRepository(Utilisateur).findOne({ where: { email: email, activated: true } });
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -36,7 +36,7 @@ export class AuthService {
     }
 
     return await this.transactionManager.executeInTransaction(async manager => {
-      const sessionCode = await this.getUserSessionCode(manager, user.pseudo, user.pwd);
+      const sessionCode = await this.getUserSessionCode(manager, user.email, user.pwd);
       return { ...user, sessionCode };
     });
   }
@@ -51,9 +51,9 @@ export class AuthService {
     };
   }
 
-  private async getUserSessionCode(manager: any, pseudo: string, password: string): Promise<string> {
+  private async getUserSessionCode(manager: any, email: string, password: string): Promise<string> {
     const query = `SELECT security.get_user_code($1, $2) AS session_code`;
-    const params = [pseudo, password];
+    const params = [email, password];
     const result = await manager.query(query, params);
     return result[0].session_code;
   }

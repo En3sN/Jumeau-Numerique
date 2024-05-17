@@ -4,7 +4,7 @@ import { UtilisateurController } from './utilisateur.controller';
 import { UtilisateurService } from './utilisateur.service';
 import { SharedModule } from 'src/shared/shared.module';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
-import { Utilisateur } from 'src/Entity/utilisateur.entity';
+import { Utilisateur } from './Entities/utilisateur.entity';
 
 @Module({
   imports: [

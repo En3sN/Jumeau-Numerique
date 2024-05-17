@@ -3,9 +3,9 @@ import { EntityManager, Repository } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 import { CreateUtilisateurDto } from './DTO/Create-utilisateur.dto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { Utilisateur } from 'src/Entity/utilisateur.entity';
 import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';
 import * as bcrypt from 'bcrypt';
+import { Utilisateur } from './Entities/utilisateur.entity';
 
 @Injectable()
 export class UtilisateurService {
