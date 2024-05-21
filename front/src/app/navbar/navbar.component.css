@@ -1,0 +1,38 @@
+.logo-container {
+    margin: 0;
+    z-index: 1; 
+}
+
+.logo-container .logo img {
+    height: 55px; 
+    border-radius: 5px;
+    margin: 2px;
+    left: 0;
+}
+
+.logo-container .logo {
+    text-decoration: none;
+    filter: drop-shadow(0 0 5px rgba(54, 53, 53, 0.5)); 
+}
+
+.mlh_top_container {
+    margin-left: 0px;
+    margin-right: 0px;
+    max-width: 100%;
+}
+
+.mlh_connect {
+    right: 0;
+}
+
+.mlh_header {
+    width: 100%;    
+}
+
+.mlh_title {
+    font-size: 2.4rem;
+}
+
+.mlh_menu {
+    width: 100%;
+}

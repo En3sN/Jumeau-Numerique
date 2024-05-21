@@ -1,0 +1,41 @@
+.container {
+    max-width: 800px;
+    padding: 0 15px;
+}
+
+h2 {
+    text-decoration: underline;
+    text-align: center;
+    font-family: "Verdana";
+    margin-bottom: 15px;
+}
+
+.form-label {
+    font-weight: bold;
+}
+
+.input-group .form-control {
+    border-radius: 4px;
+}
+
+.input-group .btn {
+    border-radius: 4px;
+}
+
+.btn-outline-secondary {
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #545b62;
+}
+
+input[type="text"], input[type="email"], input[type="tel"], select {
+    border-radius: 4px;
+}
+
+.btn-large-text {
+    font-size: 1.15rem; 
+  }
+  

@@ -1,0 +1,53 @@
+<div class="navbar fixed-top bg-primary" data-bs-theme="dark">
+    <div class="container mlh_top_container">
+      <div class="row mlh_header">
+        <div class="logo-container not-front col-3 d-flex flex-wrap">
+          <a href="https://www.mulhouse.fr" class="logo" accesskey="1">
+            <img src="https://www.mulhouse.fr/wp-content/themes/mulhouse/images/logo-mulhouse.png" alt="Logo Mulhouse">
+          </a>
+        </div>
+        <div class="col-6 d-flex justify-content-center">
+          <h1 class="navbar-brand mlh_title">Jumeau Numérique Citoyen </h1>
+        </div>
+        <div class="d-flex justify-content-end text-light col-3">
+          <span class="d-flex align-items-center" (click)="showUserInfo()"> Gilles GAUTIER </span>
+          <i aria-hidden="true" class="d-flex align-items-center fa fa-user" style="margin:5px;" (click)="showLoginModal()"></i>
+        </div>
+        <div class="col-3 d-none">
+          <a class="mlh_connect d-flex flex-row-reverse align-middle" href="./login">
+            <div style="margin:2px;"> Connexion </div>
+            <i aria-hidden="true" class="fa fa-sign-in align-middle" style="margin:2px; padding-top: 5px;"></i>
+          </a>
+        </div>
+      </div>
+  
+      <div class="row navbar-expand-lg mlh_menu">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex justify-content-center navbar-collapse collapse" id="navbarResponsive">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/home">Accueil</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/activities">Activités</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/tableau-de-bord">Tableau de bord</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/planning">Planning</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/contacts">Contacts</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/help">Aide</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  

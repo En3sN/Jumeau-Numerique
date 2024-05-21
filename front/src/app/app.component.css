@@ -1,0 +1,51 @@
+.logo-container {
+    margin: 0;
+    z-index: 1; 
+}
+
+.logo-container .logo {
+    text-decoration: none;
+    filter: drop-shadow(0 0 16px rgba(0, 0, 0, 0.5)); 
+}
+
+.logo-container .logo img {
+    height: 60px; 
+	margin: 5px;
+	left:0;
+}
+
+.mlh_top_container{
+    margin-left: 0px;
+    margin-right: 0px;
+	max-width: 100%;
+}
+
+.mlh_connect{
+	right: 0;
+}
+	
+.mlh_header {
+	width:100%;	
+}
+	
+.mlh_title {
+	font-size: 2.5rem;
+}
+
+.mlh_menu{
+	width:100%;
+}
+
+.mlh_verdana{
+	font-family: "Verdana";
+	
+}
+
+.mlh_card{
+	margin : 5px;
+	
+}
+.mlh_block_data{
+    padding-bottom: 25px;
+	
+}
