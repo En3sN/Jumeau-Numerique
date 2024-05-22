@@ -1,30 +1,29 @@
 <!-- Modal de connexion -->
 <div class="modal" id="DlgLogin" style="top:100px;" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="loginModalLabel">Connexion au portail</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <label class="col-form-label" for="inputDlgLogin">Login :</label>
-          <input type="text" class="form-control" placeholder="Login" id="inputDlgLogin">
-          <p>
-            <label class="col-form-label" for="inputDlgPWD">Mot de passe :</label>
-            <div class="input-group mb-3">
-              <input [type]="passwordFieldType" class="form-control" id="inputDlgPWD" placeholder="Password" autocomplete="off">
-              <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility()">
-                <i class="fa" [ngClass]="passwordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
-              </button>
-            </div>
-          <p>
-        </div>
-        <div class="modal-footer d-flex bd-highlight mb-3">
-          <button type="button" class="btn btn-secondary me-auto p-2" id="btDlgSignUp" (click)="signup()">S'inscrire</button>
-          <button type="button" class="btn btn-primary p-2" id="btDlgLoginOk" (click)="login()">Connexion</button>
-          <button type="button" class="btn btn-secondary p-2" id="btDlgLoginCancel" data-bs-dismiss="modal">Fermer</button>
-        </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModalLabel">Connexion au portail</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label class="col-form-label" for="inputDlgEmail">Email :</label>
+        <input type="email" class="form-control" placeholder="Email" id="inputDlgEmail" [(ngModel)]="email">
+        <p>
+          <label class="col-form-label" for="inputDlgPWD">Mot de passe :</label>
+          <div class="input-group mb-3">
+            <input [type]="passwordFieldType" class="form-control" id="inputDlgPWD" placeholder="Mot de passe" autocomplete="off" [(ngModel)]="pwd">
+            <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility()">
+              <i class="fa" [ngClass]="passwordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
+            </button>
+          </div>
+        <p>
+      </div>
+      <div class="modal-footer d-flex bd-highlight mb-3">
+        <button type="button" class="btn btn-secondary me-auto p-2" id="btDlgSignUp" (click)="signup()">S'inscrire</button>
+        <button type="button" class="btn btn-primary p-2" id="btDlgLoginOk" (click)="login()">Connexion</button>
+        <button type="button" class="btn btn-secondary p-2" id="btDlgLoginCancel" data-bs-dismiss="modal">Fermer</button>
       </div>
     </div>
   </div>
-  
+</div>
