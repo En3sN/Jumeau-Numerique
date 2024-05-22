@@ -1,0 +1,21 @@
+.uniform-text {
+    font-size: 1rem; 
+}
+
+.uniform-input {
+    font-size: 1rem; 
+    padding: 0.5rem; 
+}
+
+.mlh_block_data {
+    padding-bottom: 10px; 
+}
+
+.mlh_org_logo {
+    max-height: 150px;
+    width: auto;
+}
+
+.mlh_verdana {
+    font-family: "Verdana";
+}

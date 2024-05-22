@@ -3,9 +3,12 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { InfosPersoComponent } from './infos-perso/infos-perso.component'; 
 import { InscriptionComponent } from './inscription/inscription.component';
+import { AccueilComponent } from './accueil/accueil.component';
+
 
 const routes: Routes = [
-  { path: '', redirectTo: '/tableau-de-bord', pathMatch: 'full' }, 
+  { path: '', redirectTo: '/accueil', pathMatch: 'full' }, 
+  { path: 'accueil', component: AccueilComponent },
   { path: 'tableau-de-bord', component: DashboardComponent },
   { path: 'infos-perso', component: InfosPersoComponent },
   { path: 'inscription', component: InscriptionComponent },

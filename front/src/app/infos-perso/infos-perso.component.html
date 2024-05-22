@@ -1,124 +1,56 @@
-<!-- Modal de modification de mot de passe -->
-<div class="modal" id="DlgMajPWD" style="top:100px;">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Modification du mot de passe</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Informations personnelles avec onglets -->
+<div class="container mlh_top_container">
+  <div class="row">
+    <div class="col-3 mt-4 border-end">
+      <h3 class="mlh_verdana">Mes données</h3>
+      <ul class="nav nav-pills d-flex flex-column bd-highlight mb-3" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link active" id="pills-infos-perso-tab" data-bs-toggle="pill" href="#pills-infos-perso" role="tab" aria-controls="pills-infos-perso" aria-selected="true">Mes Informations Personnelles</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-infos-complementaires-tab" data-bs-toggle="pill" href="#pills-infos-complementaires" role="tab" aria-controls="pills-infos-complementaires" aria-selected="false">Mes Informations Complémentaires</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-competences-tab" data-bs-toggle="pill" href="#pills-competences" role="tab" aria-controls="pills-competences" aria-selected="false">Mes Compétences</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-abonnements-tab" data-bs-toggle="pill" href="#pills-abonnements" role="tab" aria-controls="pills-abonnements" aria-selected="false">Mes abonnements</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-activites-tab" data-bs-toggle="pill" href="#pills-activites" role="tab" aria-controls="pills-activites" aria-selected="false">Mes activités</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-organisation-tab" data-bs-toggle="pill" href="#pills-organisation" role="tab" aria-controls="pills-organisation" aria-selected="false">Mon organisation</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-planning-tab" data-bs-toggle="pill" href="#pills-planning" role="tab" aria-controls="pills-planning" aria-selected="false">Mon planning</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-9 mt-4">
+      <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-infos-perso" role="tabpanel" aria-labelledby="pills-infos-perso-tab">
+          <app-mes-informations-personnelles></app-mes-informations-personnelles>
         </div>
-        <div class="modal-body">
-          <div>
-            <label class="col-form-label" for="inputPWD1"> Mot de passe actuel: </label>
-            <div class="d-flex justify-content-between align-items-center">
-              <input [type]="currentPasswordFieldType" class="form-control" id="inputPWD1" placeholder="*****" autocomplete="off">
-              <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('current')">
-                <i class="fa" [ngClass]="currentPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
-              </button>
-            </div>
-          </div>
-          <div>
-            <label class="col-form-label mt-4" for="inputPWD2"> Nouveau mot de passe: </label>
-            <div class="has-success">
-              <div class="d-flex justify-content-between align-items-center">
-                <input [type]="newPasswordFieldType" class="form-control is-valid" id="inputPWD2" placeholder="*****" autocomplete="off">
-                <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('new')">
-                  <i class="fa" [ngClass]="newPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
-                </button>
-              </div>
-              <div class="valid-feedback d-block">Les mots de passe correspondent !</div>
-            </div>
-          </div>
-          <div>
-            <label class="col-form-label" for="inputPWD3"> Confirmation mot de passe: </label>
-            <div class="d-flex justify-content-between align-items-center">
-              <input [type]="confirmPasswordFieldType" class="form-control" id="inputPWD3" placeholder="*****" autocomplete="off">
-              <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('confirm')">
-                <i class="fa" [ngClass]="confirmPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
-              </button>
-            </div>
-          </div>
+        <div class="tab-pane fade" id="pills-infos-complementaires" role="tabpanel" aria-labelledby="pills-infos-complementaires-tab">
+          <app-mes-informations-complementaires></app-mes-informations-complementaires>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="btDlgMajPWDOk" (click)="savePassword()">Enregistrer</button>
-          <button type="button" class="btn btn-secondary" id="btDlgMajPWDCancel" data-bs-dismiss="modal" (click)="closePasswordModal()">Fermer</button>
+        <div class="tab-pane fade" id="pills-competences" role="tabpanel" aria-labelledby="pills-competences-tab">
+          <app-mes-competences></app-mes-competences>
+        </div>
+        <div class="tab-pane fade" id="pills-abonnements" role="tabpanel" aria-labelledby="pills-abonnements-tab">
+          <app-mes-abonnements></app-mes-abonnements>
+        </div>
+        <div class="tab-pane fade" id="pills-activites" role="tabpanel" aria-labelledby="pills-activites-tab">
+          <app-mes-activites></app-mes-activites>
+        </div>
+        <div class="tab-pane fade" id="pills-organisation" role="tabpanel" aria-labelledby="pills-organisation-tab">
+          <app-mon-organisation></app-mon-organisation>
+        </div>
+        <div class="tab-pane fade" id="pills-planning" role="tabpanel" aria-labelledby="pills-planning-tab">
+          <app-mon-planning></app-mon-planning>
         </div>
       </div>
     </div>
   </div>
-  
-  <!-- Informations personnelles -->
-  <div class="container mlh_top_container">
-    <div class="row">
-      <div class="col-3 mt-4 border-end">
-        <h3 class="mlh_verdana">Mes données</h3>
-        <ul class="nav nav-pills d-flex flex-column bd-highlight mb-3">
-          <li class="nav-item">
-            <a class="nav-link active" href="#">Mes Informations Personnelles</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-info" href="#">Mes Informations Complémentaires</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-info" href="#">Mes Compétences</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-info" href="#">Mes abonnements</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-info" href="#">Mes activités</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-info" href="#">Mon organisation</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-info" href="#">Mon planning</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-9 mt-4">
-        <h2 class="mlh_verdana">Mes Infos Perso</h2>
-        <div class="row border-bottom mlh_block_data">
-          <div class="col-6">
-            <label class="col-form-label" for="inputDlgUserInfoNom"> Nom : </label>
-            <input type="text" class="form-control" id="inputDlgUserInfoNom">
-  
-            <label class="col-form-label col-form-label-sm" for="inputDlgUserInfoPseudo"> Pseudo (facultatif) : </label>
-            <input type="text" class="form-control form-control-sm" id="inputDlgUserInfoPseudo">
-  
-            <label class="col-form-label" for="inputDlgUserInfoEmail"> Email : </label>
-            <input type="text" class="form-control" id="inputDlgUserInfoEmail">
-  
-            <label class="col-form-label" for="inputDlgUserInfoStatut"> Statut : </label>
-            <select class="form-select" id="inputDlgUserInfoStatut">
-              <option value="Particulier" selected>Particulier</option>
-              <option value="Etudiant">Etudiant</option>
-              <option value="Association">Association</option>
-              <option value="Entreprise">Entreprise</option>
-              <option value="Auto-Entrepreneur">Auto-Entrepreneur</option>
-            </select>
-  
-            <label class="col-form-label col-form-label-sm mt-2" for="inputDlgUserInfoAss"> Entreprise / Organisme / Association : </label>
-            <input type="text" class="form-control form-control-sm" placeholder="Zone à afficher en fonction du statut" id="inputDlgUserInfoAss">
-          </div>
-          <div class="col-6 mt-4">
-            <label class="col-form-label col-form-label-sm" for="inputDlgUserInfoTel"> Téléphone (facultatif) : </label>
-            <input type="text" class="form-control form-control-sm" id="inputDlgUserInfoTel">
-  
-            <label class="col-form-label col-form-label-sm" for="inputDlgUserInfoAdresse"> Adresse (facultatif) : </label>
-            <input type="text" class="form-control form-control-sm" id="inputDlgUserInfoAdresse">
-  
-            <label class="col-form-label col-form-label-sm" for="inputDlgUserInfoCp"> Code postal (facultatif): </label>
-            <input type="text" class="form-control form-control-sm" id="inputDlgUserInfoCp">
-  
-            <label class="col-form-label col-form-label-sm" for="inputDlgUserInfoCommune"> Commune (facultatif): </label>
-            <input type="text" class="form-control form-control-sm" id="inputDlgUserInfoCommune">
-          </div>
-        </div>
-        <div class="d-flex bd-highlight mt-4 border-bottom mlh_block_data">
-          <button type="button" class="btn btn-secondary me-auto p-2" id="btUserInfoPwd" (click)="changePassword()">Changer de mot de passe</button>
-          <button type="button" class="btn btn-primary p-2" id="btUserInfoOk" (click)="saveUserInfo()">Enregistrer</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
+</div>

@@ -1,0 +1,22 @@
+.mlh_top_container {
+    margin-left: 0px;
+    margin-right: 0px;
+    max-width: 100%;
+}
+
+.mlh_verdana {
+    font-family: "Verdana";
+    margin-bottom: 17px;
+}
+
+.mlh_block_data {
+    padding-bottom: 25px;
+}
+.uniform-text {
+    font-size: 1rem; 
+}
+
+.uniform-input {
+    font-size: 1rem;
+    padding: 0.5rem; 
+}
