@@ -18,6 +18,8 @@ import { MesAbonnementsComponent } from './infos-perso/mes-abonnements/mes-abonn
 import { MesActivitesComponent } from './infos-perso/mes-activites/mes-activites.component';
 import { MonOrganisationComponent } from './infos-perso/mon-organisation/mon-organisation.component';
 import { MonPlanningComponent } from './infos-perso/mon-planning/mon-planning.component';
+import { AuthService } from './Services/auth.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,7 @@ import { MonPlanningComponent } from './infos-perso/mon-planning/mon-planning.co
     HttpClientModule,
     FormsModule,
   ],
-  providers: [],
+  providers: [AuthService, CookieService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

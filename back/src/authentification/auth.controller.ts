@@ -1,19 +1,26 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './LocalAuthGuard';
 import { LoginDto } from './dto/login.dto';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-    @UseGuards(LocalAuthGuard)
-    @Post()
-    async login(@Body() loginDto: LoginDto) { 
-        const user = await this.authService.validateUser(loginDto.email, loginDto.pwd);
-        if (!user) {
-            return { message: 'Authentication failed. User not found or incorrect password.' };
-        }
-        return this.authService.login(user);
+  @Post()
+  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: Response) {
+    const user = await this.authService.validateUser(loginDto.email, loginDto.pwd);
+    if (!user) {
+      return { message: 'Authentication failed. User not found or incorrect password.' };
     }
+    const jwt = await this.authService.login(user);
+    response.cookie('jwt', jwt.access_token, { httpOnly: true, secure: false, sameSite: 'lax' });
+    return { message: 'Login successful' };
+  }
+
+  @Post('logout')
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.cookie('jwt', '', { httpOnly: true, expires: new Date(0) });
+    return { message: 'Logout successful' };
+  }
 }

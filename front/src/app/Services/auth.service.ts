@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../environments/environment'; 
+import { environment } from '../../environments/environment';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,24 +11,25 @@ import { environment } from '../../environments/environment';
 export class AuthService {
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cookieService: CookieService) {}
 
   login(email: string, pwd: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/auth`, { email, pwd }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/auth`, { email, pwd }, { withCredentials: true }).pipe(
       map(response => {
-        if (response && response.token) {
-          localStorage.setItem('token', response.token);
-        }
         return response;
       })
     );
   }
 
-  logout(): void {
-    localStorage.removeItem('token');
+  logout(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true });
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return !!this.cookieService.get('jwt');
+  }
+
+  getToken(): string {
+    return this.cookieService.get('jwt');
   }
 }
