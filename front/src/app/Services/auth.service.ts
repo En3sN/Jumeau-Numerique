@@ -16,20 +16,23 @@ export class AuthService {
   login(email: string, pwd: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/auth`, { email, pwd }, { withCredentials: true }).pipe(
       map(response => {
+        if (response && response.token) {
+          this.cookieService.set('token', response.token, { secure: false });
+        }
         return response;
       })
     );
   }
 
-  logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true });
+  logout(): void {
+    this.cookieService.delete('token');
   }
 
   isLoggedIn(): boolean {
-    return !!this.cookieService.get('jwt');
+    return !!this.cookieService.get('token');
   }
 
   getToken(): string {
-    return this.cookieService.get('jwt');
+    return this.cookieService.get('token');
   }
 }

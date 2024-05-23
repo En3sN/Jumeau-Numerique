@@ -2,24 +2,25 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import * as csurf from 'csurf';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Configurer CORS pour autoriser les requêtes depuis localhost:4200
+  app.use(cookieParser());
+  app.use(csurf({ cookie: true }));
+
   app.enableCors({
     origin: 'http://localhost:4200',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
-  app.use(cookieParser());
-
   app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,  // Assure que seules les propriétés définies dans les DTOs sont reçues
-    transform: true,  // Transforme les entrées en leur type déclaré dans le DTO
-    forbidNonWhitelisted: true, // Rejette les requêtes contenant des propriétés non prévues dans le DTO
-    disableErrorMessages: false, // Pour la production, désactive les messages d'erreur
+    whitelist: true,
+    transform: true,
+    forbidNonWhitelisted: true,
+    disableErrorMessages: false,
   }));
 
   await app.listen(3000);

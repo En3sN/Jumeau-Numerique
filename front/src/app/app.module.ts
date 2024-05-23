@@ -9,7 +9,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
 import { InfosPersoComponent } from './infos-perso/infos-perso.component';
 import { InscriptionComponent } from './inscription/inscription.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MesInformationsPersonnellesComponent } from './infos-perso/mes-informations-personnelles/mes-informations-personnelles.component';
 import { MesInformationsComplementairesComponent } from './infos-perso/mes-informations-complementaires/mes-informations-complementaires.component';
@@ -18,8 +18,9 @@ import { MesAbonnementsComponent } from './infos-perso/mes-abonnements/mes-abonn
 import { MesActivitesComponent } from './infos-perso/mes-activites/mes-activites.component';
 import { MonOrganisationComponent } from './infos-perso/mon-organisation/mon-organisation.component';
 import { MonPlanningComponent } from './infos-perso/mon-planning/mon-planning.component';
-import { AuthService } from './Services/auth.service';
+import { AuthService } from './Services/Auth.service';
 import { CookieService } from 'ngx-cookie-service';
+import { CsrfInterceptor } from './Services/CsrfInterceptor.service';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,7 @@ import { CookieService } from 'ngx-cookie-service';
     HttpClientModule,
     FormsModule,
   ],
-  providers: [AuthService, CookieService],
+  providers: [AuthService, CookieService,  { provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

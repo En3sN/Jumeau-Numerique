@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
-import { AuthService } from '../Services/auth.service';
+import { AuthService } from '../Services/Auth.service';
 
 @Component({
   selector: 'app-login',

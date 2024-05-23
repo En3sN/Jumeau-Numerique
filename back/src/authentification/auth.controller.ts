@@ -14,13 +14,13 @@ export class AuthController {
       return { message: 'Authentication failed. User not found or incorrect password.' };
     }
     const jwt = await this.authService.login(user);
-    response.cookie('jwt', jwt.access_token, { httpOnly: true, secure: false, sameSite: 'lax' });
+    response.cookie('token', jwt.access_token, { httpOnly: true, secure: false, sameSite: 'lax' });
     return { message: 'Login successful' };
   }
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) response: Response) {
-    response.cookie('jwt', '', { httpOnly: true, expires: new Date(0) });
+    response.cookie('token', '', { httpOnly: true, expires: new Date(0) });
     return { message: 'Logout successful' };
   }
 }
