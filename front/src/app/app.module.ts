@@ -18,9 +18,9 @@ import { MesAbonnementsComponent } from './infos-perso/mes-abonnements/mes-abonn
 import { MesActivitesComponent } from './infos-perso/mes-activites/mes-activites.component';
 import { MonOrganisationComponent } from './infos-perso/mon-organisation/mon-organisation.component';
 import { MonPlanningComponent } from './infos-perso/mon-planning/mon-planning.component';
-import { AuthService } from './Services/Auth.service';
 import { CookieService } from 'ngx-cookie-service';
 import { CsrfInterceptor } from './Services/CsrfInterceptor.service';
+import { AuthService } from './Services/Auth.service';
 
 @NgModule({
   declarations: [
@@ -45,7 +45,7 @@ import { CsrfInterceptor } from './Services/CsrfInterceptor.service';
     HttpClientModule,
     FormsModule,
   ],
-  providers: [AuthService, CookieService,  { provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
+  providers: [AuthService, CookieService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

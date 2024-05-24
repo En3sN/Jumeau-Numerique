@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import * as bootstrap from 'bootstrap';
 import { AuthService } from '../Services/Auth.service';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +13,7 @@ export class LoginComponent {
   pwd: string = '';
   passwordFieldType: string = 'password';
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   togglePasswordVisibility(): void {
     this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
@@ -22,10 +22,11 @@ export class LoginComponent {
   login(): void {
     this.authService.login(this.email, this.pwd).subscribe(
       response => {
-        console.log('Login successful', response);
-        const loginModal = bootstrap.Modal.getInstance(document.getElementById('DlgLogin') as HTMLElement);
-        loginModal?.hide();
-        this.router.navigate(['/']);
+        if (response.message === 'Login successful') {
+          const loginModal = bootstrap.Modal.getInstance(document.getElementById('DlgLogin') as HTMLElement);
+          loginModal?.hide();
+          this.router.navigate(['/']);
+        }
       },
       error => {
         console.error('Login failed', error);

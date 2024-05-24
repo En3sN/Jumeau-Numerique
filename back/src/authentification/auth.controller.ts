@@ -1,7 +1,8 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Get, Body, Res, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { Response } from 'express';
+import { Response, Request } from 'express';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -14,13 +15,20 @@ export class AuthController {
       return { message: 'Authentication failed. User not found or incorrect password.' };
     }
     const jwt = await this.authService.login(user);
-    response.cookie('token', jwt.access_token, { httpOnly: true, secure: false, sameSite: 'lax' });
-    return { message: 'Login successful' };
+    response.cookie('jwt', jwt.access_token, { httpOnly: true, secure: true, sameSite: 'lax' });
+    return jwt;
   }
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) response: Response) {
-    response.cookie('token', '', { httpOnly: true, expires: new Date(0) });
+    response.cookie('jwt', '', { httpOnly: true, expires: new Date(0) });
+    response.cookie('_csrf', '', { httpOnly: true, expires: new Date(0) }); 
     return { message: 'Logout successful' };
+  }
+
+  @Get('status')
+  @UseGuards(JwtAuthGuard)
+  async status(@Req() req: Request) {
+    return { loggedIn: true, user: req['user'] };
   }
 }
