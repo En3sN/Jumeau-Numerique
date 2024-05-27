@@ -36,3 +36,8 @@
 .mlh_menu {
     width: 100%;
 }
+
+.default-cursor {
+    cursor: pointer ;
+  }
+  
