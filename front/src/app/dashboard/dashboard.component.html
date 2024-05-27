@@ -64,5 +64,30 @@
 		</div>
 	  </div>
 	</div>
+	<div class="container mt-5">
+		<h2>Tableau filtrable</h2>
+		<div class="mb-3">
+		  <label for="filterInput" class="form-label">Filtrer par nom :</label>
+		  <input type="text" class="form-control" id="filterInput" [(ngModel)]="filterText" (input)="applyFilter()" placeholder="Entrer un nom">
+		</div>
+		<table class="table table-striped">
+		  <thead>
+			<tr>
+			  <th scope="col">Nom</th>
+			  <th scope="col">Age</th>
+			  <th scope="col">Email</th>
+			</tr>
+		  </thead>
+		  <tbody>
+			<tr *ngFor="let user of filteredUsers">
+			  <td>{{ user.name }}</td>
+			  <td>{{ user.age }}</td>
+			  <td>{{ user.email }}</td>
+			</tr>
+		  </tbody>
+		</table>
+	  </div>
+	  
   </div>
+  
   

@@ -16,7 +16,7 @@ export class AuthController {
     }
     const jwt = await this.authService.login(user);
     response.cookie('jwt', jwt.access_token, { httpOnly: true, secure: true, sameSite: 'lax' });
-    return jwt;
+    return { message: 'Login successful',jwt };
   }
 
   @Post('logout')

@@ -10,7 +10,7 @@ import { LoginComponent } from './login/login.component';
 import { InfosPersoComponent } from './infos-perso/infos-perso.component';
 import { InscriptionComponent } from './inscription/inscription.component';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MesInformationsPersonnellesComponent } from './infos-perso/mes-informations-personnelles/mes-informations-personnelles.component';
 import { MesInformationsComplementairesComponent } from './infos-perso/mes-informations-complementaires/mes-informations-complementaires.component';
 import { MesCompetencesComponent } from './infos-perso/mes-competences/mes-competences.component';
@@ -44,6 +44,7 @@ import { AuthService } from './Services/Auth.service';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    ReactiveFormsModule,
   ],
   providers: [AuthService, CookieService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]

@@ -25,7 +25,7 @@ export class LoginComponent {
         if (response.message === 'Login successful') {
           const loginModal = bootstrap.Modal.getInstance(document.getElementById('DlgLogin') as HTMLElement);
           loginModal?.hide();
-          this.router.navigate(['/']);
+          //this.router.navigate(['/']);
         }
       },
       error => {

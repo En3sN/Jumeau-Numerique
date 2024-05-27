@@ -1,84 +1,91 @@
 <div class="container mt-3">
     <h2>Inscription</h2>
-    <form>
-        <div class="row">
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionNom" class="form-label">Nom</label>
-                <input type="text" class="form-control" id="inputDlgInscriptionNom" placeholder="Nom">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionPseudo" class="form-label">Pseudo (facultatif)</label>
-                <input type="text" class="form-control" id="inputDlgInscriptionPseudo" placeholder="Pseudo">
-            </div>
+    <form [formGroup]="inscriptionForm" (ngSubmit)="saveInscription()">
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionNom" class="form-label">Nom<span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="inputDlgInscriptionNom" placeholder="Nom" formControlName="nom" [ngClass]="{'is-invalid': inscriptionForm.get('nom')?.invalid && (inscriptionForm.get('nom')?.touched || inscriptionForm.get('nom')?.dirty)}">
         </div>
-        <div class="row">
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionEmail" class="form-label">Email</label>
-                <input type="email" class="form-control" id="inputDlgInscriptionEmail" placeholder="Email">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionTel" class="form-label">Téléphone</label>
-                <input type="tel" class="form-control" id="inputDlgInscriptionTel" placeholder="Téléphone">
-            </div>
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionPseudo" class="form-label">Pseudo (facultatif)</label>
+          <input type="text" class="form-control" id="inputDlgInscriptionPseudo" placeholder="Pseudo" formControlName="pseudo">
         </div>
-        <div class="row">
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionAdresse" class="form-label">Adresse</label>
-                <input type="text" class="form-control" id="inputDlgInscriptionAdresse" placeholder="Adresse">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionCp" class="form-label">Code postal</label>
-                <input type="text" class="form-control" id="inputDlgInscriptionCp" placeholder="Code postal">
-            </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionEmail" class="form-label">Email<span class="text-danger">*</span></label>
+          <input type="email" class="form-control" id="inputDlgInscriptionEmail" placeholder="Email" formControlName="email" [ngClass]="{'is-invalid': inscriptionForm.get('email')?.invalid && (inscriptionForm.get('email')?.touched || inscriptionForm.get('email')?.dirty)}">
+          <div *ngIf="inscriptionForm.get('email')?.errors?.['pattern'] && (inscriptionForm.get('email')?.touched || inscriptionForm.get('email')?.dirty)" class="invalid-feedback d-block">
+            Format de l'email invalide.
+          </div>
         </div>
-        <div class="row">
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionCommune" class="form-label">Commune</label>
-                <input type="text" class="form-control" id="inputDlgInscriptionCommune" placeholder="Commune">
-            </div>
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionRoles" class="form-label">Rôles</label>
-                <input type="text" class="form-control" id="inputDlgInscriptionRoles" placeholder="Rôles">
-            </div>
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionTel" class="form-label">Téléphone</label>
+          <input type="tel" class="form-control" id="inputDlgInscriptionTel" placeholder="Téléphone" formControlName="tel">
         </div>
-        <div class="row">
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionStatut" class="form-label">Statut</label>
-                <select class="form-select" id="inputDlgInscriptionStatut">
-                    <option value="Particulier" selected>Particulier</option>
-                    <option value="Etudiant">Etudiant</option>
-                    <option value="Association">Association</option>
-                    <option value="Entreprise">Entreprise</option>
-                    <option value="Auto-Entrepreneur">Auto-Entrepreneur</option>
-                </select>
-            </div>
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionOrganisation" class="form-label">Organisation (facultatif)</label>
-                <input type="text" class="form-control" id="inputDlgInscriptionOrganisation" placeholder="Organisation">
-            </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionAdresse" class="form-label">Adresse</label>
+          <input type="text" class="form-control" id="inputDlgInscriptionAdresse" placeholder="Adresse" formControlName="adresse">
         </div>
-        <div class="row">
-            <div class="col-md-6 mb-2">
-                <label for="inputDlgInscriptionPWD2" class="form-label">Nouveau mot de passe</label>
-                <div class="input-group">
-                    <input [type]="newPasswordFieldType" class="form-control" id="inputDlgInscriptionPWD2" placeholder="*****" autocomplete="off">
-                    <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('new')">
-                        <i class="fa" [ngClass]="newPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="col-md-6 mb-4">
-                <label for="inputDlgInscriptionPWD3" class="form-label">Confirmation mot de passe</label>
-                <div class="input-group">
-                    <input [type]="confirmPasswordFieldType" class="form-control" id="inputDlgInscriptionPWD3" placeholder="*****" autocomplete="off">
-                    <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('confirm')">
-                        <i class="fa" [ngClass]="confirmPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
-                    </button>
-                </div>
-            </div>
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionCp" class="form-label">Code postal</label>
+          <input type="text" class="form-control" id="inputDlgInscriptionCp" placeholder="Code postal" formControlName="cp">
         </div>
-        <div class="d-grid gap-2 mb-2">      
-            <button type="button" class="btn btn-primary btn-large-text" (click)="saveInscription()">S'inscrire</button>
-          </div>          
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionCommune" class="form-label">Commune</label>
+          <input type="text" class="form-control" id="inputDlgInscriptionCommune" placeholder="Commune" formControlName="commune">
+        </div>
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionRoles" class="form-label">Rôles</label>
+          <input type="text" class="form-control" id="inputDlgInscriptionRoles" placeholder="Rôles" formControlName="roles">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionStatut" class="form-label">Statut<span class="text-danger">*</span></label>
+          <select class="form-select" id="inputDlgInscriptionStatut" formControlName="statut" [ngClass]="{'is-invalid': inscriptionForm.get('statut')?.invalid && (inscriptionForm.get('statut')?.touched || inscriptionForm.get('statut')?.dirty)}">
+            <option value="Particulier">Particulier</option>
+            <option value="Etudiant">Etudiant</option>
+            <option value="Association">Association</option>
+            <option value="Entreprise">Entreprise</option>
+            <option value="Auto-Entrepreneur">Auto-Entrepreneur</option>
+          </select>
+        </div>
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionOrganisation" class="form-label">Organisation (facultatif)</label>
+          <input type="text" class="form-control" id="inputDlgInscriptionOrganisation" placeholder="Organisation" formControlName="organisation">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-2">
+          <label for="inputDlgInscriptionPWD2" class="form-label">Mot de passe<span class="text-danger">*</span></label>
+          <div class="input-group">
+            <input [type]="newPasswordFieldType" class="form-control" id="inputDlgInscriptionPWD2" placeholder="*****" autocomplete="off" formControlName="pwd" [ngClass]="{'is-invalid': inscriptionForm.get('pwd')?.invalid && (inscriptionForm.get('pwd')?.touched || inscriptionForm.get('pwd')?.dirty)}">
+            <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('new')">
+              <i class="fa" [ngClass]="newPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
+            </button>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <label for="inputDlgInscriptionPWD3" class="form-label">Confirmation mot de passe<span class="text-danger">*</span></label>
+          <div class="input-group">
+            <input [type]="confirmPasswordFieldType" class="form-control" id="inputDlgInscriptionPWD3" placeholder="*****" autocomplete="off" formControlName="confirmPwd" [ngClass]="{'is-invalid': inscriptionForm.get('confirmPwd')?.invalid && (inscriptionForm.get('confirmPwd')?.touched || inscriptionForm.get('confirmPwd')?.dirty)}">
+            <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('confirm')">
+              <i class="fa" [ngClass]="confirmPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
+            </button>
+            <div *ngIf="inscriptionForm.get('confirmPwd')?.errors?.['mismatch'] && (inscriptionForm.get('confirmPwd')?.touched || inscriptionForm.get('confirmPwd')?.dirty)" class="invalid-feedback d-block">
+              Les mots de passe ne correspondent pas.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-grid gap-2 mb-2">      
+        <button type="submit" class="btn btn-primary btn-large-text">S'inscrire</button>
+      </div>          
     </form>
-</div>
+  </div>
+  
