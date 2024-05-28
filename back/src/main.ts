@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use(csurf({ cookie: true }));
 
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: 'http://localhost:4201',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
@@ -23,6 +23,6 @@ async function bootstrap() {
     disableErrorMessages: false,
   }));
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();
