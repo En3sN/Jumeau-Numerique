@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './LocalAuthGuard';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from '../JwtStrategy/JwtStrategy';
-import { SharedModule } from '../shared/shared.module';
+import { SharedModule } from '../Shared/shared.module';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 import { JwtAuthGuard } from '../jwt-auth.guard/jwt-auth.guard';
 
