@@ -59,7 +59,7 @@ export class InscriptionComponent {
           });
         })
       ).subscribe(response => {
-        console.log('Inscription réussie', response);
+        console.log('Inscription réussie');
         this.router.navigate(['/accueil']);
       }, error => {
         console.error('Erreur lors de l\'inscription', error);

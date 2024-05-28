@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './LocalAuthGuard';
 import { AuthController } from './auth.controller';
-import { JwtStrategy } from './JwtStrategy';
+import { JwtStrategy } from '../JwtStrategy/JwtStrategy';
 import { SharedModule } from '../shared/shared.module';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from '../jwt-auth.guard/jwt-auth.guard';
 
 @Module({
   imports: [
