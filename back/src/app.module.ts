@@ -7,7 +7,7 @@ import { AuthModule } from './authentification/auth.module';
 import typeorm from './typeorm';
 import { UtilisateurModule } from './utilisateur/utilisateur.module';
 import { JwtModule } from '@nestjs/jwt';
-import { CsrfController } from './csrf/csrf.controller';
+import { CsrfController } from './security/csrf/csrf.controller';
 
 
 @Module({

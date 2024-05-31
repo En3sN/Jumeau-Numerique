@@ -43,6 +43,7 @@ export class AuthService {
   
   async login(user: any) {
     const payload = {
+      id: user.id,
       sessionCode: user.sessionCode,
       issuedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'), 
     };
