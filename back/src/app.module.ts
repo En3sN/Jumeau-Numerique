@@ -20,10 +20,13 @@ import { CsrfController } from './security/csrf/csrf.controller';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
     }),
-    JwtModule.register({
-      global: true,
-      secret: 'SECRET_KEY',
-      signOptions: { expiresIn: '10h' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '10h' },
+      }),
+      inject: [ConfigService],
     }),
     AuthModule,
     UtilisateurModule,

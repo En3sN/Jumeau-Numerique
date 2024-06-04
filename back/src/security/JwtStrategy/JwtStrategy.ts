@@ -1,18 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
+import { UtilisateurService } from 'src/utilisateur/utilisateur.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(
+    private configService: ConfigService,
+    private utilisateurService: UtilisateurService
+  ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // Extrait le JWT du header Authorization
-      ignoreExpiration: false, // Ne pas ignorer l'expiration du token
-      secretOrKey: 'SECRET_KEY', // Clé secrète pour vérifier la signature du token
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: configService.get<string>('JWT_SECRET'), 
     });
   }
 
   async validate(payload: any) {
-    return { sessionCode: payload.sessionCode }; // Retourne le payload validé, accessible dans les reqêtes
+    console.log("Payload:", payload);
+
+    // Récupérer l'utilisateur en fonction du code de session
+    const user = await this.utilisateurService.getUserBySessionCode(payload.sessionCode);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    // Vérifier que l'email et l'ID de l'utilisateur correspondent à ceux du payload
+    if (user.email !== payload.email || user.id !== payload.id) {
+      throw new UnauthorizedException();
+    }
+
+    return { ...payload, user };
   }
 }
