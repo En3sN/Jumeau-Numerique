@@ -23,16 +23,7 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(pass, user.pwd);
     
     if (!isPasswordValid) {
-      // If the password is not valid, check if it's an unhashed password
-      if (user.pwd === pass) {
-        // Hash the unhashed password and update the user record
-        const hashedPassword = await bcrypt.hash(pass, 10);
-        user.pwd = hashedPassword;
-        await this.dataSource.getRepository(Utilisateur).save(user);
-      } else {
-        console.log("No user found or password mismatch in AuthService");
-        throw new UnauthorizedException('Invalid credentials');
-      }
+      throw new UnauthorizedException('Invalid credentials');
     }
 
     return await this.transactionManager.executeInTransaction(async manager => {

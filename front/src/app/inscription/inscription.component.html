@@ -3,8 +3,8 @@
     <form [formGroup]="inscriptionForm" (ngSubmit)="saveInscription()">
       <div class="row">
         <div class="col-md-6 mb-2">
-          <label for="inputDlgInscriptionNom" class="form-label">Nom<span class="text-danger">*</span></label>
-          <input type="text" class="form-control" id="inputDlgInscriptionNom" placeholder="Nom" formControlName="nom" [ngClass]="{'is-invalid': inscriptionForm.get('nom')?.invalid && (inscriptionForm.get('nom')?.touched || inscriptionForm.get('nom')?.dirty)}">
+          <label for="inputDlgInscriptionNom" class="form-label">Nom (Nom complet)<span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="inputDlgInscriptionNom" placeholder="Nom + Prénom" formControlName="nom" [ngClass]="{'is-invalid': inscriptionForm.get('nom')?.invalid && (inscriptionForm.get('nom')?.touched || inscriptionForm.get('nom')?.dirty)}">
         </div>
         <div class="col-md-6 mb-2">
           <label for="inputDlgInscriptionPseudo" class="form-label">Pseudo (facultatif)</label>

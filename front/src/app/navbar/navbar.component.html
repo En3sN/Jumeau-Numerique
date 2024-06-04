@@ -11,6 +11,9 @@
       </div>
       <div class="d-flex justify-content-end align-items-center text-light col-3">
         <ng-container *ngIf="isLoggedIn$ | async; else loginIcon">
+          <span class="d-flex align-items-center me-2 " *ngIf="(utilisateurInfo$ | async) as userInfo">
+            {{ userInfo.nom }}  <!--{{ userInfo.pseudo }} -->
+          </span>
           <div class="dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fas fa-user"></i>

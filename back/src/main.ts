@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use(csurf({ cookie: true }));
 
   app.enableCors({
-    origin: 'http://jn-mulhouse.fr',
+    origin: ['http://jn-mulhouse.fr', 'http://localhost:4201'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });

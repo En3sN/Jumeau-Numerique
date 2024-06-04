@@ -40,4 +40,7 @@ export class Utilisateur {
 
   @Column({ name: 'activated', default: false, type: 'boolean' })
   activated:boolean;
+
+  @Column({name: 'salt',type: 'text'})
+  salt: string; 
 }

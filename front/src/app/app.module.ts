@@ -19,7 +19,7 @@ import { MesActivitesComponent } from './infos-perso/mes-activites/mes-activites
 import { MonOrganisationComponent } from './infos-perso/mon-organisation/mon-organisation.component';
 import { MonPlanningComponent } from './infos-perso/mon-planning/mon-planning.component';
 import { CookieService } from 'ngx-cookie-service';
-import { CsrfInterceptor } from './Services/CsrfInterceptor.service';
+import { CsrfInterceptor } from './Services/Csrf-Interceptor.service';
 import { AuthService } from './Services/Auth.service';
 
 @NgModule({

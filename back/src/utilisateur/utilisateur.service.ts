@@ -25,13 +25,14 @@ export class UtilisateurService {
 
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(createUtilisateurDto.pwd, saltRounds);
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(createUtilisateurDto.pwd, salt);
 
     const query = `
       INSERT INTO security.user_my_infos (
-        nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated, statut, organisation
+        nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated, statut, organisation, salt
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
       ) RETURNING *;
     `;
 
@@ -47,7 +48,8 @@ export class UtilisateurService {
       createUtilisateurDto.roles || null,
       createUtilisateurDto.activated ?? false,
       createUtilisateurDto.statut || 'Particulier',
-      createUtilisateurDto.organisation || null
+      createUtilisateurDto.organisation || null,
+      salt 
     ];
 
     const result = await this.entityManager.query(query, values);
