@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger } from '@nestjs/common';
 import { JwtAuthGuard } from '../security/jwt-auth.guard/jwt-auth.guard';
 import { UtilisateurService } from './utilisateur.service';
 import { CreateUtilisateurDto } from './DTO/create-utilisateur.dto';
@@ -6,6 +6,8 @@ import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';
 
 @Controller('utilisateur')
 export class UtilisateurController {
+  private readonly logger = new Logger(UtilisateurController.name);
+
   constructor(private utilisateurService: UtilisateurService) {}
 
   @UseGuards(JwtAuthGuard)
@@ -15,7 +17,8 @@ export class UtilisateurController {
     if (!sessionCode) {
       throw new Error('Session code is missing from the JWT payload.');
     }
-    return await this.utilisateurService.findAllUserInfo(sessionCode);
+    const userInfo = await this.utilisateurService.findAllUserInfo(sessionCode);
+    return userInfo;
   }
 
   @Post()

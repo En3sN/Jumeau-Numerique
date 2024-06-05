@@ -9,16 +9,15 @@ import { UtilisateurModule } from './utilisateur/utilisateur.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CsrfController } from './security/csrf/csrf.controller';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [typeorm]
+      load: [typeorm],
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => (configService.get('typeorm'))
+      useFactory: async (configService: ConfigService) => configService.get('typeorm'),
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -31,7 +30,7 @@ import { CsrfController } from './security/csrf/csrf.controller';
     AuthModule,
     UtilisateurModule,
   ],
-  controllers: [AppController,CsrfController],
+  controllers: [AppController, CsrfController],
   providers: [AppService],
 })
 export class AppModule {}

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource, EntityManager } from 'typeorm';
 import { Utilisateur } from '../utilisateur/Entities/utilisateur.entity';
@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private dataSource: DataSource,
     private jwtService: JwtService,
@@ -17,12 +19,11 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<any> {
     return await this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const user = await manager.getRepository(Utilisateur).findOne({ where: { email: email, activated: true } });
-      console.log(user);
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
-      const hashedPassword = await bcrypt.hash(pass, user.salt);
 
+      const hashedPassword = await bcrypt.hash(pass, user.salt);
       const isPasswordValid = hashedPassword === user.pwd;
 
       if (!isPasswordValid) {
@@ -40,6 +41,7 @@ export class AuthService {
       sessionCode: user.sessionCode,
       issuedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'), 
     };
+    this.logger.log('Generating JWT with payload:', payload);
     return {
       access_token: this.jwtService.sign(payload),
     };

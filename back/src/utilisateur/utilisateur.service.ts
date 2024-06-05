@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { EntityManager, FindOptionsWhere, Repository } from 'typeorm';
+import { Injectable, Logger } from '@nestjs/common';
+import { EntityManager, Repository } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 import { CreateUtilisateurDto } from './DTO/create-utilisateur.dto';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,8 @@ import { Utilisateur } from './Entities/utilisateur.entity';
 
 @Injectable()
 export class UtilisateurService {
+  private readonly logger = new Logger(UtilisateurService.name);
+
   constructor(
     private transactionManager: TransactionManager,
     @InjectRepository(Utilisateur)
