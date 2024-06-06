@@ -1,0 +1,12 @@
+{
+    "/ng-cli-ws": {
+      "target": "ws://localhost:4201",
+      "secure": false,
+      "ws": true,
+      "changeOrigin": true,
+      "pathRewrite": {
+        "^/ng-cli-ws": "/wss://jn-mulhouse.fr/La-petite-manchester/ng-cli-ws"
+      }
+    }
+  }
+  
