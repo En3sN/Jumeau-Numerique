@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { AuthService } from './Services/Auth.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +10,21 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'front';
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  ngOnInit(): void {
+    this.authService.onLogout.subscribe(() => {
+      const currentUrl = this.router.url;
+      const protectedRoutes = ['/tableau-de-bord', '/planning', '/infos-perso'];
+
+      if (protectedRoutes.includes(currentUrl)) {
+        this.router.navigate(['/accueil']);
+      }
+    });
+
+    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+      this.authService.checkLoginStatus().subscribe();
+    });
+  }
 }

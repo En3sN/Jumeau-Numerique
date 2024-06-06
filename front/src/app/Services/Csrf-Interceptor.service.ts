@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class CsrfInterceptor implements HttpInterceptor {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (req.method === 'GET') {

@@ -5,6 +5,7 @@ import { environment } from '../../environments/environment';
 import { CookieService } from 'ngx-cookie-service';
 import { catchError, map, tap } from 'rxjs/operators';
 import { UtilisateurService } from './Utilisateur.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -12,10 +13,13 @@ import { UtilisateurService } from './Utilisateur.service';
 export class AuthService {
   private apiUrl = environment.apiUrl;
   private loggedIn = new BehaviorSubject<boolean>(false);
+  public onLogout = new BehaviorSubject<void>(undefined);
+
 
   constructor(
     private http: HttpClient,
     private cookieService: CookieService,
+    private router: Router,
     private utilisateurService: UtilisateurService
   ) {
     this.initializeLoginStatus();
@@ -26,7 +30,7 @@ export class AuthService {
       map(response => {
         if (response && response.message === 'Login successful') {
           this.loggedIn.next(true);
-          this.checkLoginStatus().subscribe();  
+          this.checkLoginStatus().subscribe();
         }
         return response;
       })
@@ -36,8 +40,9 @@ export class AuthService {
   logout(): void {
     this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).subscribe(() => {
       this.cookieService.delete('jwt');
-      this.cookieService.delete('_csrf'); 
+      this.cookieService.delete('_csrf');
       this.loggedIn.next(false);
+      this.onLogout.next();
       this.utilisateurService.clearUtilisateurInfo();
     });
   }
@@ -64,10 +69,9 @@ export class AuthService {
     );
   }
 
- 
   private initializeLoginStatus(): void {
     this.checkLoginStatus().subscribe({
-      next: () => {},
+      next: () => { },
       error: (error) => {
         if (error.status === 401) {
           this.loggedIn.next(false);

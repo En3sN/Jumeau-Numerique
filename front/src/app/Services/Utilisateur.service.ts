@@ -11,7 +11,7 @@ export class UtilisateurService {
   private apiUrl = environment.apiUrl;
   private utilisateurInfoSubject = new BehaviorSubject<any>(null);
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getUtilisateurInfo(): Observable<any> {
     return this.utilisateurInfoSubject.asObservable();
