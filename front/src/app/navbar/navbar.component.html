@@ -39,19 +39,21 @@
             <a class="nav-link" routerLink="/accueil">Accueil</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/activities">Activités</a>
+            <a class="nav-link" routerLink="/activites">Activités</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/tableau-de-bord">Tableau de bord</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/planning">Planning</a>
-          </li>
+          <ng-container *ngIf="isLoggedIn$ | async">
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/tableau-de-bord">Tableau de bord</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/planning">Planning</a>
+            </li>
+          </ng-container>
           <li class="nav-item">
             <a class="nav-link" routerLink="/contacts">Contacts</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" routerLink="/help">Aide</a>
+            <a class="nav-link" routerLink="/aide">Aide</a>
           </li>
         </ul>
       </div>

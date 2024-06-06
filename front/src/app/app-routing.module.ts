@@ -4,6 +4,10 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { InfosPersoComponent } from './infos-perso/infos-perso.component'; 
 import { InscriptionComponent } from './inscription/inscription.component';
 import { AccueilComponent } from './accueil/accueil.component';
+import { PlanningComponent } from './planning/planning.component';
+import { AideComponent } from './aide/aide.component';
+import { ContactsComponent } from './contacts/contacts.component';
+import { ActivitesComponent } from './activites/activites.component';
 
 
 const routes: Routes = [
@@ -12,6 +16,10 @@ const routes: Routes = [
   { path: 'tableau-de-bord', component: DashboardComponent },
   { path: 'infos-perso', component: InfosPersoComponent },
   { path: 'inscription', component: InscriptionComponent },
+  { path: 'planning', component: PlanningComponent },
+  { path: 'aide', component: AideComponent },
+  { path: 'contacts', component: ContactsComponent },
+  { path: 'activites', component: ActivitesComponent },
 
 ];
 

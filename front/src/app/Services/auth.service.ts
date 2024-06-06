@@ -64,14 +64,13 @@ export class AuthService {
     );
   }
 
+ 
   private initializeLoginStatus(): void {
     this.checkLoginStatus().subscribe({
       next: () => {},
       error: (error) => {
         if (error.status === 401) {
-          console.error('User is not authenticated', error);
-        } else {
-          console.error('Error checking login status', error);
+          this.loggedIn.next(false);
         }
       }
     });

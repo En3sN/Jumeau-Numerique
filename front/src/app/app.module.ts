@@ -21,6 +21,10 @@ import { MonPlanningComponent } from './infos-perso/mon-planning/mon-planning.co
 import { CookieService } from 'ngx-cookie-service';
 import { CsrfInterceptor } from './Services/Csrf-Interceptor.service';
 import { AuthService } from './Services/Auth.service';
+import { PlanningComponent } from './planning/planning.component';
+import { ContactsComponent } from './contacts/contacts.component';
+import { AideComponent } from './aide/aide.component';
+import { ActivitesComponent } from './activites/activites.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +41,11 @@ import { AuthService } from './Services/Auth.service';
     MesAbonnementsComponent,
     MesActivitesComponent,
     MonOrganisationComponent,
-    MonPlanningComponent
+    MonPlanningComponent,
+    PlanningComponent,
+    ContactsComponent,
+    AideComponent,
+    ActivitesComponent,
   ],
   imports: [
     BrowserModule,
