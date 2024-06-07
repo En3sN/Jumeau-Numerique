@@ -28,14 +28,29 @@
   </div>
 </div>
 
-<!-- Alerte de succès -->
-<div *ngIf="showSuccessAlert" class="alert alert-dismissible alert-success">
-  <button type="button" class="btn-close" (click)="closeSuccessAlert()"></button>
-  <strong>Well done!</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.
+
+
+<div *ngIf="showSuccessToast" class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div class="toast show toast-success" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Succès</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Connexion réussie.
+    </div>
+  </div>
 </div>
 
-<!-- Alerte d'erreur -->
-<div *ngIf="showErrorAlert" class="alert alert-dismissible alert-primary">
-  <button type="button" class="btn-close" (click)="closeErrorAlert()"></button>
-  <strong>Oh snap!</strong> <a href="#" class="alert-link">Change a few things up</a> and try submitting again.
+
+<div *ngIf="showErrorToast" class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div class="toast show toast-error" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Erreur</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Identifiant erroné.
+    </div>
+  </div>
 </div>

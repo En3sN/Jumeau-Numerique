@@ -36,34 +36,14 @@ export class UtilisateurService {
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(createUtilisateurDto.pwd, salt);
 
-    const query = `
-      INSERT INTO security.user_my_infos (
-        nom, pseudo, email, tel, pwd, adresse, cp, commune, roles, activated, statut, organisation, salt
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
-      ) RETURNING *;
-    `;
+    const newUser = this.userRepository.create({
+      ...createUtilisateurDto,
+      pwd: hashedPassword,
+      salt: salt,
+    });
 
-    const values = [
-      createUtilisateurDto.nom,
-      createUtilisateurDto.pseudo,
-      createUtilisateurDto.email,
-      createUtilisateurDto.tel || null,
-      hashedPassword, 
-      createUtilisateurDto.adresse || null,
-      createUtilisateurDto.cp || null,
-      createUtilisateurDto.commune || null,
-      createUtilisateurDto.roles || null,
-      createUtilisateurDto.activated ?? false,
-      createUtilisateurDto.statut || 'Particulier',
-      createUtilisateurDto.organisation || null,
-      salt 
-    ];
-
-    const result = await this.entityManager.query(query, values);
-    return result[0]; 
+    return await this.userRepository.save(newUser);
   }
-
   async updateUser(id: number, updateUtilisateurDto: UpdateUtilisateurDto, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const setClause = Object.entries(updateUtilisateurDto)

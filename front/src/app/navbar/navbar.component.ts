@@ -14,6 +14,8 @@ export class NavbarComponent implements OnInit {
   isLoggedIn$: Observable<boolean> = this.authService.isLoggedIn();
   utilisateurInfo$: Observable<any> = this.utilisateurService.getUtilisateurInfo();
 
+  showLogoutToast = false;
+
   constructor(
     private authService: AuthService,
     private utilisateurService: UtilisateurService,
@@ -40,5 +42,9 @@ export class NavbarComponent implements OnInit {
   logout(): void {
     this.authService.logout();
     this.utilisateurService.clearUtilisateurInfo();
+    this.showLogoutToast = true;
+    setTimeout(() => {
+      this.showLogoutToast = false;
+    }, 4000);
   }
 }

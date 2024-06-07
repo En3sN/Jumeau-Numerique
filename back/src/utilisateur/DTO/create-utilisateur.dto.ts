@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsArray, IsBoolean, IsInt, IsDefined } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsArray, IsBoolean, IsInt } from 'class-validator';
 
 export class CreateUtilisateurDto {
   @IsString()
@@ -50,4 +50,8 @@ export class CreateUtilisateurDto {
   @IsInt()
   @IsOptional()
   organisation?: number;
+  
+  @IsString()
+  @IsOptional()
+  salt?: string;
 }

@@ -41,3 +41,8 @@
     cursor: pointer ;
   }
   
+  .toast-logout .toast-header {
+    background-color: #fd7e14; 
+    color: white;
+  }
+  

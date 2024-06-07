@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { switchMap } from 'rxjs';
 import { Router } from '@angular/router';
+import { UtilisateurService } from '../Services/Utilisateur.service';
 
 @Component({
   selector: 'app-inscription',
@@ -15,7 +13,7 @@ export class InscriptionComponent {
   confirmPasswordFieldType: string = 'password';
   inscriptionForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router) {
+  constructor(private fb: FormBuilder, private utilisateurService: UtilisateurService, private router: Router) {
     this.inscriptionForm = this.fb.group({
       nom: ['', Validators.required],
       pseudo: [''],
@@ -51,14 +49,9 @@ export class InscriptionComponent {
         organisation: parseInt(this.inscriptionForm.value.organisation, 10) || null
       };
 
-      this.http.get<{ csrfToken: string }>(`${environment.apiUrl}/csrf`, { withCredentials: true }).pipe(
-        switchMap(csrfResponse => {
-          return this.http.post(`${environment.apiUrl}/utilisateur`, formValue, {
-            withCredentials: true,
-            headers: { 'X-CSRF-Token': csrfResponse.csrfToken }
-          });
-        })
-      ).subscribe(response => {
+      delete formValue.confirmPwd;
+
+      this.utilisateurService.inscrireUtilisateur(formValue).subscribe(response => {
         console.log('Inscription réussie');
         this.router.navigate(['/accueil']);
       }, error => {
