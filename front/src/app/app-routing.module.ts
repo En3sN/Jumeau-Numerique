@@ -8,7 +8,7 @@ import { PlanningComponent } from './planning/planning.component';
 import { AideComponent } from './aide/aide.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { ActivitesComponent } from './activites/activites.component';
-import { AuthGuard } from './Services/Auth-guard..service';
+import { AuthGuard } from './Services/Auth-guard.service';
 
 
 const routes: Routes = [
