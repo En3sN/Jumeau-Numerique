@@ -12,6 +12,8 @@ export class LoginComponent {
   email: string = '';
   pwd: string = '';
   passwordFieldType: string = 'password';
+  showSuccessAlert: boolean = false; 
+  showErrorAlert: boolean = false; 
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -25,18 +27,28 @@ export class LoginComponent {
         if (response.message === 'Login successful') {
           const loginModal = bootstrap.Modal.getInstance(document.getElementById('DlgLogin') as HTMLElement);
           loginModal?.hide();
-          //this.router.navigate(['/']);
+          this.showSuccessAlert = true; 
+          setTimeout(() => this.showSuccessAlert = false, 5000); 
         }
       },
       error => {
+        this.showErrorAlert = true; 
+        setTimeout(() => this.showErrorAlert = false, 5000); 
         console.error('Login failed', error);
       }
     );
   }
-
   signup(): void {
     const loginModal = bootstrap.Modal.getInstance(document.getElementById('DlgLogin') as HTMLElement);
     loginModal?.hide();
     this.router.navigate(['/inscription']);
+  }
+
+  closeSuccessAlert(): void {
+    this.showSuccessAlert = false;
+  }
+
+  closeErrorAlert(): void {
+    this.showErrorAlert = false;
   }
 }

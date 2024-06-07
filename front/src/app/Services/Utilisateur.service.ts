@@ -20,7 +20,6 @@ export class UtilisateurService {
   fetchUtilisateurInfo(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/utilisateur/infos`, { withCredentials: true }).pipe(
       map(response => {
-        // Assuming the response is an array and we want the first element
         if (Array.isArray(response) && response.length > 0) {
           this.utilisateurInfoSubject.next(response[0]);
         }
