@@ -12,6 +12,7 @@ export class InscriptionComponent {
   newPasswordFieldType: string = 'password';
   confirmPasswordFieldType: string = 'password';
   inscriptionForm: FormGroup;
+  emailInUse: boolean = false;
 
   constructor(private fb: FormBuilder, private utilisateurService: UtilisateurService, private router: Router) {
     this.inscriptionForm = this.fb.group({
@@ -55,7 +56,11 @@ export class InscriptionComponent {
         console.log('Inscription réussie');
         this.router.navigate(['/accueil']);
       }, error => {
-        console.error('Erreur lors de l\'inscription', error);
+        if (error.status === 409) {
+          this.emailInUse = true;
+        } else {
+          console.error('Erreur lors de l\'inscription', error);
+        }
       });
     } else {
       console.log('Formulaire invalide');

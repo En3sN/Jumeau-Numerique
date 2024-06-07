@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 import { CreateUtilisateurDto } from './DTO/create-utilisateur.dto';
@@ -32,6 +32,11 @@ export class UtilisateurService {
   }
   
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
+    const existingUser = await this.userRepository.findOne({ where: { email: createUtilisateurDto.email } });
+    if (existingUser) {
+      throw new ConflictException('Email is already in use');
+    }
+
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     const hashedPassword = await bcrypt.hash(createUtilisateurDto.pwd, salt);
