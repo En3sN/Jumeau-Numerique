@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './Services/Auth.service';
 import { filter } from 'rxjs';
+import { fadeAnimation } from './animations';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  animations: [fadeAnimation]
 })
 export class AppComponent {
   title = 'front';
@@ -26,5 +28,9 @@ export class AppComponent {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       this.authService.checkLoginStatus().subscribe();
     });
+  }
+
+  prepareRoute(outlet: RouterOutlet) {
+    return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
   }
 }

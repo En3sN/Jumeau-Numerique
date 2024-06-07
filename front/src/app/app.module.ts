@@ -25,6 +25,8 @@ import { PlanningComponent } from './planning/planning.component';
 import { ContactsComponent } from './contacts/contacts.component';
 import { AideComponent } from './aide/aide.component';
 import { ActivitesComponent } from './activites/activites.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -53,6 +55,7 @@ import { ActivitesComponent } from './activites/activites.component';
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    BrowserAnimationsModule
   ],
   providers: [AuthService, CookieService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]

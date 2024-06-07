@@ -10,18 +10,16 @@ import { ContactsComponent } from './contacts/contacts.component';
 import { ActivitesComponent } from './activites/activites.component';
 import { AuthGuard } from './Services/Auth-guard.service';
 
-
 const routes: Routes = [
-  { path: '', redirectTo: '/accueil', pathMatch: 'full' }, 
-  { path: 'accueil', component: AccueilComponent },
-  { path: 'tableau-de-bord', component: DashboardComponent, canActivate: [AuthGuard] },
-  { path: 'infos-perso', component: InfosPersoComponent, canActivate: [AuthGuard] },
-  { path: 'inscription', component: InscriptionComponent },
-  { path: 'planning', component: PlanningComponent, canActivate: [AuthGuard] },
-  { path: 'aide', component: AideComponent },
-  { path: 'contacts', component: ContactsComponent },
-  { path: 'activites', component: ActivitesComponent },
-
+  { path: '', redirectTo: '/accueil', pathMatch: 'full', data: { animation: 'HomePage' } },
+  { path: 'accueil', component: AccueilComponent, data: { animation: 'HomePage' } },
+  { path: 'tableau-de-bord', component: DashboardComponent, canActivate: [AuthGuard], data: { animation: 'DashboardPage' } },
+  { path: 'infos-perso', component: InfosPersoComponent, canActivate: [AuthGuard], data: { animation: 'InfosPersoPage' } },
+  { path: 'inscription', component: InscriptionComponent, data: { animation: 'InscriptionPage' } },
+  { path: 'planning', component: PlanningComponent, canActivate: [AuthGuard], data: { animation: 'PlanningPage' } },
+  { path: 'aide', component: AideComponent, data: { animation: 'AidePage' } },
+  { path: 'contacts', component: ContactsComponent, data: { animation: 'ContactsPage' } },
+  { path: 'activites', component: ActivitesComponent, data: { animation: 'ActivitesPage' } },
 ];
 
 @NgModule({

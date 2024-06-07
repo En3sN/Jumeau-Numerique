@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-mes-activites',
@@ -7,4 +8,19 @@ import { Component } from '@angular/core';
 })
 export class MesActivitesComponent {
 
+  openModal(): void {
+    const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+
+  closeModal(): void {
+    const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance?.hide();
+  }
+
+  saveModal(): void {
+    this.closeModal();
+  }
 }
