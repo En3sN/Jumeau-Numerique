@@ -7,6 +7,7 @@ import * as bootstrap from 'bootstrap';
   styleUrls: ['./mes-activites.component.css']
 })
 export class MesActivitesComponent {
+  showConfirmationToast: boolean = false;
 
   openModal(): void {
     const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
@@ -21,6 +22,12 @@ export class MesActivitesComponent {
   }
 
   saveModal(): void {
+    this.showConfirmationToast = true;
+    setTimeout(() => this.showConfirmationToast = false, 4000); 
     this.closeModal();
+  }
+
+  closeConfirmationToast(): void {
+    this.showConfirmationToast = false;
   }
 }
