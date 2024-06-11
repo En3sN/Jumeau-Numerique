@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger, Patch } from '@nestjs/common';
 import { JwtAuthGuard } from '../security/jwt-auth.guard/jwt-auth.guard';
 import { UtilisateurService } from './utilisateur.service';
 import { CreateUtilisateurDto } from './DTO/create-utilisateur.dto';
@@ -41,7 +41,7 @@ export class UtilisateurController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('/:id')
+  @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async updateUser(@Param('id') id: number, @Body() updateUtilisateurDto: UpdateUtilisateurDto, @Request() req): Promise<any> {
     const sessionCode = req.user.sessionCode;
@@ -50,6 +50,4 @@ export class UtilisateurController {
     }
     return await this.utilisateurService.updateUser(id, updateUtilisateurDto, sessionCode);
   }
-
-
 }
