@@ -1,6 +1,55 @@
-<div class="col-9 mt-4">
+<div *ngIf="hasPermission">
+  <div class="col-9">
+    <div class="row mt-4">
+      <h3 class="mlh_verdana">Filtre</h3>
+      <p>
+        <input type="text" class="form-control form-control-sm" id="inputFiltreNom">
+      </p>
+    </div>
+    <div class="row mt-4">
+      <div class="d-flex justify-content-between">
+        <h2 class="mlh_verdana">Mes Activités</h2>
+        <div class="d-flex justify-content-center mlh_block_data">
+          <button type="button" class="btn btn-primary p-2" id="btUserInfoPwd" onclick="">Ajouter une activité</button>
+        </div>
+      </div>
+      <div class="d-flex flex-wrap overflow-auto">
+        <div class="card border-info mb-3 m-1" style="max-width: 40rem;">
+          <div class="card-body row">
+            <div class="col-2">
+              <img class="form-control" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo"/>
+            </div>
+            <div class="col-8 border-end">
+              <h4 class="card-title">Location de machines à coudre</h4>
+              <p class="card-text">La Petite Manchester propose la location pour un usage sur place de machines à coudre professionnelles.</p>
+              <p class="card-text">
+                organisme : <a href="#">La Petite Manchester</a>
+              </p>
+              <p>
+                <span class="badge bg-info">Couture</span>
+                <span class="badge bg-info">Machine</span>
+                <span class="badge bg-info">Petite Manchester</span>
+                <span class="badge bg-info">Box Briand</span>
+                <span class="badge bg-info">Location</span>
+              </p>
+            </div>
+            <div class="col-2">
+              <div class="mlh_card_action d-flex justify-content-start"><strong>
+                <i class="fa fa-pen"></i> modifier
+              </strong></div>
+              <div class="mlh_card_action d-flex justify-content-start"><strong>
+                <i class="fa fa-trash"></i> supprimer
+              </strong></div>
+            </div>
+          </div>
+        </div>
+        <!-- Répétez les autres cartes ici -->
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="!hasPermission" class="col-9 mt-4">
   <h2 class="mlh_verdana">Mes Activités</h2>
-
   <div class="row border-bottom mlh_block_data">
     <p>Votre compte n'est actuellement pas autorisé à déclarer de nouvelles activités sur la plateforme !</p>
   </div>
@@ -19,13 +68,10 @@
       <div class="modal-body">
         <label class="col-form-label" for="inputDlgDemandeServiceNom">Nom de l'organisation :</label>
         <input type="text" class="form-control" id="inputDlgDemandeServiceNom">
-
         <label class="col-form-label" for="inputDlgDemandeServicenActivite">Domaine d'activité :</label>
         <input type="text" class="form-control" id="inputDlgDemandeServicenActivite">
-
         <label class="col-form-label" for="inputDlgDemandeServiceEmail">Email :</label>
         <input type="text" class="form-control" id="inputDlgDemandeServiceEmail">
-
         <label class="col-form-label col-form-label-sm" for="inputDlgDemandeServiceDesc">Description (facultatif) :</label>
         <textarea class="form-control form-control-sm" id="inputDlgDemandeServiceDesc" rows="3"></textarea>
       </div>
@@ -37,7 +83,6 @@
   </div>
 </div>
 
-<!-- Toast de confirmation -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div *ngIf="showConfirmationToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">

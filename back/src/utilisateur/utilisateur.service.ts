@@ -31,6 +31,13 @@ export class UtilisateurService {
     return result[0]; 
   }
   
+
+  async getUserRolesBySessionCode(sessionCode: string): Promise<any> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      return manager.query(`SELECT roles FROM security.user_my_infos`);
+    }, sessionCode);
+  }
+
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     const existingUser = await this.userRepository.findOne({ where: { email: createUtilisateurDto.email } });
     if (existingUser) {

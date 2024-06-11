@@ -1,13 +1,25 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as bootstrap from 'bootstrap';
+import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
 
 @Component({
   selector: 'app-mes-activites',
   templateUrl: './mes-activites.component.html',
   styleUrls: ['./mes-activites.component.css']
 })
-export class MesActivitesComponent {
+export class MesActivitesComponent implements OnInit {
   showConfirmationToast: boolean = false;
+  hasPermission: boolean = false;
+
+  constructor(private utilisateurService: UtilisateurService) {}
+
+  ngOnInit(): void {
+    this.utilisateurService.getUserRoles().subscribe(roles => {
+      if (roles && Array.isArray(roles)) {
+        this.hasPermission = roles.includes('Activite') || roles.includes('Admin');
+      }
+    });
+  }
 
   openModal(): void {
     const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
