@@ -33,24 +33,16 @@ export class UtilisateurService {
   }
 
   getUserRoles(): Observable<string[]> {
-    return this.http.get<{ csrfToken: string }>(`${this.apiUrl}/csrf`, { withCredentials: true }).pipe(
-      switchMap(csrfResponse => {
-        return this.http.get<{ roles: string[] }[]>(`${this.apiUrl}/utilisateur/roles`, {
-          withCredentials: true,
-          headers: { 'X-CSRF-Token': csrfResponse.csrfToken }
-        });
-      }),
-      map(response => response[0]?.roles || []) 
+    return this.http.get<{ roles: string[] }[]>(`${this.apiUrl}/utilisateur/roles`, {
+      withCredentials: true
+    }).pipe(
+      map(response => response[0]?.roles || [])
     );
   }
+
   inscrireUtilisateur(formValue: any): Observable<any> {
-    return this.http.get<{ csrfToken: string }>(`${this.apiUrl}/csrf`, { withCredentials: true }).pipe(
-      switchMap(csrfResponse => {
-        return this.http.post(`${this.apiUrl}/utilisateur`, formValue, {
-          withCredentials: true,
-          headers: { 'X-CSRF-Token': csrfResponse.csrfToken }
-        });
-      })
-    );
+    return this.http.post(`${this.apiUrl}/utilisateur`, formValue, {
+      withCredentials: true
+    });
   }
 }
