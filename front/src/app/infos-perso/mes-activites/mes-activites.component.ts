@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
 
@@ -11,7 +12,7 @@ export class MesActivitesComponent implements OnInit {
   showConfirmationToast: boolean = false;
   hasPermission: boolean = false;
 
-  constructor(private utilisateurService: UtilisateurService) {}
+  constructor(private utilisateurService: UtilisateurService, private router: Router) {}
 
   ngOnInit(): void {
     this.utilisateurService.getUserRoles().subscribe(roles => {
@@ -41,5 +42,13 @@ export class MesActivitesComponent implements OnInit {
 
   closeConfirmationToast(): void {
     this.showConfirmationToast = false;
+  }
+
+  editActivite(id: number): void {
+    this.router.navigate(['/modifier-activite', id]);
+  }
+
+  viewDetails() {
+    this.router.navigate(['/details-activite']);
   }
 }

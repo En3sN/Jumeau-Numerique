@@ -26,6 +26,8 @@ import { ContactsComponent } from './contacts/contacts.component';
 import { AideComponent } from './aide/aide.component';
 import { ActivitesComponent } from './activites/activites.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ModifierActiviteComponent } from './infos-perso/mes-activites/modifier-activite/modifier-activite.component';
+import { DetailsActiviteComponent } from './infos-perso/mes-activites/details-activite/details-activite.component';
 
 
 @NgModule({
@@ -48,6 +50,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ContactsComponent,
     AideComponent,
     ActivitesComponent,
+    ModifierActiviteComponent,
+    DetailsActiviteComponent,
   ],
   imports: [
     BrowserModule,
