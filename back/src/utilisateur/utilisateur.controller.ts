@@ -8,7 +8,7 @@ import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';
 export class UtilisateurController {
   private readonly logger = new Logger(UtilisateurController.name);
 
-  constructor(private utilisateurService: UtilisateurService) {}
+  constructor(private utilisateurService: UtilisateurService) { }
 
   @UseGuards(JwtAuthGuard)
   @Get('infos')
@@ -31,7 +31,7 @@ export class UtilisateurController {
     const roles = await this.utilisateurService.getUserRolesBySessionCode(sessionCode);
     console.log(roles);
     return roles;
-    
+
   }
 
   @Post()
@@ -49,5 +49,16 @@ export class UtilisateurController {
       throw new Error('Session code is missing from the JWT payload.');
     }
     return await this.utilisateurService.updateUser(id, updateUtilisateurDto, sessionCode);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('/:id/role')
+  @HttpCode(HttpStatus.OK)
+  async addRoleToUser(@Param('id') id: number, @Body('roles') roles: string, @Request() req): Promise<any> {
+    const sessionCode = req.user.sessionCode;
+    if (!sessionCode) {
+      throw new Error('Session code is missing from the JWT payload.');
+    }
+    return await this.utilisateurService.addRoleToUser(id, roles, sessionCode);
   }
 }

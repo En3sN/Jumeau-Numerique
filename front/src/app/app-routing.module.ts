@@ -21,9 +21,9 @@ const routes: Routes = [
   { path: 'planning', component: PlanningComponent, canActivate: [AuthGuard], data: { animation: 'PlanningPage' } },
   { path: 'aide', component: AideComponent, data: { animation: 'AidePage' } },
   { path: 'contacts', component: ContactsComponent, data: { animation: 'ContactsPage' } },
-  { path: 'activites', component: ActivitesComponent,canActivate: [AuthGuard], data: { animation: 'ActivitesPage' } },
-  { path: 'modifier-activite/:id', component: ModifierActiviteComponent,canActivate: [AuthGuard], data: { animation: 'ModifierActivitePage' }},
-  { path: 'details-activite', component: DetailsActiviteComponent,canActivate: [AuthGuard], data: { animation: 'DetailsActivitePage' }},
+  { path: 'activites', component: ActivitesComponent, canActivate: [AuthGuard], data: { animation: 'ActivitesPage' } },
+  { path: 'modifier-activite/:id', component: ModifierActiviteComponent, canActivate: [AuthGuard], data: { animation: 'ModifierActivitePage' }},
+  { path: 'details-activite', component: DetailsActiviteComponent, canActivate: [AuthGuard], data: { animation: 'DetailsActivitePage' }},
 
 ];
 

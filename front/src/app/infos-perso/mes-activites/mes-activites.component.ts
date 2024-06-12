@@ -11,14 +11,24 @@ import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
 export class MesActivitesComponent implements OnInit {
   showConfirmationToast: boolean = false;
   hasPermission: boolean = false;
+  userRoles: string[] = [];
+  userId: number | null = null;
 
-  constructor(private utilisateurService: UtilisateurService, private router: Router) {}
+  constructor(
+    private utilisateurService: UtilisateurService, 
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    this.utilisateurService.getUtilisateurInfo().subscribe(user => {
+      this.userId = user.id; // Stocker l'ID de l'utilisateur
+      this.userRoles = user.roles || [];
+      this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
+    });
+
     this.utilisateurService.getUserRoles().subscribe(roles => {
-      if (roles && Array.isArray(roles)) {
-        this.hasPermission = roles.includes('Activite') || roles.includes('Admin');
-      }
+      this.userRoles = roles;
+      this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
     });
   }
 
@@ -35,9 +45,22 @@ export class MesActivitesComponent implements OnInit {
   }
 
   saveModal(): void {
-    this.showConfirmationToast = true;
-    setTimeout(() => this.showConfirmationToast = false, 4000); 
-    this.closeModal();
+    if (this.userId === null) {
+      console.error('User ID is null');
+      return;
+    }
+    this.utilisateurService.addRoleToUser(this.userId, 'Activite').subscribe({
+      next: (response) => {
+        this.userRoles = response.roles || [];
+        this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
+        this.showConfirmationToast = true;
+        this.closeModal(); 
+        setTimeout(() => this.showConfirmationToast = false, 4000);
+      },
+      error: (err) => {
+        console.error('Error:', err);
+      }
+    });
   }
 
   closeConfirmationToast(): void {

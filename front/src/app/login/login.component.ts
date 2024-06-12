@@ -34,7 +34,6 @@ export class LoginComponent {
       error => {
         this.showErrorToast = true; 
         setTimeout(() => this.showErrorToast = false, 4000); 
-        console.error('Login failed', error);
       }
     );
   }

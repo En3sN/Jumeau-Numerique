@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { map, switchMap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,7 @@ import { map, switchMap } from 'rxjs/operators';
 export class UtilisateurService {
   private apiUrl = environment.apiUrl;
   private utilisateurInfoSubject = new BehaviorSubject<any>(null);
+  private userId: number | null = null;
 
   constructor(private http: HttpClient) { }
 
@@ -17,19 +18,21 @@ export class UtilisateurService {
     return this.utilisateurInfoSubject.asObservable();
   }
 
+  clearUtilisateurInfo(): void {
+    this.utilisateurInfoSubject.next(null);
+    this.userId = null;
+  }
+
   fetchUtilisateurInfo(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/utilisateur/infos`, { withCredentials: true }).pipe(
       map(response => {
         if (Array.isArray(response) && response.length > 0) {
           this.utilisateurInfoSubject.next(response[0]);
+          this.userId = response[0].id; // Stocker l'ID de l'utilisateur
         }
         return response[0];
       })
     );
-  }
-
-  clearUtilisateurInfo(): void {
-    this.utilisateurInfoSubject.next(null);
   }
 
   getUserRoles(): Observable<string[]> {
@@ -42,6 +45,12 @@ export class UtilisateurService {
 
   inscrireUtilisateur(formValue: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/utilisateur`, formValue, {
+      withCredentials: true
+    });
+  }
+
+  addRoleToUser(userId: number, roles: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/utilisateur/${userId}/role`, { roles }, {
       withCredentials: true
     });
   }
