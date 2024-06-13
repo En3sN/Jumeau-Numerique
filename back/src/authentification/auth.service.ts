@@ -18,7 +18,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     return await this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      const user = await manager.getRepository(Utilisateur).findOne({ where: { email: email, activated: true } });
+      const user = await manager.getRepository(Utilisateur).findOne({ where: { email: email } });
       if (!user) {
         throw new UnauthorizedException('Invalid credentials');
       }
@@ -28,6 +28,10 @@ export class AuthService {
 
       if (!isPasswordValid) {
         throw new UnauthorizedException('Invalid credentials');
+      }
+
+      if (!user.activated) {
+        throw new UnauthorizedException('User account is not activated');
       }
 
       const sessionCode = await this.getUserSessionCode(manager, user.email, user.pwd);

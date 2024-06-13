@@ -14,6 +14,7 @@ export class LoginComponent {
   passwordFieldType: string = 'password';
   showSuccessToast: boolean = false; 
   showErrorToast: boolean = false; 
+  showActivationErrorToast: boolean = false; 
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -32,8 +33,13 @@ export class LoginComponent {
         }
       },
       error => {
-        this.showErrorToast = true; 
-        setTimeout(() => this.showErrorToast = false, 4000); 
+        if (error.error.message === 'User account is not activated') {
+          this.showActivationErrorToast = true;
+          setTimeout(() => this.showActivationErrorToast = false, 4000);
+        } else {
+          this.showErrorToast = true; 
+          setTimeout(() => this.showErrorToast = false, 4000); 
+        }
       }
     );
   }
@@ -50,5 +56,9 @@ export class LoginComponent {
 
   closeErrorToast(): void {
     this.showErrorToast = false;
+  }
+
+  closeActivationErrorToast(): void {
+    this.showActivationErrorToast = false;
   }
 }

@@ -28,13 +28,11 @@
   </div>
 </div>
 
-
-
 <div *ngIf="showSuccessToast" class="toast-container position-fixed bottom-0 end-0 p-3">
   <div class="toast show toast-success" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
       <strong class="me-auto">Succès</strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" (click)="closeSuccessToast()"></button>
     </div>
     <div class="toast-body">
       Connexion réussie.
@@ -42,15 +40,26 @@
   </div>
 </div>
 
-
 <div *ngIf="showErrorToast" class="toast-container position-fixed bottom-0 end-0 p-3">
   <div class="toast show toast-error" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
       <strong class="me-auto">Erreur</strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" (click)="closeErrorToast()"></button>
     </div>
     <div class="toast-body">
       Identifiant erroné.
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showActivationErrorToast" class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div class="toast show toast-error" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header">
+      <strong class="me-auto">Erreur</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" (click)="closeActivationErrorToast()"></button>
+    </div>
+    <div class="toast-body">
+      Votre compte n'est pas activé.
     </div>
   </div>
 </div>
