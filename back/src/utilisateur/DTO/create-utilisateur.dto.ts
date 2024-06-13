@@ -50,6 +50,10 @@ export class CreateUtilisateurDto {
   @IsInt()
   @IsOptional()
   organisation?: number;
+
+  @IsString()
+  @IsOptional()
+  organisation_nom?: string;
   
   @IsString()
   @IsOptional()

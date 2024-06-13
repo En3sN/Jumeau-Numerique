@@ -1,6 +1,7 @@
 <div class="container mt-3">
   <h2>Inscription</h2>
   <form [formGroup]="inscriptionForm" (ngSubmit)="saveInscription()">
+    <!-- Autres champs du formulaire -->
     <div class="row">
       <div class="col-md-6 mb-2">
         <label for="inputDlgInscriptionNom" class="form-label">Nom (Nom complet)<span class="text-danger">*</span></label>
@@ -56,7 +57,7 @@
       </div>
       <div class="col-md-6 mb-2">
         <label for="inputDlgInscriptionOrganisation" class="form-label">Organisation (facultatif)</label>
-        <input type="text" class="form-control" id="inputDlgInscriptionOrganisation" placeholder="Organisation" formControlName="organisation">
+        <input type="text" class="form-control" id="inputDlgInscriptionOrganisation" placeholder="Organisation" formControlName="organisation_nom">
       </div>
     </div>
     <div class="row">

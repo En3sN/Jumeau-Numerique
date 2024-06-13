@@ -39,12 +39,11 @@ export class UtilisateurService {
     }, sessionCode);
   }
 
-  async activateUser(userId: number, activate: boolean, sessionCode: string): Promise<string> {
-    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      await manager.query('SELECT security.set_user_activated($1, $2)', [userId, activate]);
-      return activate ? 'User activated successfully' : 'User deactivated successfully';
-    }, sessionCode);
+  async activateUser(userId: number, activate: boolean): Promise<string> {
+    await this.entityManager.query('SELECT security.set_user_activated($1, $2)', [userId, activate]);
+    return activate ? 'User activated successfully' : 'User deactivated successfully';
   }
+
 
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     const existingUser = await this.userRepository.findOne({ where: { email: createUtilisateurDto.email } });
@@ -62,9 +61,12 @@ export class UtilisateurService {
       salt: salt,
     });
 
-    return await this.userRepository.save(newUser);
-  }
+    const savedUser = await this.userRepository.save(newUser);
 
+    await this.activateUser(savedUser.id, true); 
+
+    return savedUser;
+  }
 
   async addRoleToUser(userId: number, roles: string, sessionCode: string): Promise<Utilisateur> {
     const user = await this.userRepository.findOne({ where: { id: userId } });

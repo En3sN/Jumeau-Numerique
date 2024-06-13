@@ -39,6 +39,7 @@ export class UtilisateurController {
     return await this.utilisateurService.createUser(createUtilisateurDto);
   }
 
+  
   @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
@@ -67,11 +68,7 @@ export class UtilisateurController {
   @HttpCode(HttpStatus.OK)
   async activateUser(
     @Param('id') id: number, @Body() updateUtilisateurDto: UpdateUtilisateurDto, @Request() req): Promise<{ message: string }> {
-    const sessionCode = req.user.sessionCode;
-    if (!sessionCode) {
-      throw new Error('Session code is missing from the JWT payload.');
-    }
-    const message = await this.utilisateurService.activateUser(id, updateUtilisateurDto.activated, sessionCode);
+    const message = await this.utilisateurService.activateUser(id, updateUtilisateurDto.activated);
     return { message };
   }
 }

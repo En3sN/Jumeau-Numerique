@@ -27,7 +27,7 @@ export class InscriptionComponent {
       commune: [''],
       roles: [''],
       statut: ['Particulier', Validators.required],
-      organisation: [null]
+      organisation_nom: ['']
     }, { validator: this.passwordMatchValidator });
   }
 
@@ -47,14 +47,13 @@ export class InscriptionComponent {
       const formValue = {
         ...this.inscriptionForm.value,
         roles: this.inscriptionForm.value.roles.split(',').map((role: string) => role.trim()),
-        organisation: parseInt(this.inscriptionForm.value.organisation, 10) || null
+        organisation_nom: this.inscriptionForm.value.organisation_nom
       };
 
       delete formValue.confirmPwd;
 
       this.utilisateurService.inscrireUtilisateur(formValue).subscribe(response => {
         console.log('Inscription réussie');
-        this.router.navigate(['/accueil']);
       }, error => {
         if (error.status === 409) {
           this.emailInUse = true;
