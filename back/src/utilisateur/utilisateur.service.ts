@@ -39,6 +39,12 @@ export class UtilisateurService {
     }, sessionCode);
   }
 
+  async activateUser(userId: number, activate: boolean, sessionCode: string): Promise<string> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      await manager.query('SELECT security.set_user_activated($1, $2)', [userId, activate]);
+      return activate ? 'User activated successfully' : 'User deactivated successfully';
+    }, sessionCode);
+  }
 
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     const existingUser = await this.userRepository.findOne({ where: { email: createUtilisateurDto.email } });

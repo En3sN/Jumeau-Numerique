@@ -31,7 +31,6 @@ export class UtilisateurController {
     const roles = await this.utilisateurService.getUserRolesBySessionCode(sessionCode);
     console.log(roles);
     return roles;
-
   }
 
   @Post()
@@ -60,5 +59,19 @@ export class UtilisateurController {
       throw new Error('Session code is missing from the JWT payload.');
     }
     return await this.utilisateurService.addRoleToUser(id, roles, sessionCode);
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('activate/:id')
+  @HttpCode(HttpStatus.OK)
+  async activateUser(
+    @Param('id') id: number, @Body() updateUtilisateurDto: UpdateUtilisateurDto, @Request() req): Promise<{ message: string }> {
+    const sessionCode = req.user.sessionCode;
+    if (!sessionCode) {
+      throw new Error('Session code is missing from the JWT payload.');
+    }
+    const message = await this.utilisateurService.activateUser(id, updateUtilisateurDto.activated, sessionCode);
+    return { message };
   }
 }

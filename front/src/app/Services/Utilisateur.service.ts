@@ -28,7 +28,7 @@ export class UtilisateurService {
       map(response => {
         if (Array.isArray(response) && response.length > 0) {
           this.utilisateurInfoSubject.next(response[0]);
-          this.userId = response[0].id; // Stocker l'ID de l'utilisateur
+          this.userId = response[0].id; 
         }
         return response[0];
       })

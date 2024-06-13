@@ -21,7 +21,7 @@ export class MesActivitesComponent implements OnInit {
 
   ngOnInit(): void {
     this.utilisateurService.getUtilisateurInfo().subscribe(user => {
-      this.userId = user.id; // Stocker l'ID de l'utilisateur
+      this.userId = user.id; 
       this.userRoles = user.roles || [];
       this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
     });
