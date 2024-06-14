@@ -1,118 +1,112 @@
 <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-10">
-        <div class="d-flex justify-content-between align-items-center mt-4">
-          <img class="img-thumbnail" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo" style="width: 150px; height: auto;">
-          <h2 class="mlh_verdana m-3">
-            Location de machines à coudre professionnelles : <br> Box Briand
-          </h2>
-          <button type="button" class="btn btn-outline-info">Site Web</button>
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <div class="d-flex justify-content-between align-items-center mt-4">
+        <img class="img-thumbnail" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo" style="width: 150px; height: auto;">
+        <h2 class="mlh_verdana m-3">
+          Location de machines à coudre professionnelles : <br> Box Briand
+        </h2>
+        <button type="button" class="btn btn-outline-info">Site Web</button>
+      </div>
+      <div class="row mt-4">
+        <div class="col-12 mlh_block_data">
+          Créer des passerelles entre le monde de l’Industrie et celui de l’Education par le biais du textile, telle est la raison d’être de La Petite Manchester. Un projet mis sur les rails en 2015 et porté depuis par Nathalie Methia. Un projet engagé et humain qui attaque l’ultime étape de son développement.
         </div>
-        <div class="row mt-4">
-          <div class="col-12 mlh_block_data">
-            Créer des passerelles entre le monde de l’Industrie et celui de l’Education par le biais du textile, telle est la raison d’être de La Petite Manchester. Un projet mis sur les rails en 2015 et porté depuis par Nathalie Methia. Un projet engagé et humain qui attaque l’ultime étape de son développement.
-          </div>
-        </div>
-        <div class="row mt-4">
-          <div class="col-12 mlh_block_data border-bottom">
-            <ul class="nav nav-tabs" role="tablist">
-              <li class="nav-item" role="presentation">
-                <a class="nav-link active" data-bs-toggle="tab" href="#Generalite" aria-selected="true" role="tab">Généralités</a>
-              </li>
-              <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#InfoGen" aria-selected="false" role="tab">Informations requises</a>
-              </li>
-              <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#services" aria-selected="false" role="tab">Services associés</a>
-              </li>
-              <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#planning" aria-selected="false" role="tab">Définition des créneaux pour les rendez-vous initiaux</a>
-              </li>
-            </ul>
-            <div id="myTabContent" class="tab-content mt-3">
-              <div class="tab-pane fade show active" id="Generalite" role="tabpanel">
-                <p class="card-text">
-                  organisme : <a href="#"> La Petite Manchester </a>
-                </p>
-                <label class="col-form-label">Référence :</label>
-                <strong>REFX2154876</strong> <br>
-                <label class="col-form-label">Quelques documents :</label>
-                <select multiple class="form-select" id="inputActDoc">
-                  <option>Flyer</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
-                <label class="col-form-label">Adresse :</label>
-                <strong>33 avenue de Colmar 68100 Mulhouse</strong>
-              </div>
-              <div class="tab-pane fade mt-2" id="InfoGen" role="tabpanel">
-                <p>Cette activité nécessitera un rendez-vous initial pour pouvoir accéder aux différents services proposés.</p>
-                <label class="col-form-label">Informations complémentaires demandées :</label>
-                <select multiple class="form-select" id="inputActInfo">
-                  <option>Ages</option>
-                  <option></option>
-                  <option></option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
-                <label class="col-form-label mt-2">Éléments à fournir :</label>
-                <select multiple class="form-select" id="inputActItem">
-                  <option>Carte d'identité</option>
-                  <option>Diplôme de ...</option>
-                  <option>Certification ...</option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
-              </div>
-              <div class="tab-pane fade mt-2" id="services" role="tabpanel">
-                <div class="d-flex justify-content-between align-items-center mt-1">
-                  <h3 class="mlh_verdana mt-2">Les services disponibles</h3>
-                  <button type="button" class="btn btn-primary" id="btUserInfoPwd">Ajouter un service</button>
-                </div>
-                <div class="row mt-2">
-                  <h4 class="mlh_verdana">Filtre</h4>
-                  <input type="text" class="form-control form-control-sm" id="inputFiltreNom">
-                </div>
-                <div class="d-flex flex-wrap overflow-auto border-bottom mt-2">
-                  <div class="card border-info mb-3" style="flex: 1 1 calc(33.333% - 1rem); margin: 0.5rem;">
-                    <div class="card-body d-flex">
-                      <img class="img-thumbnail me-3" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo" style="width: 100px; height: auto;">
-                      <div class="flex-grow-1">
-                        <h4 class="card-title">Réservation piqueuse (Ref : P4522896)</h4>
-                        <p class="card-text">La Petite Manchester propose la location pour un usage sur place de machines à coudre professionnelles.</p>
-                        <p>
-                          <span class="badge bg-info">Couture</span>
-                          <span class="badge bg-info">Machine</span>
-                          <span class="badge bg-info">Petite Manchester</span>
-                          <span class="badge bg-info">Box Briand</span>
-                          <span class="badge bg-info">Location</span>
-                        </p>
-                      </div>
-                      <div class="d-flex flex-column justify-content-around">
-                        <button class="btn btn-outline-secondary mb-2">Modifier</button>
-                        <button class="btn btn-outline-danger">Supprimer</button>
-                      </div>
+      </div>
+      <div class="row mt-4">
+        <div class="col-12 mlh_block_data border-bottom">
+          <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" data-bs-toggle="tab" href="#Generalite" aria-selected="true" role="tab">Généralités</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" data-bs-toggle="tab" href="#InfoGen" aria-selected="false" role="tab">Informations requises</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" data-bs-toggle="tab" href="#services" aria-selected="false" role="tab">Services associés</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" data-bs-toggle="tab" href="#planning" aria-selected="false" role="tab">Définition des créneaux pour les rendez-vous initiaux</a>
+            </li>
+          </ul>
+          <div id="myTabContent" class="tab-content mt-3">
+            <div class="tab-pane fade show active" id="Generalite" role="tabpanel">
+              <p class="card-text">
+                organisme : <a href="#"> La Petite Manchester </a>
+              </p>
+              <label class="col-form-label">Référence :</label>
+              <strong>REFX2154876</strong> <br>
+              <label class="col-form-label">Quelques documents :</label>
+              <select multiple class="form-select" id="inputActDoc">
+                <option>Flyer</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+              <label class="col-form-label">Adresse :</label>
+              <strong>33 avenue de Colmar 68100 Mulhouse</strong>
+            </div>
+            <div class="tab-pane fade mt-2" id="InfoGen" role="tabpanel">
+              <p>Cette activité nécessitera un rendez-vous initial pour pouvoir accéder aux différents services proposés.</p>
+              <label class="col-form-label">Informations complémentaires demandées :</label>
+              <select multiple class="form-select" id="inputActInfo">
+                <option>Ages</option>
+                <option></option>
+                <option></option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+              <label class="col-form-label mt-2">Éléments à fournir :</label>
+              <select multiple class="form-select" id="inputActItem">
+                <option>Carte d'identité</option>
+                <option>Diplôme de ...</option>
+                <option>Certification ...</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+            </div>
+            <div class="tab-pane fade mt-2" id="planning" role="tabpanel">
+              <h3 class="mlh_verdana mt-2">Planning</h3>
+              <div class="row">
+                <div class="col-md-3">
+                  <div id="external-events" class="bg-light p-2">
+                    <h4>Draggable Events</h4>
+                    <div id="external-events-list">
+                      <div class="fc-event" title="My Event 1">My Event 1</div>
+                      <div class="fc-event" title="My Event 2">My Event 2</div>
+                      <div class="fc-event" title="My Event 3">My Event 3</div>
+                      <div class="fc-event" title="My Event 4">My Event 4</div>
+                      <div class="fc-event" title="My Event 5">My Event 5</div>
                     </div>
+                    <div class="form-check mt-3">
+                      <input type="checkbox" class="form-check-input" id="drop-remove">
+                      <label class="form-check-label" for="drop-remove">Remove after drop</label>
+                    </div>
+                  </div>
+                  <div id="trash-container" class="text-center mt-3">
+                    <i class="fas fa-trash-alt" id="trash-icon" style="font-size: 2em; color: red; cursor: pointer;"></i>
+                    <p>Drag events here to delete</p>
+                  </div>
+                </div>
+                <div class="col-md-9">
+                  <div id="calendar-container">
+                    <div id="calendar"></div>
                   </div>
                 </div>
               </div>
-              <div class="tab-pane fade mt-2" id="planning" role="tabpanel">
-                <h3 class="mlh_verdana mt-2">Planning</h3>
-                <div>
-                  <img src="./images/calendrier.png">
-                </div>
-                <h4>Informations rendez-vous</h4>
-                <p>La durée d'un rendez-vous est définie dans l'activité à <strong>60</strong> minutes. Les plages de rendez-vous seront divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas utilisés.</p>
-              </div>
+              <h4>Informations rendez-vous</h4>
+              <p>La durée d'un rendez-vous est définie dans l'activité à <strong>60</strong> minutes. Les plages de rendez-vous seront divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas utilisés.</p>
             </div>
+            
+                       
           </div>
         </div>
-        <div class="d-flex justify-content-end bd-highlight mt-2 border-bottom mlh_block_data">
-          <button type="button" class="btn btn-secondary p-2 m-1" id="btActModif">Modifier l'activité</button>
-          <button type="button" class="btn btn-primary p-2 m-1" id="btActBack" (click)="back()">Retour</button>
-        </div>
+      </div>
+      <div class="d-flex justify-content-end bd-highlight mt-2 border-bottom mlh_block_data">
+        <button type="button" class="btn btn-secondary p-2 m-1" id="btActModif">Modifier l'activité</button>
+        <button type="button" class="btn btn-primary p-2 m-1" id="btActBack" (click)="back()">Retour</button>
       </div>
     </div>
-  </div>  
+  </div>
+</div>

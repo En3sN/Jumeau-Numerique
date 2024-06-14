@@ -28,6 +28,10 @@ import { ActivitesComponent } from './activites/activites.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModifierActiviteComponent } from './infos-perso/mes-activites/modifier-activite/modifier-activite.component';
 import { DetailsActiviteComponent } from './infos-perso/mes-activites/details-activite/details-activite.component';
+import { FullCalendarModule } from '@fullcalendar/angular'; 
+import dayGridPlugin from '@fullcalendar/daygrid'; 
+import interactionPlugin from '@fullcalendar/interaction';
+
 
 
 @NgModule({
@@ -59,7 +63,8 @@ import { DetailsActiviteComponent } from './infos-perso/mes-activites/details-ac
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FullCalendarModule 
   ],
   providers: [AuthService, CookieService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]

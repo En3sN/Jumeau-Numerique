@@ -1,1 +1,30 @@
-<p>contacts works!</p>
+<div class="container mlh_top_container">
+    <div class="container">
+        <header class="mt-4">
+            <h2 class="text-primary">
+                Contacts
+            </h2>
+            <p>
+                Pour toutes questions, remarques, demandes d'informations, veuillez utiliser le formulaire ci dessous. Merci.
+            </p>
+        </header>
+        <form class="bg-light p-3">
+            <p>
+                <i> Tous les informations demandées sont obligatoires ! </i>
+            </p>
+            
+            <label class="col-form-label" for="inputEmailNom"> Nom<span class="text-danger">*</span> : </label>
+            <input type="text" class="form-control" id="inputEmailNom">
+
+            <label class="col-form-label" for="inputEmailAdresse"> Email<span class="text-danger">*</span> : </label>
+            <input type="text" class="form-control" id="inputEmailAdresse">
+
+            <label class="col-form-label " for="inputEmailMsg"> Message<span class="text-danger">*</span> : </label>
+            <textarea class="form-control form-control-sm" id="inputEmailMsg" rows="5"></textarea>
+            
+            <button type="button" class="btn btn-primary p-2 mt-4" id="btEmailSend" >Envoyer le message</button>
+            
+        </form>
+        
+    </div>
+</div>

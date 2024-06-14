@@ -16,15 +16,14 @@ const routes: Routes = [
   { path: '', redirectTo: '/accueil', pathMatch: 'full', data: { animation: 'HomePage' } },
   { path: 'accueil', component: AccueilComponent, data: { animation: 'HomePage' } },
   { path: 'tableau-de-bord', component: DashboardComponent, canActivate: [AuthGuard], data: { animation: 'DashboardPage' } },
-  { path: 'infos-perso', component: InfosPersoComponent, canActivate: [AuthGuard], data: { animation: 'InfosP  ersoPage' } },
+  { path: 'infos-perso', component: InfosPersoComponent, canActivate: [AuthGuard], data: { animation: 'InfosPersoPage' } },
   { path: 'inscription', component: InscriptionComponent, data: { animation: 'InscriptionPage' } },
   { path: 'planning', component: PlanningComponent, canActivate: [AuthGuard], data: { animation: 'PlanningPage' } },
   { path: 'aide', component: AideComponent, data: { animation: 'AidePage' } },
   { path: 'contacts', component: ContactsComponent, data: { animation: 'ContactsPage' } },
-  { path: 'activites', component: ActivitesComponent, canActivate: [AuthGuard], data: { animation: 'ActivitesPage' } },
+  { path: 'activites', component: ActivitesComponent, data: { animation: 'ActivitesPage' } },
   { path: 'modifier-activite/:id', component: ModifierActiviteComponent, canActivate: [AuthGuard], data: { animation: 'ModifierActivitePage' }},
   { path: 'details-activite', component: DetailsActiviteComponent, canActivate: [AuthGuard], data: { animation: 'DetailsActivitePage' }},
-
 ];
 
 @NgModule({
