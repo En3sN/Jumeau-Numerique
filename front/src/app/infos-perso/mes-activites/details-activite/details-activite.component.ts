@@ -17,11 +17,11 @@ export class DetailsActiviteComponent implements AfterViewInit {
   calendar: Calendar | undefined;
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-    initialView: 'dayGridMonth',
+    initialView: 'timeGridWeek',
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      right: 'timeGridDay,timeGridWeek,dayGridMonth'
     },
     editable: true,
     droppable: true,
