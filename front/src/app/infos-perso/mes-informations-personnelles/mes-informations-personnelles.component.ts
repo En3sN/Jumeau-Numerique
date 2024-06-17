@@ -1,15 +1,36 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as bootstrap from 'bootstrap';
+import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
 
 @Component({
   selector: 'app-mes-informations-personnelles',
   templateUrl: './mes-informations-personnelles.component.html',
   styleUrls: ['./mes-informations-personnelles.component.css']
 })
-export class MesInformationsPersonnellesComponent {
+export class MesInformationsPersonnellesComponent implements OnInit {
   currentPasswordFieldType: string = 'password';
   newPasswordFieldType: string = 'password';
   confirmPasswordFieldType: string = 'password';
+
+  utilisateur: any = {
+    nom: '',
+    pseudo: '',
+    email: '',
+    statut: '',
+    organisation_nom: '',
+    tel: '',
+    adresse: '',
+    cp: '',
+    commune: ''
+  };
+
+  constructor(private utilisateurService: UtilisateurService) {}
+
+  ngOnInit(): void {
+    this.utilisateurService.fetchUtilisateurInfo().subscribe(data => {
+      this.utilisateur = data;
+    });
+  }
 
   togglePasswordVisibility(field: string): void {
     switch(field) {
@@ -26,8 +47,9 @@ export class MesInformationsPersonnellesComponent {
   }
 
   savePassword(): void {
-    // Logique pour enregistrer le mot de passe
+
   }
+  
 
   closePasswordModal(): void {
     const passwordModal = bootstrap.Modal.getInstance(document.getElementById('DlgMajPWD') as HTMLElement);
@@ -40,6 +62,14 @@ export class MesInformationsPersonnellesComponent {
   }
 
   saveUserInfo(): void {
-    // Logique pour enregistrer les informations utilisateur
+    const updateData = { ...this.utilisateur };
+    delete updateData.id; 
+
+    this.utilisateurService.updateUtilisateurInfo(updateData).subscribe(response => {
+      console.log('User info updated successfully:', response);
+      alert('Informations mises à jour avec succès');
+    }, error => {
+      console.error('Error updating user info:', error);
+    });
   }
 }

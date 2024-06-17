@@ -28,11 +28,18 @@ export class UtilisateurService {
       map(response => {
         if (Array.isArray(response) && response.length > 0) {
           this.utilisateurInfoSubject.next(response[0]);
-          this.userId = response[0].id; 
+          this.userId = response[0].id;
         }
         return response[0];
       })
     );
+  }
+
+  updateUtilisateurInfo(updateData: any): Observable<any> {
+    if (this.userId === null) {
+      throw new Error('User ID is not set.');
+    }
+    return this.http.patch(`${this.apiUrl}/utilisateur/${this.userId}`, updateData, { withCredentials: true });
   }
 
   getUserRoles(): Observable<string[]> {
@@ -50,8 +57,6 @@ export class UtilisateurService {
   }
 
   addRoleToUser(userId: number, roles: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/utilisateur/${userId}/role`, { roles }, {
-      withCredentials: true
-    });
+    return this.http.patch(`${this.apiUrl}/utilisateur/role/${userId}`, { roles }, { withCredentials: true });
   }
 }

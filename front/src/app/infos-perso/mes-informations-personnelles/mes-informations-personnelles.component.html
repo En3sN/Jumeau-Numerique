@@ -51,17 +51,17 @@
     <div class="row border-bottom mlh_block_data">
         <div class="col-6">
             <label class="col-form-label uniform-text" for="inputDlgUserInfoNom"> Nom : </label>
-            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoNom">
+            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoNom" [(ngModel)]="utilisateur.nom">
             
-            <label class="col-form-label uniform-text" for="inputDlgUserInfoPseudo"> Pseudo (facultatif) : </label>
-            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoPseudo">
+            <label class="col-form-label uniform-text" for="inputDlgUserInfoPseudo"> Pseudo : </label>
+            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoPseudo" [(ngModel)]="utilisateur.pseudo">
             
             <label class="col-form-label uniform-text" for="inputDlgUserInfoEmail"> Email : </label>
-            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoEmail">
+            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoEmail" [(ngModel)]="utilisateur.email">
             
             <label class="col-form-label uniform-text" for="inputDlgUserInfoStatut"> Statut : </label>
-            <select class="form-select uniform-input" id="inputDlgUserInfoStatut">
-                <option value="Particulier" selected>Particulier</option>
+            <select class="form-select uniform-input" id="inputDlgUserInfoStatut" [(ngModel)]="utilisateur.statut">
+                <option value="Particulier">Particulier</option>
                 <option value="Etudiant">Etudiant</option>
                 <option value="Association">Association</option>
                 <option value="Entreprise">Entreprise</option>
@@ -69,24 +69,26 @@
             </select>
             
             <label class="col-form-label uniform-text" for="inputDlgUserInfoAss"> Entreprise / Organisme / Association : </label>
-            <input type="text" class="form-control uniform-input" placeholder="Zone à afficher en fonction du statut" id="inputDlgUserInfoAss">
+            <input type="text" class="form-control uniform-input" placeholder="Zone à afficher en fonction du statut" id="inputDlgUserInfoAss" [(ngModel)]="utilisateur.organisation_nom">
         </div>
         <div class="col-6 ">
             <label class="col-form-label uniform-text" for="inputDlgUserInfoTel"> Téléphone (facultatif) : </label>
-            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoTel">
+            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoTel" [(ngModel)]="utilisateur.tel">
             
-            <label class="col-form-label uniform-text" for="inputDlgUserInfoAdresse"> Adresse (facultatif) : </label>
-            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoAdresse">
+            <label class="col-form-label uniform-text" for="inputDlgUserInfoAdresse"> Adresse : </label>
+            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoAdresse" [(ngModel)]="utilisateur.adresse">
             
-            <label class="col-form-label uniform-text" for="inputDlgUserInfoCp"> Code postal (facultatif): </label>
-            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoCp">
+            <label class="col-form-label uniform-text" for="inputDlgUserInfoCp"> Code postal : </label>
+            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoCp" [(ngModel)]="utilisateur.cp">
             
-            <label class="col-form-label uniform-text" for="inputDlgUserInfoCommune"> Commune (facultatif): </label>
-            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoCommune">
+            <label class="col-form-label uniform-text" for="inputDlgUserInfoCommune"> Commune : </label>
+            <input type="text" class="form-control uniform-input" id="inputDlgUserInfoCommune" [(ngModel)]="utilisateur.commune">
         </div>
     </div>
-    <div class="d-flex bd-highlight mt-4 border-bottom mlh_block_data">
-        <button type="button" class="btn btn-secondary me-auto p-2" id="btUserInfoPwd" (click)="changePassword()">Changer de mot de passe</button>
-        <button type="button" class="btn btn-primary p-2" id="btUserInfoOk" (click)="saveUserInfo()">Enregistrer</button>
+    <div class="row mlh_block_data">
+        <div class="col-12 d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary me-auto p-2" id="btUserInfoPwd" (click)="changePassword()">Changer de mot de passe</button>
+            <button type="button" class="btn btn-primary" (click)="saveUserInfo()">Enregistrer</button>
+        </div>
     </div>
 </div>

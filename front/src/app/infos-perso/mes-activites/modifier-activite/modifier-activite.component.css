@@ -1,57 +1,58 @@
 .container {
-    max-width: 1000px;
-    margin: auto;
-  }
-  
-  .mlh_verdana {
-    font-family: Verdana, Geneva, sans-serif;
-    font-weight: bold;
-  }
-  
-  .card {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-  
-  .card-body {
-    padding: 20px;
-  }
-  
-  .mlh_org_logo {
-    height: 100px;
-    width: auto;
-    display: block;
-    margin: 10px 0;
-  }
-  
-  .form-control, .form-control-sm, .form-select {
-    margin-top: 5px;
-  }
-  
-  .btn-info {
-    background-color: #17a2b8;
-    border-color: #17a2b8;
-    color: white;
-  }
-  
-  .btn-info:hover {
-    background-color: #138496;
-    border-color: #117a8b;
-  }
-  
-  .btn-secondary, .btn-primary {
-    width: 150px;
-  }
-  
-  .d-flex .form-select {
-    width: calc(100% - 100px);
-  }
-  
-  .d-flex .btn {
-    margin-left: 10px;
-  }
-  
-  .border-top {
-    border-top: 2px solid #ddd !important;
-  }  
+  max-width: 1000px;
+  margin: auto;
+}
+
+.mlh_verdana {
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: bold;
+}
+
+.card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.mlh_org_logo {
+  height: 100px;
+  width: auto;
+  display: block;
+  margin: 10px 0;
+}
+
+.form-control, .form-control-sm, .form-select {
+  margin-top: 5px;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+  color: white;
+}
+
+.btn-info:hover {
+  background-color: #138496;
+  border-color: #117a8b;
+}
+
+.btn-secondary, .btn-primary {
+  width: 150px;
+}
+
+.d-flex .form-select {
+  width: calc(100% - 100px);
+}
+
+.d-flex .btn {
+  margin-left: 10px;
+}
+
+.border-top {
+  border-top: 2px solid #ddd !important;
+}
