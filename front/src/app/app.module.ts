@@ -31,6 +31,7 @@ import { DetailsActiviteComponent } from './infos-perso/mes-activites/details-ac
 import { FullCalendarModule } from '@fullcalendar/angular'; 
 import dayGridPlugin from '@fullcalendar/daygrid'; 
 import interactionPlugin from '@fullcalendar/interaction';
+import { CommonModule } from '@angular/common';  // Import CommonModule
 
 
 
@@ -62,6 +63,7 @@ import interactionPlugin from '@fullcalendar/interaction';
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
+    CommonModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
     FullCalendarModule 
