@@ -46,10 +46,7 @@ export class MesInformationsPersonnellesComponent implements OnInit {
     }
   }
 
-  savePassword(): void {
-
-  }
-  
+  savePassword(): void {}
 
   closePasswordModal(): void {
     const passwordModal = bootstrap.Modal.getInstance(document.getElementById('DlgMajPWD') as HTMLElement);
@@ -66,10 +63,18 @@ export class MesInformationsPersonnellesComponent implements OnInit {
     delete updateData.id; 
 
     this.utilisateurService.updateUtilisateurInfo(updateData).subscribe(response => {
-      console.log('User info updated successfully:', response);
-      alert('Informations mises à jour avec succès');
+      console.log('User info updated successfully:');
+      this.showUpdateToast();
     }, error => {
-      console.error('Error updating user info:', error);
+      console.error('Error updating user info:');
     });
+  }
+
+  showUpdateToast(): void {
+    const toastElement = document.getElementById('updateToast');
+    if (toastElement) {
+      const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
+      toast.show();
+    }
   }
 }
