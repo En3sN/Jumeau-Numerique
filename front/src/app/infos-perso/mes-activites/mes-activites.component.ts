@@ -20,6 +20,10 @@ export class MesActivitesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadUtilisateurInfo();
+  }
+
+  loadUtilisateurInfo(): void {
     this.utilisateurService.getUtilisateurInfo().subscribe(user => {
       this.userId = user.id; 
       this.userRoles = user.roles || [];
@@ -55,6 +59,7 @@ export class MesActivitesComponent implements OnInit {
         this.userRoles = response.roles || [];
         this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
         this.showConfirmationToast = true;
+        this.loadUtilisateurInfo(); 
         this.closeModal(); 
         setTimeout(() => this.showConfirmationToast = false, 4000);
       },
@@ -63,7 +68,6 @@ export class MesActivitesComponent implements OnInit {
       }
     });
   }
-  
 
   closeConfirmationToast(): void {
     this.showConfirmationToast = false;
