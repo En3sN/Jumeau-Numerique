@@ -54,14 +54,16 @@ export class UtilisateurController {
   @UseGuards(JwtAuthGuard)
   @Patch('/:id/role')
   @HttpCode(HttpStatus.OK)
-  async addRoleToUser(@Param('id') id: number, @Body('roles') roles: string, @Request() req): Promise<any> {
+  async addRoleToUser(@Param('id') id: number, @Body() updateUtilisateurDto: UpdateUtilisateurDto, @Request() req): Promise<any> {
     const sessionCode = req.user.sessionCode;
     if (!sessionCode) {
       throw new Error('Session code is missing from the JWT payload.');
     }
-    return await this.utilisateurService.addRoleToUser(id, roles, sessionCode);
+    if (!Array.isArray(updateUtilisateurDto.roles)) {
+      throw new Error('Roles must be an array');
+    }
+    return await this.utilisateurService.addRoleToUser(id, updateUtilisateurDto.roles, sessionCode);
   }
-
 
   @UseGuards(JwtAuthGuard)
   @Patch('activate/:id')

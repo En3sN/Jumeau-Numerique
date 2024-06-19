@@ -45,7 +45,6 @@ export class AuthService {
       sessionCode: user.sessionCode,
       issuedAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'), 
     };
-    this.logger.log('Generating JWT with payload:', payload);
     return {
       access_token: this.jwtService.sign(payload),
     };

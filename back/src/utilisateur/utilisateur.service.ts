@@ -67,24 +67,24 @@ export class UtilisateurService {
 
     return savedUser;
   }
-
-  async addRoleToUser(userId: number, roles: string, sessionCode: string): Promise<Utilisateur> {
+  
+  async addRoleToUser(userId: number, roles: string[], sessionCode: string): Promise<Utilisateur> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
     }
 
-    const updatedRoles = Array.from(new Set([...user.roles, roles]));
+    const currentRoles = user.roles.filter(role => role && role.trim());
+    const newRoles = roles.filter(role => role && role.trim());
+    const updatedRoles = Array.from(new Set([...currentRoles, ...newRoles]));
 
     const updateUtilisateurDto: UpdateUtilisateurDto = { roles: updatedRoles };
 
     return this.updateUser(userId, updateUtilisateurDto, sessionCode);
   }
 
-
   async updateUser(id: number, updateUtilisateurDto: UpdateUtilisateurDto, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-
       const setClause = Object.entries(updateUtilisateurDto)
         .map(([key, value], index) => `${key} = $${index + 1}`)
         .join(', ');
@@ -92,7 +92,7 @@ export class UtilisateurService {
       const values = Object.values(updateUtilisateurDto);
 
       const query = `
-        UPDATE security.users_table
+        UPDATE security.user_my_infos
         SET ${setClause}
         WHERE id = ${id}
         RETURNING *;

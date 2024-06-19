@@ -49,7 +49,8 @@ export class MesActivitesComponent implements OnInit {
       console.error('User ID is null');
       return;
     }
-    this.utilisateurService.addRoleToUser(this.userId, 'Activite').subscribe({
+    const roles = ['Activite'].filter(role => role && role.trim());
+    this.utilisateurService.addRoleToUser(this.userId, roles).subscribe({
       next: (response) => {
         this.userRoles = response.roles || [];
         this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
@@ -62,6 +63,7 @@ export class MesActivitesComponent implements OnInit {
       }
     });
   }
+  
 
   closeConfirmationToast(): void {
     this.showConfirmationToast = false;
