@@ -44,6 +44,12 @@ export class UtilisateurService {
     return activate ? 'User activated successfully' : 'User deactivated successfully';
   }
 
+  async getStatuts(): Promise<string[]> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const result = await manager.query('SELECT unnest(enum_range(NULL::security.typ_user_statut)) AS statut');
+      return result.map((row: { statut: string }) => row.statut);
+    });
+  }
 
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     const existingUser = await this.userRepository.findOne({ where: { email: createUtilisateurDto.email } });

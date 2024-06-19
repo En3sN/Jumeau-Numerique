@@ -59,4 +59,8 @@ export class UtilisateurService {
   addRoleToUser(userId: number, roles: string[]): Observable<any> {
     return this.http.patch(`${this.apiUrl}/utilisateur/${userId}/role`, { roles }, { withCredentials: true });
   }
+
+  getStatuts(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/utilisateur/statuts`);
+  }
 }

@@ -73,4 +73,10 @@ export class UtilisateurController {
     const message = await this.utilisateurService.activateUser(id, updateUtilisateurDto.activated);
     return { message };
   }
+
+  @Get('statuts')
+  async getStatuts(): Promise<string[]> {
+    return await this.utilisateurService.getStatuts();
+  }
 }
+

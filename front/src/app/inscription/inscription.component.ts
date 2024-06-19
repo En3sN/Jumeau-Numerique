@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UtilisateurService } from '../Services/Utilisateur.service';
@@ -8,16 +8,17 @@ import { UtilisateurService } from '../Services/Utilisateur.service';
   templateUrl: './inscription.component.html',
   styleUrls: ['./inscription.component.css']
 })
-export class InscriptionComponent {
+export class InscriptionComponent implements OnInit {
   newPasswordFieldType: string = 'password';
   confirmPasswordFieldType: string = 'password';
   inscriptionForm: FormGroup;
   emailInUse: boolean = false;
+  statuts: string[] = [];
 
   constructor(private fb: FormBuilder, private utilisateurService: UtilisateurService, private router: Router) {
     this.inscriptionForm = this.fb.group({
       nom: ['', Validators.required],
-      pseudo: [''],
+      pseudo: ['', Validators.required],
       email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)]],
       tel: [''],
       pwd: ['', [Validators.required, Validators.minLength(6)]],
@@ -29,6 +30,16 @@ export class InscriptionComponent {
       statut: ['Particulier', Validators.required],
       organisation_nom: ['']
     }, { validator: this.passwordMatchValidator });
+  }
+
+  ngOnInit(): void {
+    this.loadStatuts();
+  }
+
+  loadStatuts(): void {
+    this.utilisateurService.getStatuts().subscribe((statuts: string[]) => {
+      this.statuts = statuts;
+    });
   }
 
   passwordMatchValidator(form: FormGroup) {

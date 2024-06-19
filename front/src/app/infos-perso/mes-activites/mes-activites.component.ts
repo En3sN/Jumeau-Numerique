@@ -8,6 +8,7 @@ import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
   templateUrl: './mes-activites.component.html',
   styleUrls: ['./mes-activites.component.css']
 })
+
 export class MesActivitesComponent implements OnInit {
   showConfirmationToast: boolean = false;
   hasPermission: boolean = false;

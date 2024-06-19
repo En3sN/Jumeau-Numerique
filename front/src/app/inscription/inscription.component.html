@@ -9,7 +9,7 @@
       </div>
       <div class="col-md-6 mb-2">
         <label for="inputDlgInscriptionPseudo" class="form-label">Pseudo<span class="text-danger">*</span></label>
-        <input type="text" class="form-control" id="inputDlgInscriptionPseudo" placeholder="Pseudo" formControlName="pseudo">
+        <input type="text" class="form-control" id="inputDlgInscriptionPseudo" placeholder="Pseudo" formControlName="pseudo" [ngClass]="{'is-invalid': inscriptionForm.get('pseudo')?.invalid && (inscriptionForm.get('pseudo')?.touched || inscriptionForm.get('pseudo')?.dirty)}">
       </div>
     </div>
     <div class="row">
@@ -48,11 +48,7 @@
       <div class="col-md-6 mb-2">
         <label for="inputDlgInscriptionStatut" class="form-label">Statut<span class="text-danger">*</span></label>
         <select class="form-select" id="inputDlgInscriptionStatut" formControlName="statut" [ngClass]="{'is-invalid': inscriptionForm.get('statut')?.invalid && (inscriptionForm.get('statut')?.touched || inscriptionForm.get('statut')?.dirty)}">
-          <option value="Particulier">Particulier</option>
-          <option value="Etudiant">Etudiant</option>
-          <option value="Association">Association</option>
-          <option value="Entreprise">Entreprise</option>
-          <option value="Auto-Entrepreneur">Auto-Entrepreneur</option>
+          <option *ngFor="let statut of statuts" [value]="statut">{{ statut }}</option>
         </select>
       </div>
       <div class="col-md-6 mb-2">
