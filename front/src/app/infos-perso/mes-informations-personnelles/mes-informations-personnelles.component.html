@@ -61,15 +61,11 @@
             
             <label class="col-form-label uniform-text" for="inputDlgUserInfoStatut"> Statut : </label>
             <select class="form-select uniform-input" id="inputDlgUserInfoStatut" [(ngModel)]="utilisateur.statut">
-                <option value="Particulier">Particulier</option>
-                <option value="Etudiant">Etudiant</option>
-                <option value="Association">Association</option>
-                <option value="Entreprise">Entreprise</option>
-                <option value="Auto-Entrepreneur">Auto-Entrepreneur</option>
+                <option *ngFor="let statut of statuts" [value]="statut">{{ statut }}</option>
             </select>
             
             <label class="col-form-label uniform-text" for="inputDlgUserInfoAss"> Entreprise / Organisme / Association : </label>
-            <input type="text" class="form-control uniform-input" placeholder="Zone à afficher en fonction du statut" id="inputDlgUserInfoAss" [(ngModel)]="utilisateur.organisation_nom">
+            <input type="text" class="form-control uniform-input"  id="inputDlgUserInfoAss" [(ngModel)]="utilisateur.organisation_nom">
         </div>
         <div class="col-6 ">
             <label class="col-form-label uniform-text" for="inputDlgUserInfoTel"> Téléphone (facultatif) : </label>
@@ -104,5 +100,4 @@
         Informations mises à jour avec succès.
       </div>
     </div>
-  </div>
-  
+</div>
