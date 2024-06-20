@@ -8,12 +8,12 @@ import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
   templateUrl: './mes-activites.component.html',
   styleUrls: ['./mes-activites.component.css']
 })
-
 export class MesActivitesComponent implements OnInit {
   showConfirmationToast: boolean = false;
   hasPermission: boolean = false;
   userRoles: string[] = [];
   userId: number | null = null;
+  activityToDelete: number | null = null;
 
   constructor(
     private utilisateurService: UtilisateurService, 
@@ -74,11 +74,29 @@ export class MesActivitesComponent implements OnInit {
     this.showConfirmationToast = false;
   }
 
-  editActivite(id: number): void {
+  editActivite(id: number, event: MouseEvent): void {
+    event.stopPropagation(); 
     this.router.navigate(['/modifier-activite', id]);
   }
 
-  viewDetails() {
+  deleteActivite(id: number, event: MouseEvent): void {
+    event.stopPropagation(); 
+    this.activityToDelete = id;
+    const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+
+  confirmDelete(): void {
+    if (this.activityToDelete !== null) {
+      this.activityToDelete = null;
+      const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance?.hide();
+    }
+  }
+
+  viewDetails(): void {
     this.router.navigate(['/details-activite']);
   }
 }
