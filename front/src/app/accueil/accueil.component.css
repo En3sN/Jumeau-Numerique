@@ -27,14 +27,6 @@ body {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
-.mlh_connect {
-    right: 0;
-}
-
-.mlh_header {
-    width: 100%;
-}
-
 .mlh_title {
     font-size: 2.5rem;
     font-weight: 700;
@@ -42,76 +34,14 @@ body {
     text-align: center;
 }
 
-.mlh_menu {
-    width: 100%;
-}
-
 .mlh_verdana {
     font-family: "Verdana", sans-serif;
-}
-
-.mlh_card {
-    margin: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.mlh_block_data {
-    padding-bottom: 10px;
-}
-
-.mlh_org_logo {
-    max-height: 150px;
-    width: auto;
 }
 
 .mlh_accueil_logo {
     max-height: 40px;
     width: auto;
     margin-right: 10px;
-}
-
-.mlh_card_logo {
-    max-height: auto;
-    width: auto;
-}
-
-.mlh_tags {
-    padding: 2px;
-    position: relative;
-    height: 15px;
-    width: 15px;
-    right: -4px;
-}
-
-.mlh_bt_tag {
-    top: -9px;
-    position: relative;
-}
-
-.mlh_card_action {
-    font-size: small;
-}
-
-.mlh_bt_tags {
-    height: 20px;
-}
-
-.mlh_bt_tags_plus {
-    height: 15px;
-    margin-top: -12px;
-}
-
-.mlh_serv_tilte {
-    font-size: 2rem;
-    font-weight: 500;
-}
-
-.mlh_panneau_info {
-    width: 50% !important;
-}
-
-.mlh_accueil_filtre {
-    font-size: 1.5rem;
 }
 
 #AccueilFiltre {
@@ -156,10 +86,16 @@ body {
 
 .list-group-item {
     transition: transform 0.2s;
+    cursor: pointer;
 }
 
 .list-group-item:hover {
     transform: scale(1.02);
+}
+
+.activity-section {
+    max-width: 800px;
+    margin: 0 auto;
 }
 
 footer {
