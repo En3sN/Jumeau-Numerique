@@ -50,4 +50,8 @@ export class UpdateUtilisateurDto {
   @IsInt()
   @IsOptional()
   organisation?: number;
+
+  @IsString()
+  @IsOptional()
+  organisation_nom?: string;
 }

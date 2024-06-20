@@ -31,7 +31,6 @@ export class MesInformationsPersonnellesComponent implements OnInit {
   ngOnInit(): void {
     this.utilisateurService.fetchUtilisateurInfo().subscribe(data => {
       this.utilisateur = data;
-      console.log('Utilisateur data:', this.utilisateur);
       this.loadStatuts();
     });
   }
@@ -39,12 +38,9 @@ export class MesInformationsPersonnellesComponent implements OnInit {
   loadStatuts(): void {
     this.utilisateurService.getStatuts().subscribe((statuts: string[]) => {
       this.statuts = statuts;
-      console.log('Statuts:', this.statuts);
-      // Ensure utilisateur.statut is set correctly
       if (!this.utilisateur.statut) {
         this.utilisateur.statut = this.statuts[0];
       }
-      console.log('Initial utilisateur.statut:', this.utilisateur.statut);
     });
   }
 
@@ -79,10 +75,10 @@ export class MesInformationsPersonnellesComponent implements OnInit {
     delete updateData.id; 
 
     this.utilisateurService.updateUtilisateurInfo(updateData).subscribe(response => {
-      console.log('User info updated successfully:');
+      console.log('User info updated successfully');
       this.showUpdateToast();
     }, error => {
-      console.error('Error updating user info:');
+      console.error('Error updating user info');
     });
   }
 

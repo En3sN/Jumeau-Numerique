@@ -27,7 +27,6 @@ export class UtilisateurService {
     return this.http.get<any>(`${this.apiUrl}/utilisateur/infos`, { withCredentials: true }).pipe(
       map(response => {
         if (Array.isArray(response) && response.length > 0) {
-          console.log('Fetched utilisateur info:', response[0]);
           this.utilisateurInfoSubject.next(response[0]);
           this.userId = response[0].id;
         }

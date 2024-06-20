@@ -48,4 +48,8 @@ export class GetUtilisateurInfoDto {
   @IsInt()
   @IsOptional()
   organisation?: number;
+
+  @IsString()
+  @IsOptional()
+  organisation_nom?: string;
 }

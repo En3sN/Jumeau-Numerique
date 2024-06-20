@@ -22,7 +22,7 @@ export class UtilisateurService {
 
   async findAllUserInfo(sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      return manager.query(`SELECT id, nom, pseudo, email, tel, pwd, adresse, cp, commune, statut, roles, activated FROM security.user_my_infos`);
+      return manager.query(`SELECT id, nom, pseudo, email, tel, pwd, adresse, cp, commune, statut, organisation, organisation_nom, roles, activated FROM security.user_my_infos`);
     }, sessionCode);
   }
 

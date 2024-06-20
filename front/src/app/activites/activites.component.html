@@ -1,53 +1,372 @@
-<div class="container mt-5">
-    <div class="row">
-      <div class="col-12">
-        <h3 class="mlh_verdana">Filtre</h3>
-        <input type="text" class="form-control form-control-sm mb-3" id="inputFiltreNom" placeholder="Rechercher une activité">
-      </div>
-    </div>
-    
+<div class="container mlh_top_container">
+  <div class="row">
+      <div class="col-2 mt-4 border-end">
+          <div>
+              <h4 class="mlh_verdana bg-secondary rounded p-2 text-light">
+                  Tri
+              </h4>
+              <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                  <input type="checkbox" class="btn-check" id="btncheck1" checked autocomplete="off">
+                  <label class="btn btn-primary" for="btncheck1">Récente</label>
+                  <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
+                  <label class="btn btn-primary" for="btncheck2">Populaire</label>
+                  <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
+                  <label class="btn btn-primary" for="btncheck3">A-Z</label>
+              </div>
+          </div>
+          <div class="border-bottom mt-2">
+              <h4 class="mlh_verdana bg-secondary rounded p-2 text-light">
+                  Filtre
+              </h4>
+              <div>
+                  <h5 class="mlh_verdana">
+                      Eléments du filtre
+                  </h5>
+                  <div id="filterItems">
+                      <span class="badge bg-info">
+                          nom : ap
+                          <button type="button" class="btn btn-outline-light mlh_tags" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Supprimer">
+                              <div class="mlh_bt_tag">x</div>
+                          </button>
+                      </span>
+                      <span class="badge bg-info">
+                          tag : machine
+                          <button type="button" class="btn btn-outline-light mlh_tags" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Supprimer">
+                              <div class="mlh_bt_tag">x</div>
+                          </button>
+                      </span>
+                      <span class="badge bg-info">
+                          tag : couture
+                          <button type="button" class="btn btn-outline-light mlh_tags" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Supprimer">
+                              <div class="mlh_bt_tag">x</div>
+                          </button>
+                      </span>
+                  </div>
+              </div>
 
-    <div class="row">
-      <div class="col-12">
-        <div class="d-flex flex-wrap">
-          <div class="card border-info mb-3" style="flex: 1 1 calc(33.333% - 1rem); margin: 0.5rem;" (click)="viewDetails()">
-            <div class="card-body d-flex">
-              <img class="img-thumbnail me-3" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo" style="width: auto; height: auto;">
-              <div class="flex-grow-1">
-                <h4 class="card-title">Location de machines à coudre</h4>
-                <p class="card-text">La Petite Manchester propose la location pour un usage sur place de machines à coudre professionnelles.</p>
-                <p class="card-text">organisme : <a href="#">La Petite Manchester</a></p>
-                <p>
-                  <span class="badge bg-info">Couture</span>
-                  <span class="badge bg-info">Machine</span>
-                  <span class="badge bg-info">Petite Manchester</span>
-                  <span class="badge bg-info">Box Briand</span>
-                  <span class="badge bg-info">Location</span>
-                </p>
+              <h5 class="mlh_verdana mt-4">
+                  Définition du filtre :
+              </h5>
+              <div class="input-group mb-3">
+                  <input type="text" id="inputFiltreNom" class="form-control" placeholder="texte à rechercher" aria-label="Recipient's username" aria-describedby="button-addon1">
+                  <button class="btn btn-primary" type="button" id="button-addon1">Appliquer</button>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="d-flex flex-wrap">
-          <div class="card border-info mb-3" style="flex: 1 1 calc(33.333% - 1rem); margin: 0.5rem;" (click)="viewDetails()">
-            <div class="card-body d-flex">
-              <img class="img-thumbnail me-3" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo" style="width: auto; height: auto;">
-              <div class="flex-grow-1">
-                <h4 class="card-title">Location de machines à coudre</h4>
-                <p class="card-text">La Petite Manchester propose la location pour un usage sur place de machines à coudre professionnelles.</p>
-                <p class="card-text">organisme : <a href="#">La Petite Manchester</a></p>
-                <p>
-                  <span class="badge bg-info">Couture</span>
-                  <span class="badge bg-info">Machine</span>
-                  <span class="badge bg-info">Petite Manchester</span>
-                  <span class="badge bg-info">Box Briand</span>
-                  <span class="badge bg-info">Location</span>
-                </p>
+
+              <h6 class="mlh_verdana">
+                  Type :
+              </h6>
+              <div class="list-group">
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
+                      <label class="form-check-label" for="flexCheckChecked1">
+                          Location / Réservation
+                      </label>
+                  </div>
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2">
+                      <label class="form-check-label" for="flexCheckChecked2">
+                          Formation
+                      </label>
+                  </div>
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3">
+                      <label class="form-check-label" for="flexCheckChecked3">
+                          Evénements
+                      </label>
+                  </div>
               </div>
-            </div>
+
+              <h6 class="mlh_verdana">
+                  Domaine :
+              </h6>
+              <div class="list-group">
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked4">
+                      <label class="form-check-label" for="flexCheckChecked4">
+                          Couture
+                      </label>
+                  </div>
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked5">
+                      <label class="form-check-label" for="flexCheckChecked5">
+                          Bricolage
+                      </label>
+                  </div>
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked6">
+                      <label class="form-check-label" for="flexCheckChecked6">
+                          Informatique
+                      </label>
+                  </div>
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked7">
+                      <label class="form-check-label" for="flexCheckChecked7">
+                          Langue vivante
+                      </label>
+                  </div>
+              </div>
+
+              <h6 class="mlh_verdana">
+                  Organisation :
+              </h6>
+              <div class="input-group mb-3">
+                  <input type="text" id="inputFiltreOrganisation" class="form-control" placeholder="Organisation à rechercher" aria-label="Recipient's username" aria-describedby="button-addon3">
+                  <button class="btn btn-primary" type="button" id="button-addon3">Appliquer</button>
+              </div>
+
+              <h6 class="mlh_verdana">
+                  Tag :
+              </h6>
+              <div class="input-group mb-3">
+                  <input type="text" id="inputFiltreTag" class="form-control" placeholder="Tag à rechercher" aria-label="Recipient's username" aria-describedby="button-addon2">
+                  <button class="btn btn-primary" type="button" id="button-addon2">Appliquer</button>
+              </div>
+
+              <h6 class="mlh_verdana">
+                  Statut :
+              </h6>
+              <div class="list-group">
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked8">
+                      <label class="form-check-label" for="flexCheckChecked8">
+                          Abonné à l'activité
+                      </label>
+                  </div>
+                  <div class="form-check list-group-item">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked9">
+                      <label class="form-check-label" for="flexCheckChecked9">
+                          Référent de l'activité
+                      </label>
+                  </div>
+              </div>
           </div>
-        </div>
+          <h4 class="mlh_verdana mt-4 bg-secondary rounded p-2 text-light">
+              Légende
+          </h4>
+          <div>
+              <div class="card border-3 border-danger mb-3 p-3">
+                  Activités avec validation du référent pour son usage
+              </div>
+
+              <div class="card border-3 border-success mb-3 p-3">
+                  Activités dont vous êtes abonnés
+              </div>
+              <div class="card border-3 border-warning mb-3 p-3">
+                  Activités dont vous êtes le référent
+              </div>
+              <div class="card border-3 border-info mb-3 p-3">
+                  Autres activités
+              </div>
+          </div>
       </div>
-    </div>
+
+      <div class="col-10">
+          <div class="row mt-2">
+              <div class="p-2">
+                  <h3 class="mlh_verdana bg-secondary rounded p-2 text-light">
+                      Activités disponibles
+                  </h3>
+              </div>
+
+              <div class="offcanvas offcanvas-start mlh_panneau_info" tabindex="-1" id="offcanvasActivite" aria-labelledby="offcanvasServiceLabel">
+                  <div class="offcanvas-header">
+                      <img class="form-control" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo" style="max-width: 200px;">
+                      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                  </div>
+                  <div class="offcanvas-body">
+                      <h4 class="offcanvas-title" id="offcanvasServiceLabel">Location de machines à coudre professionnelles : Box Briand</h4>
+                      <h5 class="offcanvas-title" id="offcanvasServiceLabel"><a href="#">Ref : PM_BoxBriand</a></h5>
+                      <p>Créer des passerelles entre le monde de l’Industrie et celui de l’Education par le biais du textile, telle est la raison d’être de La Petite Manchester. Un projet mis sur les rails en 2015 et porté depuis par Nathalie Methia. Un projet engagé et humain qui attaque l’ultime étape de son développement.</p>
+                      <p>
+                          <div><u> Organisation :</u> <a href="#">La Petite Manchester</a></div>
+                          <div><u> Type :</u> Location/Réservation Cuire </div>
+                          <div><u> Domaine :</u> Couture</div>
+                      <p>
+                      <p>
+                          <label class="col-form-label" for="inputActRef"><u> Documents :</u></label>
+                          <select multiple="" class="form-select" id="inputActInfo">
+                              <option> Informations générales sur la réservation </option>
+                              <option> Notice d'utilisation </option>
+                              <option> Notice de maintenance </option>
+                          </select>
+                      </p>
+
+                      <u> Information complémentaires :</u>
+
+                      <p>
+                          <div class="d-flex justify-content-start align-items-center">
+                              <h3>
+                                  <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                              </h3>
+                              Cette activité nécessitera un rendez initial avec le référent pour bénéficier des services attenants. Le rendez-vous sera pris lors de la demande d'abonnement.
+                          </div>
+                      <p>
+
+                      <p>
+                          <div class="d-flex justify-content-start align-items-center">
+                              <h3>
+                                  <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                              </h3>
+                              Des informations complémentaires seront demandées lors de l'inscription :
+                          </div>
+                          <select multiple="" class="form-select" id="inputActInfo">
+                              <option> Ages </option>
+                          </select>
+                      <p>
+                      <p>
+                          <div class="d-flex justify-content-start align-items-center">
+                              <h3>
+                                  <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                              </h3>
+                              Des documents seront à fournir pour valider l'abonnement :
+                          </div>
+                          <select multiple="" class="form-select" id="inputActItem">
+                              <option> Carte d'identité </option>
+                              <option> Diplôme de ... </option>
+                              <option> Certification ... </option>
+                          </select>
+                      <p>
+                      <p>
+                          <span class="badge bg-info">Couture</span>
+                          <span class="badge bg-info">Machine</span>
+                          <span class="badge bg-info">Petite Manchester</span>
+                          <span class="badge bg-info">Box Briand</span>
+                          <span class="badge bg-info">Location</span>
+                      </p>
+
+                      <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">S'abonner</button>
+                      <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Se désabonner</button>
+                      <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Joindre des documents</button>
+                      <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Accéder aux services proposés par l'activité</button>
+                  </div>
+              </div>
+
+              <div class="d-flex flex-wrap overflow-auto mt-2">
+                  <div class="p-1 col-6">
+                      <div class="card border-2 border-info" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite" aria-controls="offcanvasActivite">
+                          <div class="card-body row">
+                              <div class="col-2">
+                                  <img class="form-control" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo">
+                              </div>
+                              <div class="col-9">
+                                  <h4 class="card-title">Location de machines à coudre</h4>
+                                  <p class="card-text">La Petite Manchester propose la location pour un usage sur place de machines à coudre professionnelles.</p>
+                                  <p class="card-text">
+                                      organisme : <a href="#"> La Petite Manchester </a>
+                                  </p>
+                                  <p>
+                                      <span class="badge bg-info">Couture</span>
+                                      <span class="badge bg-info">Machine</span>
+                                      <span class="badge bg-info">Petite Manchester</span>
+                                      <span class="badge bg-info">Box Briand</span>
+                                      <span class="badge bg-info">Location</span>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="p-1 col-6">
+                      <div class="card border-2 border-warning" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite" aria-controls="offcanvasActivite">
+                          <div class="card-body row">
+                              <div class="col-2">
+                                  <img class="form-control" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo">
+                              </div>
+                              <div class="col-10">
+                                  <h4 class="card-title">Formation sur machines à coudre</h4>
+                                  <p class="card-text">La Petite Manchester propose des formations pour l'usage de machines à coudre professionnelles.</p>
+                                  <p class="card-text">
+                                      organisme : <a href="#"> La Petite Manchester </a>
+                                  </p>
+                                  <p>
+                                      <span class="badge bg-info">Couture</span>
+                                      <span class="badge bg-info">Machine</span>
+                                      <span class="badge bg-info">Petite Manchester</span>
+                                      <span class="badge bg-info">Formation</span>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="p-1 col-6">
+                      <div class="card border-2 border-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite" aria-controls="offcanvasActivite">
+                          <div class="card-body row">
+                              <div class="col-2">
+                                  <img class="form-control" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo">
+                              </div>
+                              <div class="col-10">
+                                  <h4 class="card-title">Formation sur machines à coudre</h4>
+                                  <p class="card-text">La Petite Manchester propose des formations pour l'usage de machines à coudre professionnelles.</p>
+                                  <p class="card-text">
+                                      organisme : <a href="#"> La Petite Manchester </a>
+                                  </p>
+                                  <p>
+                                      <span class="badge bg-info">Couture</span>
+                                      <span class="badge bg-info">Machine</span>
+                                      <span class="badge bg-info">Petite Manchester</span>
+                                      <span class="badge bg-info">Formation</span>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="p-1 col-6">
+                      <div class="card border-2 border-danger">
+                          POUR ENES : a supprimer
+                          <br><br>
+                          Contour en bleu (info) : normal<br>
+                          Contour en vert : abonné<br>
+                          Contour en rouge : nécessite une validation du référent de l'activité<br>
+                      </div>
+                  </div>
+                  <div class="p-1 col-6">
+                      <div class="card border-2 border-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite" aria-controls="offcanvasActivite">
+                          <div class="card-body row">
+                              <div class="col-2">
+                                  <img class="form-control" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo">
+                              </div>
+                              <div class="col-10">
+                                  <h4 class="card-title">Formation sur machines à coudre</h4>
+                                  <p class="card-text">La Petite Manchester propose des formations pour l'usage de machines à coudre professionnelles.</p>
+                                  <p class="card-text">
+                                      organisme : <a href="#"> La Petite Manchester </a>
+                                  </p>
+                                  <p>
+                                      <span class="badge bg-info">Couture</span>
+                                      <span class="badge bg-info">Machine</span>
+                                      <span class="badge bg-info">Petite Manchester</span>
+                                      <span class="badge bg-info">Formation</span>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="p-1 col-6">
+                      <div class="card border-2 border-success" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite" aria-controls="offcanvasActivite">
+                          <div class="card-body row">
+                              <div class="col-2">
+                                  <img class="form-control" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo">
+                              </div>
+                              <div class="col-10">
+                                  <h4 class="card-title">Formation sur machines à coudre</h4>
+                                  <p class="card-text">La Petite Manchester propose des formations pour l'usage de machines à coudre professionnelles.</p>
+                                  <p class="card-text">
+                                      organisme : <a href="#"> La Petite Manchester </a>
+                                  </p>
+                                  <p>
+                                      <span class="badge bg-info">Couture</span>
+                                      <span class="badge bg-info">Machine</span>
+                                      <span class="badge bg-info">Petite Manchester</span>
+                                      <span class="badge bg-info">Formation</span>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
   </div>
-  
+</div>
