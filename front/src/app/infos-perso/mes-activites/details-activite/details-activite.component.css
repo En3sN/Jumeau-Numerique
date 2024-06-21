@@ -1,34 +1,34 @@
+#calendar {
+  max-width: 1100px;
+  margin: 0 auto;
+  z-index: 1;
+  opacity: 1;
+  height: auto;
+  overflow: visible;
+}
+
 #external-events {
   padding: 10px;
-  background: #eee;
-  border: 1px solid #ddd;
-  text-align: left;
+  width: 150px;
+  z-index: 1;
+  opacity: 1;
+  height: auto;
+  overflow: visible;
 }
 
-#external-events .fc-event {
-  margin: 10px 0;
-  padding: 4px 8px;
-  background: #3174ad;
-  color: #fff;
-  border-radius: 3px;
+.fc-event {
   cursor: pointer;
-}
-
-#calendar-container {
-  max-width: 100%;
-  margin: 0 auto;
-  min-height: 500px; /* Assurez-vous d'avoir une hauteur minimale */
-}
-
-.full-calendar {
-  max-width: 100%;
-  margin: 0 auto;
+  margin: 5px 0;
+  padding: 5px;
+  background-color: #3a87ad;
+  color: white;
+  border-radius: 3px;
+  font-size: 14px;
 }
 
 .delete-event-btn {
-  background: none;
-  border: none;
-  color: red;
-  cursor: pointer;
-  margin-left: 5px;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
