@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UtilisateurService } from '../Services/Utilisateur.service';
+import * as bootstrap from 'bootstrap';  
 
 @Component({
   selector: 'app-inscription',
@@ -65,6 +66,7 @@ export class InscriptionComponent implements OnInit {
 
       this.utilisateurService.inscrireUtilisateur(formValue).subscribe(response => {
         console.log('Inscription réussie');
+        this.showSuccessToast();  
       }, error => {
         if (error.status === 409) {
           this.emailInUse = true;
@@ -82,6 +84,14 @@ export class InscriptionComponent implements OnInit {
       this.newPasswordFieldType = this.newPasswordFieldType === 'password' ? 'text' : 'password';
     } else if (field === 'confirm') {
       this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password';
+    }
+  }
+
+  showSuccessToast() {
+    const toastElement = document.getElementById('successToast');
+    if (toastElement) {
+      const toast = new bootstrap.Toast(toastElement);
+      toast.show();
     }
   }
 }

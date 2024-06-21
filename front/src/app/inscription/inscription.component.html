@@ -1,7 +1,6 @@
 <div class="container mt-3">
   <h2>Inscription</h2>
   <form [formGroup]="inscriptionForm" (ngSubmit)="saveInscription()">
-    <!-- Autres champs du formulaire -->
     <div class="row">
       <div class="col-md-6 mb-2">
         <label for="inputDlgInscriptionNom" class="form-label">Nom (Nom complet)<span class="text-danger">*</span></label>
@@ -25,7 +24,7 @@
       </div>
       <div class="col-md-6 mb-2">
         <label for="inputDlgInscriptionTel" class="form-label">Téléphone</label>
-        <input type="tel" class="form-control" id="inputDlgInscriptionTel" placeholder="Téléphone" formControlName="tel">
+        <input type="tel" class="form-control" id="inputDlgInscriptionTel" placeholder="0612345678" formControlName="tel">
       </div>
     </div>
     <div class="row">
@@ -83,4 +82,17 @@
       <button type="submit" class="btn btn-primary btn-large-text">S'inscrire</button>
     </div>          
   </form>
+</div>
+
+<!-- Toast de confirmation -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+    <div class="toast-header">
+      <strong class="me-auto">Succès</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">
+      Inscription réussie !
+    </div>
+  </div>
 </div>
