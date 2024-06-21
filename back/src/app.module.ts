@@ -3,11 +3,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './authentification/auth.module';
 import typeorm from './typeorm';
-import { UtilisateurModule } from './utilisateur/utilisateur.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CsrfController } from './security/csrf/csrf.controller';
+import { UtilisateurModule } from './security/utilisateur/utilisateur.module';
+import { AuthModule } from './security/authentification/auth.module';
+import { ActiviteController } from './services/activite/activite.controller';
+import { ActiviteModule } from './services/activite/activite.module';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { CsrfController } from './security/csrf/csrf.controller';
     }),
     AuthModule,
     UtilisateurModule,
+    ActiviteModule,
   ],
   controllers: [AppController, CsrfController],
   providers: [AppService],

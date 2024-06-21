@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DataSource, EntityManager } from 'typeorm';
 import { Utilisateur } from '../utilisateur/Entities/utilisateur.entity';
-import { TransactionManager } from '../Shared/TransactionManager/TransactionManager';
 import * as bcrypt from 'bcrypt';
 import { format } from 'date-fns';
+import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 
 @Injectable()
 export class AuthService {

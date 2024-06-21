@@ -1,0 +1,66 @@
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
+import { Activite } from '../Entities/activite.entity';
+import { CreateActiviteDto } from '../DTO/create-activite.dto';
+import { UpdateActiviteDto } from '../DTO/update-activite.dto';
+
+@Injectable()
+export class ActiviteService {
+  private readonly logger = new Logger(ActiviteService.name);
+
+  constructor(
+    private transactionManager: TransactionManager,
+    private readonly entityManager: EntityManager
+  ) {}
+
+  async create(createActiviteDto: CreateActiviteDto): Promise<Activite> {
+    const activite = this.entityManager.create(Activite, createActiviteDto);
+    return this.entityManager.save(activite);
+  }
+
+  async findAll(sessionCode: string): Promise<Activite[]> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      return manager.find(Activite);
+    }, sessionCode);
+  }
+
+  async findOne(id: number, sessionCode: string): Promise<Activite> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const activite = await manager.findOne(Activite, { where: { id } });
+      if (!activite) {
+        throw new NotFoundException(`Activité avec l'ID ${id} non trouvée`);
+      }
+      return activite;
+    }, sessionCode);
+  }
+
+  async update(id: number, updateActiviteDto: UpdateActiviteDto, sessionCode: string): Promise<Activite> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const setClause = Object.entries(updateActiviteDto)
+        .map(([key, value], index) => `${key} = $${index + 1}`)
+        .join(', ');
+
+      const values = Object.values(updateActiviteDto);
+
+      const query = `
+        UPDATE services.activite
+        SET ${setClause}
+        WHERE id = ${id}
+        RETURNING *;
+      `;
+
+      const result = await manager.query(query, values);
+      return result[0];
+    }, sessionCode);
+  }
+
+  async remove(id: number, sessionCode: string): Promise<void> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const result = await manager.delete(Activite, id);
+      if (result.affected === 0) {
+        throw new NotFoundException(`Activité avec l'ID ${id} non trouvée`);
+      }
+    }, sessionCode);
+  }
+}

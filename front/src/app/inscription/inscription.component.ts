@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UtilisateurService } from '../Services/Utilisateur.service';
-import * as bootstrap from 'bootstrap';  
+import * as bootstrap from 'bootstrap'; 
 
 @Component({
   selector: 'app-inscription',
@@ -75,6 +75,7 @@ export class InscriptionComponent implements OnInit {
         }
       });
     } else {
+      this.showErrorToast();  
       console.log('Formulaire invalide');
     }
   }
@@ -89,6 +90,14 @@ export class InscriptionComponent implements OnInit {
 
   showSuccessToast() {
     const toastElement = document.getElementById('successToast');
+    if (toastElement) {
+      const toast = new bootstrap.Toast(toastElement);
+      toast.show();
+    }
+  }
+
+  showErrorToast() {
+    const toastElement = document.getElementById('errorToast');
     if (toastElement) {
       const toast = new bootstrap.Toast(toastElement);
       toast.show();
