@@ -1,0 +1,13 @@
+.toast {
+    opacity: 1; 
+  }
+  
+  .toast-header {
+    background-color: #ffffff;
+    color: white;
+  }
+  
+  .toast-body {
+    background-color: #f8f9fa;
+  }
+  
