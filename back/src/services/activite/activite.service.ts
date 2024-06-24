@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
-import { Activite } from '../Entities/activite.entity';
-import { CreateActiviteDto } from '../DTO/create-activite.dto';
-import { UpdateActiviteDto } from '../DTO/update-activite.dto';
+import { Activite } from './Entities/activite.entity';
+import { CreateActiviteDto } from './DTO/create-activite.dto';
+import { UpdateActiviteDto } from './DTO/update-activite.dto';
 
 @Injectable()
 export class ActiviteService {
@@ -22,6 +22,19 @@ export class ActiviteService {
   async findAll(sessionCode: string): Promise<Activite[]> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       return manager.find(Activite);
+    }, sessionCode);
+  }
+
+  async findUserActivities(sessionCode: string): Promise<any> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const query = `
+        SELECT a.*
+        FROM services.activite a
+        JOIN security.users_table u ON a.organisation = u.organisation
+        WHERE u.id = (SELECT security.get_user_from_code($1));
+      `;
+      const result = await manager.query(query, [sessionCode]);
+      return result;
     }, sessionCode);
   }
 
