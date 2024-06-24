@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { InfosPersoComponent } from './infos-perso/infos-perso.component'; 
 import { InscriptionComponent } from './inscription/inscription.component';
 import { AccueilComponent } from './accueil/accueil.component';
@@ -11,11 +10,12 @@ import { ActivitesComponent } from './activites/activites.component';
 import { AuthGuard } from './Services/Auth-guard.service';
 import { ModifierActiviteComponent } from './infos-perso/mes-activites/modifier-activite/modifier-activite.component';
 import { DetailsActiviteComponent } from './infos-perso/mes-activites/details-activite/details-activite.component';
+import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/accueil', pathMatch: 'full', data: { animation: 'HomePage' } },
   { path: 'accueil', component: AccueilComponent, data: { animation: 'HomePage' } },
-  { path: 'tableau-de-bord', component: DashboardComponent, canActivate: [AuthGuard], data: { animation: 'DashboardPage' } },
+  { path: 'abonnements', component: MesAbonnementsComponent, canActivate: [AuthGuard], data: { animation: 'AbonnementsPage' } },
   { path: 'infos-perso', component: InfosPersoComponent, canActivate: [AuthGuard], data: { animation: 'InfosPersoPage' } },
   { path: 'inscription', component: InscriptionComponent, data: { animation: 'InscriptionPage' } },
   { path: 'planning', component: PlanningComponent, canActivate: [AuthGuard], data: { animation: 'PlanningPage' } },

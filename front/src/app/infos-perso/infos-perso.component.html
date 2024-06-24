@@ -4,7 +4,10 @@
       <h3 class="mlh_verdana">Mes données</h3>
       <ul class="nav nav-pills d-flex flex-column bd-highlight mb-3" id="pills-tab" role="tablist">
         <li class="nav-item">
-          <a class="nav-link active" id="pills-infos-perso-tab" data-bs-toggle="pill" href="#pills-infos-perso" role="tab" aria-controls="pills-infos-perso" aria-selected="true">Mes Informations Personnelles</a>
+          <a class="nav-link active" id="pills-dashboard-tab" data-bs-toggle="pill" href="#pills-dashboard" role="tab" aria-controls="pills-dashboard" aria-selected="false">Mon Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="pills-infos-perso-tab" data-bs-toggle="pill" href="#pills-infos-perso" role="tab" aria-controls="pills-infos-perso" aria-selected="true">Mes Informations Personnelles</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" id="pills-infos-complementaires-tab" data-bs-toggle="pill" href="#pills-infos-complementaires" role="tab" aria-controls="pills-infos-complementaires" aria-selected="false">Mes Informations Complémentaires</a>
@@ -13,23 +16,20 @@
           <a class="nav-link" id="pills-competences-tab" data-bs-toggle="pill" href="#pills-competences" role="tab" aria-controls="pills-competences" aria-selected="false">Mes Compétences</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="pills-abonnements-tab" data-bs-toggle="pill" href="#pills-abonnements" role="tab" aria-controls="pills-abonnements" aria-selected="false">Mes abonnements</a>
+          <a class="nav-link" id="pills-activites-tab" data-bs-toggle="pill" href="#pills-activites" role="tab" aria-controls="pills-activites" aria-selected="false">Mes Activités</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="pills-activites-tab" data-bs-toggle="pill" href="#pills-activites" role="tab" aria-controls="pills-activites" aria-selected="false">Mes activités</a>
+          <a class="nav-link" id="pills-organisation-tab" data-bs-toggle="pill" href="#pills-organisation" role="tab" aria-controls="pills-organisation" aria-selected="false">Mon Organisation</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" id="pills-organisation-tab" data-bs-toggle="pill" href="#pills-organisation" role="tab" aria-controls="pills-organisation" aria-selected="false">Mon organisation</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" id="pills-planning-tab" data-bs-toggle="pill" href="#pills-planning" role="tab" aria-controls="pills-planning" aria-selected="false">Mon planning</a>
+          <a class="nav-link" id="pills-planning-tab" data-bs-toggle="pill" href="#pills-planning" role="tab" aria-controls="pills-planning" aria-selected="false">Mon Planning</a>
         </li>
       </ul>
     </div>
     <div class="col-9 mt-4">
       <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade show active" id="pills-infos-perso" role="tabpanel" aria-labelledby="pills-infos-perso-tab">
-          <app-mes-informations-personnelles></app-mes-informations-personnelles>
+        <div class="tab-pane fade show active" id="pills-dashboard" role="tabpanel" aria-labelledby="pills-dashboard-tab">
+          <app-dashboard></app-dashboard>
         </div>
         <div class="tab-pane fade" id="pills-infos-complementaires" role="tabpanel" aria-labelledby="pills-infos-complementaires-tab">
           <app-mes-informations-complementaires></app-mes-informations-complementaires>
@@ -37,8 +37,8 @@
         <div class="tab-pane fade" id="pills-competences" role="tabpanel" aria-labelledby="pills-competences-tab">
           <app-mes-competences></app-mes-competences>
         </div>
-        <div class="tab-pane fade" id="pills-abonnements" role="tabpanel" aria-labelledby="pills-abonnements-tab">
-          <app-mes-abonnements></app-mes-abonnements>
+        <div class="tab-pane fade" id="pills-infos-perso" role="tabpanel" aria-labelledby="pills-infos-perso-tab">
+          <app-mes-informations-personnelles></app-mes-informations-personnelles>
         </div>
         <div class="tab-pane fade" id="pills-activites" role="tabpanel" aria-labelledby="pills-activites-tab">
           <app-mes-activites></app-mes-activites>

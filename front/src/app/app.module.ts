@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
 import { AccueilComponent } from './accueil/accueil.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { LoginComponent } from './login/login.component';
@@ -14,7 +13,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MesInformationsPersonnellesComponent } from './infos-perso/mes-informations-personnelles/mes-informations-personnelles.component';
 import { MesInformationsComplementairesComponent } from './infos-perso/mes-informations-complementaires/mes-informations-complementaires.component';
 import { MesCompetencesComponent } from './infos-perso/mes-competences/mes-competences.component';
-import { MesAbonnementsComponent } from './infos-perso/mes-abonnements/mes-abonnements.component';
 import { MesActivitesComponent } from './infos-perso/mes-activites/mes-activites.component';
 import { MonOrganisationComponent } from './infos-perso/mon-organisation/mon-organisation.component';
 import { MonPlanningComponent } from './infos-perso/mon-planning/mon-planning.component';
@@ -29,9 +27,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ModifierActiviteComponent } from './infos-perso/mes-activites/modifier-activite/modifier-activite.component';
 import { DetailsActiviteComponent } from './infos-perso/mes-activites/details-activite/details-activite.component';
 import { FullCalendarModule } from '@fullcalendar/angular'; 
-import dayGridPlugin from '@fullcalendar/daygrid'; 
-import interactionPlugin from '@fullcalendar/interaction';
-import { CommonModule } from '@angular/common';  // Import CommonModule
+import { CommonModule } from '@angular/common'; 
+import { DashboardComponent } from './infos-perso/dashboard/dashboard.component';
+import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.component';
 
 
 
