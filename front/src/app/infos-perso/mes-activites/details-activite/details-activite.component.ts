@@ -22,7 +22,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy {
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'timeGridDay,timeGridWeek,dayGridMonth'
+      right: 'timeGridDay,timeGridWeek'
     },
     editable: true,
     droppable: true,
