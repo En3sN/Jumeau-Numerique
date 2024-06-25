@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
+import { ActiviteService } from 'src/app/Services/Activite.service';
 
 @Component({
   selector: 'app-mes-activites',
@@ -13,20 +14,23 @@ export class MesActivitesComponent implements OnInit {
   hasPermission: boolean = false;
   userRoles: string[] = [];
   userId: number | null = null;
+  userActivities: any[] = [];
   activityToDelete: number | null = null;
 
   constructor(
-    private utilisateurService: UtilisateurService, 
+    private utilisateurService: UtilisateurService,
+    private activiteService: ActiviteService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadUtilisateurInfo();
+    this.loadUserActivities();
   }
 
   loadUtilisateurInfo(): void {
     this.utilisateurService.getUtilisateurInfo().subscribe(user => {
-      this.userId = user.id; 
+      this.userId = user.id;
       this.userRoles = user.roles || [];
       this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
     });
@@ -34,6 +38,12 @@ export class MesActivitesComponent implements OnInit {
     this.utilisateurService.getUserRoles().subscribe(roles => {
       this.userRoles = roles;
       this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
+    });
+  }
+
+  loadUserActivities(): void {
+    this.activiteService.getUserActivities().subscribe(activities => {
+      this.userActivities = activities;
     });
   }
 
@@ -60,11 +70,11 @@ export class MesActivitesComponent implements OnInit {
         this.userRoles = response.roles || [];
         this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
         this.showConfirmationToast = true;
-        this.loadUtilisateurInfo(); 
-        this.closeModal(); 
+        this.loadUtilisateurInfo();
+        this.closeModal();
         setTimeout(() => this.showConfirmationToast = false, 4000);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error:', err);
       }
     });
@@ -75,12 +85,12 @@ export class MesActivitesComponent implements OnInit {
   }
 
   editActivite(id: number, event: MouseEvent): void {
-    event.stopPropagation(); 
+    event.stopPropagation();
     this.router.navigate(['/modifier-activite', id]);
   }
 
   deleteActivite(id: number, event: MouseEvent): void {
-    event.stopPropagation(); 
+    event.stopPropagation();
     this.activityToDelete = id;
     const modalElement = document.getElementById('confirmationModal') as HTMLElement;
     const modalInstance = new bootstrap.Modal(modalElement);
@@ -89,14 +99,22 @@ export class MesActivitesComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.activityToDelete !== null) {
-      this.activityToDelete = null;
-      const modalElement = document.getElementById('confirmationModal') as HTMLElement;
-      const modalInstance = bootstrap.Modal.getInstance(modalElement);
-      modalInstance?.hide();
+      this.activiteService.supprimerActivite(this.activityToDelete).subscribe({
+        next: () => {
+          this.userActivities = this.userActivities.filter(activity => activity.id !== this.activityToDelete);
+          this.activityToDelete = null;
+          const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+          const modalInstance = bootstrap.Modal.getInstance(modalElement);
+          modalInstance?.hide();
+        },
+        error: (err: any) => {
+          console.error('Error deleting activity:', err);
+        }
+      });
     }
   }
 
-  viewDetails(): void {
+  viewDetails(id: number): void {
     this.router.navigate(['/details-activite']);
   }
 }
