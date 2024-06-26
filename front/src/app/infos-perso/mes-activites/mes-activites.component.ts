@@ -114,7 +114,8 @@ export class MesActivitesComponent implements OnInit {
     }
   }
 
-  viewDetails(id: number): void {
-    this.router.navigate(['/details-activite']);
+  viewDetails(id: number) {
+    this.router.navigate(['/details-activite', id]);
   }
+  
 }

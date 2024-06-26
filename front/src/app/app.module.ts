@@ -30,6 +30,8 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { CommonModule } from '@angular/common'; 
 import { DashboardComponent } from './infos-perso/dashboard/dashboard.component';
 import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.component';
+import { ToastComponent } from './Shared/toast/toast.component';
+import { ToastService } from './Shared/Service/toast.service';
 
 
 
@@ -55,6 +57,7 @@ import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.compo
     ActivitesComponent,
     ModifierActiviteComponent,
     DetailsActiviteComponent,
+    ToastComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,7 +69,7 @@ import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.compo
     BrowserAnimationsModule,
     FullCalendarModule 
   ],
-  providers: [AuthService, CookieService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
+  providers: [AuthService, CookieService,ToastService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

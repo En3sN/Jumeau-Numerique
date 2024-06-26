@@ -1,5 +1,6 @@
-import { Component, AfterViewInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, AfterViewInit, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
+import { ActiviteService } from 'src/app/Services/Activite.service';
 import { Calendar, EventApi } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -12,9 +13,10 @@ import * as bootstrap from 'bootstrap';
   templateUrl: './details-activite.component.html',
   styleUrls: ['./details-activite.component.css']
 })
-export class DetailsActiviteComponent implements AfterViewInit, OnDestroy {
+export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnInit {
   calendar: Calendar | undefined;
   activePopover: bootstrap.Popover | null = null;
+  activite: any;
 
   calendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -35,8 +37,32 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy {
     eventResize: this.handleEventChange.bind(this)
   };
 
-  constructor(private router: Router, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private router: Router, 
+    private route: ActivatedRoute, 
+    private activiteService: ActiviteService, 
+    private cdr: ChangeDetectorRef
+  ) {}
 
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.activiteService.getActiviteById(+id).subscribe({
+        next: (data) => {
+          this.activite = {
+            ...data,
+            documents: Array.isArray(data.documents) ? data.documents : [],
+            user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
+            prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
+          };
+        },
+        error: (err) => {
+          console.error('Error fetching activity details:', err);
+        }
+      });
+    }
+  }
+  
   ngAfterViewInit() {
     setTimeout(() => {
       this.initCalendar();
@@ -153,5 +179,10 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy {
 
   back() {
     this.router.navigate(['/infos-perso'], { queryParams: { tab: 'activites' } });
+  }
+
+
+  editActivite(): void {
+    this.router.navigate(['/modifier-activite', this.activite.id]);
   }
 }

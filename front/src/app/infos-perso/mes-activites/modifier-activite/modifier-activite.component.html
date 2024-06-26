@@ -1,175 +1,156 @@
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <h2 class="mlh_verdana text-center mb-4">
-                Description de l'activité
-            </h2>
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="col-form-label" for="inputActNom">Nom de l'activité:</label>
-                            <input type="text" class="form-control" id="inputActNom">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="col-form-label" for="inputActType">Type:</label>
-                            <input type="text" class="form-control" id="inputActType">
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-12">
-                            <label class="col-form-label" for="inputActDesc">Descriptif:</label>
-                            <textarea class="form-control" id="inputActDesc" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="form-check mt-3">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
-                        <label class="form-check-label" for="flexCheckChecked">Public</label>
-                    </div>
-                </div>
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+      <h2 class="mlh_verdana text-center mb-4">Description de l'activité</h2>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <label class="col-form-label" for="inputActNom">Nom de l'activité:</label>
+              <input [(ngModel)]="activiteData.nom" type="text" class="form-control" id="inputActNom">
             </div>
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h3 class="mlh_verdana">Généralités</h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="col-form-label" for="inputActRef">Référence:</label>
-                            <input type="text" class="form-control" id="inputActRef">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="col-form-label" for="inputActDomaine">Domaine:</label>
-                            <input type="text" class="form-control" id="inputActDomaine">
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label class="col-form-label col-form-label-sm" for="inputOrgLogo">Logo (Facultatif):</label>
-                            <img class="form-control mlh_org_logo" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo"/>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="col-form-label col-form-label-sm" for="inputActWeb">Site WEB:</label>
-                            <input type="text" class="form-control form-control-sm" id="inputActWeb">
-                        </div>
-                    </div>
-                </div>
+            <div class="col-md-6">
+              <label class="col-form-label" for="inputActType">Type:</label>
+              <input [(ngModel)]="activiteData.type" type="text" class="form-control" id="inputActType">
             </div>
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h3 class="mlh_verdana">Document(s)</h3>
-                    <div class="d-flex">
-                        <select multiple="" class="form-select" id="inputActDoc">
-                            <option>Flyer</option>
-                            <option>2</option>
-                            <option>3</option>
-                            <option>4</option>
-                            <option>5</option>
-                        </select>
-                        <button type="button" class="btn btn-info ms-2 p-2" id="btAddDoc"><strong> + </strong></button>
-                        <button type="button" class="btn btn-info ms-2 p-2" id="btDelDoc"><strong> - </strong></button>
-                    </div>
-                </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-12">
+              <label class="col-form-label" for="inputActDesc">Descriptif:</label>
+              <textarea [(ngModel)]="activiteData.description" class="form-control" id="inputActDesc" rows="3"></textarea>
             </div>
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h3 class="mlh_verdana">Tags</h3>
-                    <div class="d-flex">
-                        <button type="button" class="btn btn-info me-2 p-2" id="btAddTag"><strong> + </strong></button>
-                        <span class="badge bg-info me-2">Couture
-                            <button type="button" class="btn btn-outline-light mlh_tags" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="Supprimer">
-                                <div class="mlh_bt_tag">x</div>
-                            </button>
-                        </span>
-                        <span class="badge bg-info">Machine
-                            <button type="button" class="btn btn-outline-light mlh_tags" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="Supprimer">
-                                <div class="mlh_bt_tag">x</div>
-                            </button>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h3 class="mlh_verdana">Localisation</h3>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="col-form-label col-form-label-sm" for="inputActAdresse">Adresse:</label>
-                            <input type="text" class="form-control form-control-sm" id="inputActAdresse">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="col-form-label col-form-label-sm" for="inputActCp">Code postale:</label>
-                            <input type="text" class="form-control form-control-sm" id="inputActCp">
-                        </div>
-                    </div>
-                    <div class="row mt-3">
-                        <div class="col-md-6">
-                            <label class="col-form-label col-form-label-sm" for="inputActCommune">Commune:</label>
-                            <input type="text" class="form-control form-control-sm" id="inputActCommune">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h3 class="mlh_verdana">Prérequis</h3>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="col-form-label col-form-label-sm" for="inputActInfo">Informations complémentaires:</label>
-                            <div class="d-flex">
-                                <select multiple="" class="form-select" id="inputActInfo">
-                                    <option>Ages</option>
-                                    <option></option>
-                                    <option></option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                </select>
-                                <button type="button" class="btn btn-info ms-2 p-2" id="btAddInfo"><strong> + </strong></button>
-                                <button type="button" class="btn btn-info ms-2 p-2" id="btDelInfo"><strong> - </strong></button>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="col-form-label col-form-label-sm" for="inputActItem">Eléments nécessaires pour bénéficier de l'activité:</label>
-                            <div class="d-flex">
-                                <select multiple="" class="form-select" id="inputActItem">
-                                    <option>Carte d'identité</option>
-                                    <option>Diplôme de ...</option>
-                                    <option>Certification ...</option>
-                                    <option>4</option>
-                                    <option>5</option>
-                                </select>
-                                <button type="button" class="btn btn-info ms-2 p-2" id="btAddItem"><strong> + </strong></button>
-                                <button type="button" class="btn btn-info ms-2 p-2" id="btDelItem"><strong> - </strong></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h3 class="mlh_verdana">Rendez-vous initial</h3>
-                    <p>Le rendez-vous initial est le passage obligé pour qu'une personne puisse bénéficier des services proposés dans le cadre de cette activité: C'est le responsable de l'activité qui activera l'accès pour l'utilisateur suite au rendez-vous.</p>
-                    <div class="form-check mt-4">
-                        <input class="form-check-input" type="checkbox" value="" id="flexCheckCheckedRdv">
-                        <label class="form-check-label" for="flexCheckCheckedRdv">Rendez-vous initial</label>
-                    </div>
-                    <label class="col-form-label col-form-label-sm mt-2" for="inputActRdvBody">Corps du mail pour la demande de rendez-vous:</label>
-                    <textarea class="form-control form-control-sm" id="inputActRdvBody" rows="3"></textarea>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="d-flex justify-content-between mt-2 border-top pt-3">
-                    <button type="button" class="btn btn-secondary p-2" id="btActLogo">Charger le Logo</button>
-                    <button type="button" class="btn btn-primary p-2" id="btActOk">Enregistrer</button>
-                    <button type="button" class="btn btn-secondary p-2" id="btActBack" (click)="back()">Retour</button>
-                </div>
-            </div>
+          </div>
+          <div class="form-check mt-3">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="activiteData.public" id="flexCheckChecked">
+            <label class="form-check-label" for="flexCheckChecked">Public</label>
+          </div>
         </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mlh_verdana">Généralités</h3>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="col-form-label" for="inputActRef">Référence:</label>
+              <input [(ngModel)]="activiteData.reference" type="text" class="form-control" id="inputActRef">
+            </div>
+            <div class="col-md-6">
+              <label class="col-form-label" for="inputActDomaine">Domaine:</label>
+              <input [(ngModel)]="activiteData.domaine" type="text" class="form-control" id="inputActDomaine">
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <label class="col-form-label col-form-label-sm" for="inputOrgLogo">Logo (Facultatif):</label>
+              <img class="form-control mlh_org_logo" [src]="activiteData.logo" alt="logo"/>
+            </div>
+            <div class="col-md-6">
+              <label class="col-form-label col-form-label-sm" for="inputActWeb">Site WEB:</label>
+              <input [(ngModel)]="activiteData.url" type="text" class="form-control form-control-sm" id="inputActWeb">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mlh_verdana">Document(s)</h3>
+          <div class="d-flex">
+            <select [(ngModel)]="activiteData.documents" multiple class="form-select" id="inputActDoc">
+              <option *ngFor="let doc of activiteData.documents">{{ doc }}</option>
+            </select>
+            <button type="button" class="btn btn-info ms-2 p-2" id="btAddDoc"><strong> + </strong></button>
+            <button type="button" class="btn btn-info ms-2 p-2" id="btDelDoc"><strong> - </strong></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mlh_verdana">Tags</h3>
+          <div class="d-flex">
+            <button type="button" class="btn btn-info me-2 p-2" id="btAddTag"><strong> + </strong></button>
+            <span class="badge bg-info me-2" *ngFor="let tag of activiteData.tags">{{ tag }}
+              <button type="button" class="btn btn-outline-light mlh_tags" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-original-title="Supprimer">
+                <div class="mlh_bt_tag">x</div>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mlh_verdana">Localisation</h3>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="col-form-label col-form-label-sm" for="inputActAdresse">Adresse:</label>
+              <input [(ngModel)]="activiteData.adresse" type="text" class="form-control form-control-sm" id="inputActAdresse">
+            </div>
+            <div class="col-md-6">
+              <label class="col-form-label col-form-label-sm" for="inputActCp">Code postale:</label>
+              <input [(ngModel)]="activiteData.cp" type="text" class="form-control form-control-sm" id="inputActCp">
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <label class="col-form-label col-form-label-sm" for="inputActCommune">Commune:</label>
+              <input [(ngModel)]="activiteData.commune" type="text" class="form-control form-control-sm" id="inputActCommune">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mlh_verdana">Prérequis</h3>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="col-form-label col-form-label-sm" for="inputActInfo">Informations complémentaires:</label>
+              <div class="d-flex">
+                <select [(ngModel)]="activiteData.infos" multiple class="form-select" id="inputActInfo">
+                  <option *ngFor="let info of activiteData.infos | keyvalue">{{ info.key }}: {{ info.value }}</option>
+                </select>
+                <button type="button" class="btn btn-info ms-2 p-2" id="btAddInfo"><strong> + </strong></button>
+                <button type="button" class="btn btn-info ms-2 p-2" id="btDelInfo"><strong> - </strong></button>
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="col-form-label col-form-label-sm" for="inputActItem">Eléments nécessaires pour bénéficier de l'activité:</label>
+              <div class="d-flex">
+                <select [(ngModel)]="activiteData.prerequis" multiple class="form-select" id="inputActItem">
+                  <option *ngFor="let prereq of activiteData.prerequis | keyvalue">{{ prereq.key }}: {{ prereq.value }}</option>
+                </select>
+                <button type="button" class="btn btn-info ms-2 p-2" id="btAddItem"><strong> + </strong></button>
+                <button type="button" class="btn btn-info ms-2 p-2" id="btDelItem"><strong> - </strong></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mlh_verdana">Rendez-vous initial</h3>
+          <p>Le rendez-vous initial est le passage obligé pour qu'une personne puisse bénéficier des services proposés dans le cadre de cette activité: C'est le responsable de l'activité qui activera l'accès pour l'utilisateur suite au rendez-vous.</p>
+          <div class="form-check mt-4">
+            <input class="form-check-input" type="checkbox" [(ngModel)]="activiteData.rdv" id="flexCheckCheckedRdv">
+            <label class="form-check-label" for="flexCheckCheckedRdv">Rendez-vous initial</label>
+          </div>
+          <label class="col-form-label col-form-label-sm mt-2" for="inputActRdvBody">Corps du mail pour la demande de rendez-vous:</label>
+          <textarea [(ngModel)]="activiteData.mail_rdv" class="form-control form-control-sm" id="inputActRdvBody" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="d-flex justify-content-between mt-2 border-top pt-3">
+          <button type="button" class="btn btn-secondary p-2" id="btActLogo">Charger le Logo</button>
+          <button type="button" class="btn btn-primary p-2" id="btActOk" (click)="updateActivite()">Enregistrer</button>
+          <button type="button" class="btn btn-secondary p-2" id="btActBack" (click)="back()">Retour</button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>

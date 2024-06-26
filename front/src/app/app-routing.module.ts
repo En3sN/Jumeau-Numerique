@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: 'contacts', component: ContactsComponent, data: { animation: 'ContactsPage' } },
   { path: 'activites', component: ActivitesComponent, data: { animation: 'ActivitesPage' } },
   { path: 'modifier-activite/:id', component: ModifierActiviteComponent, canActivate: [AuthGuard], data: { animation: 'ModifierActivitePage' }},
-  { path: 'details-activite', component: DetailsActiviteComponent, canActivate: [AuthGuard], data: { animation: 'DetailsActivitePage' }},
+  { path: 'details-activite/:id', component: DetailsActiviteComponent, canActivate: [AuthGuard], data: { animation: 'DetailsActivitePage' }},
 ];
 
 @NgModule({

@@ -1,16 +1,16 @@
-<div class="container mt-5">
+<div class="container mt-5" *ngIf="activite">
   <div class="row justify-content-center">
     <div class="col-md-10">
       <div class="d-flex justify-content-between align-items-center mt-4">
-        <img class="img-thumbnail" src="https://images.squarespace-cdn.com/content/v1/632ad891c684536fe763ae26/8fae08f3-076c-4189-a1a7-3cddae36e259/logotype.png?format=1500w" alt="logo" style="width: 150px; height: auto;">
+        <img class="img-thumbnail" [src]="activite.logo" alt="logo" style="width: 150px; height: auto;">
         <h2 class="mlh_verdana m-3">
-          Location de machines à coudre professionnelles : <br> Box Briand
+          {{ activite.nom }} : <br> {{ activite.description }}
         </h2>
-        <button type="button" class="btn btn-outline-info">Site Web</button>
+        <a [href]="activite.url" class="btn btn-outline-info" target="_blank">Site Web</a>
       </div>
       <div class="row mt-4">
         <div class="col-12 mlh_block_data">
-          Créer des passerelles entre le monde de l’Industrie et celui de l’Education par le biais du textile, telle est la raison d’être de La Petite Manchester. Un projet mis sur les rails en 2015 et porté depuis par Nathalie Methia. Un projet engagé et humain qui attaque l’ultime étape de son développement.
+          {{ activite.description }}
         </div>
       </div>
       <div class="row mt-4">
@@ -29,41 +29,29 @@
               <a class="nav-link" data-bs-toggle="tab" href="#planning" aria-selected="false" role="tab">Définition des créneaux pour les rendez-vous initiaux</a>
             </li>
           </ul>
-          <div id="myTabContent" class="tab-content mt-3">
-            <div class="tab-pane fade show active" id="Generalite" role="tabpanel">
+          <div id="myTabContent" class="tab-content mt-2">
+            <div class="tab-pane fade show active mb-3" id="Generalite" role="tabpanel">
               <p class="card-text">
-                organisme : <a href="#"> La Petite Manchester </a>
+                organisme : <a href="#"> {{ activite.organisation_nom }} </a>
               </p>
-              <label class="col-form-label">Référence :</label>
-              <strong>REFX2154876</strong> <br>
+              <label class="col-form-label me-1 ">Référence :</label>
+              <strong>{{ activite.reference }}</strong> <br>
               <label class="col-form-label">Quelques documents :</label>
               <select multiple class="form-select" id="inputActDoc">
-                <option>Flyer</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
+                <option *ngFor="let doc of activite.documents">{{ doc }}</option>
               </select>
               <label class="col-form-label">Adresse :</label>
-              <strong>33 avenue de Colmar 68100 Mulhouse</strong>
+              <strong>{{ activite.adresse }}, {{ activite.cp }} {{ activite.commune }}</strong>
             </div>
-            <div class="tab-pane fade mt-2" id="InfoGen" role="tabpanel">
+            <div class="tab-pane fade mt-3" id="InfoGen" role="tabpanel">
               <p>Cette activité nécessitera un rendez-vous initial pour pouvoir accéder aux différents services proposés.</p>
               <label class="col-form-label">Informations complémentaires demandées :</label>
               <select multiple class="form-select" id="inputActInfo">
-                <option>Ages</option>
-                <option></option>
-                <option></option>
-                <option>4</option>
-                <option>5</option>
+                <option *ngFor="let info of activite.user_infos | keyvalue">{{ info.key }}: {{ info.value }}</option>
               </select>
               <label class="col-form-label mt-2">Éléments à fournir :</label>
               <select multiple class="form-select" id="inputActItem">
-                <option>Carte d'identité</option>
-                <option>Diplôme de ...</option>
-                <option>Certification ...</option>
-                <option>4</option>
-                <option>5</option>
+                <option *ngFor="let prerequis of activite.prerequis | keyvalue">{{ prerequis.key }}: {{ prerequis.value }}</option>
               </select>
             </div>
             <div class="tab-pane fade mt-2" id="planning" role="tabpanel">
@@ -89,11 +77,11 @@
           </div>
         </div>
       </div>
-      <h4>Informations rendez-vous</h4>
-      <p>La durée d'un rendez-vous est définie dans l'activité à <strong>60</strong> minutes. Les plages de rendez-vous seront divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas utilisés.</p>
-      <div class="row mt-2 border-bottom mlh_block_data">
-        <div class="d-flex justify-content-end">
-          <button type="button" class="btn btn-secondary me-2" id="btActModif">Modifier l'activité</button>
+      <h4 class="mt-2">Informations rendez-vous</h4>
+      <p>La durée d'un rendez-vous est définie dans l'activité à <strong>{{ activite.rdv_duree }}</strong> minutes. Les plages de rendez-vous seront divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas utilisés.</p>
+      <div class="row border-bottom mlh_block_data">
+        <div class="d-flex mb-1 justify-content-end">
+          <button type="button" class="btn btn-secondary me-2" id="btActModif" (click)="editActivite()">Modifier l'activité</button>
           <button type="button" class="btn btn-primary" id="btActBack" (click)="back()">Retour</button>
         </div>
       </div>
