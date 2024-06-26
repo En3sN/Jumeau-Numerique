@@ -63,4 +63,11 @@ export class UtilisateurService {
   getStatuts(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/utilisateur/statuts`);
   }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+    if (this.userId === null) {
+      throw new Error('User ID is not set.');
+    }
+    return this.http.patch(`${this.apiUrl}/utilisateur/password/${this.userId}`, { currentPassword, newPassword }, { withCredentials: true });
+  }
 }

@@ -117,5 +117,4 @@ export class MesActivitesComponent implements OnInit {
   viewDetails(id: number) {
     this.router.navigate(['/details-activite', id]);
   }
-  
 }

@@ -3,6 +3,7 @@ import { UtilisateurService } from './utilisateur.service';
 import { CreateUtilisateurDto } from './DTO/create-utilisateur.dto';
 import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';
 import { JwtAuthGuard } from '../jwt-auth.guard/jwt-auth.guard';
+import { ChangePasswordDto } from './DTO/change-password.dto';
 
 @Controller('utilisateur')
 export class UtilisateurController {
@@ -78,5 +79,19 @@ export class UtilisateurController {
   async getStatuts(): Promise<string[]> {
     return await this.utilisateurService.getStatuts();
   }
-}
 
+  @UseGuards(JwtAuthGuard)
+  @Patch('password/:id')
+  @HttpCode(HttpStatus.OK)
+  async changePassword(
+    @Param('id') id: number,
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Request() req
+  ): Promise<{ message: string }> {
+    const sessionCode = req.user.sessionCode;
+    if (!sessionCode) {
+      throw new Error('Session code is missing from the JWT payload.');
+    }
+    return await this.utilisateurService.changePassword(id, changePasswordDto, sessionCode);
+  }
+}

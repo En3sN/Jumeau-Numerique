@@ -24,7 +24,13 @@ export class MesInformationsPersonnellesComponent implements OnInit {
     commune: ''
   };
 
+  currentPassword: string = '';
+  newPassword: string = '';
+  confirmPassword: string = '';
   statuts: string[] = [];
+
+  passwordMatch: boolean = true; 
+  passwordTyped: boolean = false;  
 
   constructor(private utilisateurService: UtilisateurService) {}
 
@@ -58,7 +64,31 @@ export class MesInformationsPersonnellesComponent implements OnInit {
     }
   }
 
-  savePassword(): void {}
+  checkPasswordMatch(): void {
+    this.passwordTyped = true;
+    this.passwordMatch = this.newPassword === this.confirmPassword;
+  }
+
+  savePassword(): void {
+    this.checkPasswordMatch();
+
+    if (!this.passwordMatch) {
+      this.showToast('Les nouveaux mots de passe ne correspondent pas', 'danger');
+      return;
+    }
+
+    this.utilisateurService.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        console.log('Password changed successfully');
+        this.showToast('Mot de passe changé avec succès', 'success');
+        this.closePasswordModal();
+      },
+      error: (err) => {
+        console.error('Error changing password:', err);
+        this.showToast('Erreur lors du changement de mot de passe', 'danger');
+      }
+    });
+  }
 
   closePasswordModal(): void {
     const passwordModal = bootstrap.Modal.getInstance(document.getElementById('DlgMajPWD') as HTMLElement);
@@ -72,19 +102,23 @@ export class MesInformationsPersonnellesComponent implements OnInit {
 
   saveUserInfo(): void {
     const updateData = { ...this.utilisateur };
-    delete updateData.id; 
+    delete updateData.id;
 
     this.utilisateurService.updateUtilisateurInfo(updateData).subscribe(response => {
       console.log('User info updated successfully');
-      this.showUpdateToast();
+      this.showToast('Informations mises à jour avec succès', 'success');
     }, error => {
       console.error('Error updating user info');
+      this.showToast('Erreur de mise à jour des informations', 'danger');
     });
   }
 
-  showUpdateToast(): void {
+  showToast(message: string, type: 'success' | 'danger'): void {
     const toastElement = document.getElementById('updateToast');
     if (toastElement) {
+      toastElement.querySelector('.toast-body')!.textContent = message;
+      toastElement.classList.remove('bg-success', 'bg-danger');
+      toastElement.classList.add(`bg-${type}`);
       const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
       toast.show();
     }

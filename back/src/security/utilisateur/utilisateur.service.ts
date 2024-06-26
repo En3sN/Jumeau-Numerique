@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EntityManager, Repository } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 import { CreateUtilisateurDto } from './DTO/create-utilisateur.dto';
@@ -6,6 +6,7 @@ import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { UpdateUtilisateurDto } from './DTO/update-utilisateur-infos.dto';
 import * as bcrypt from 'bcrypt';
 import { Utilisateur } from './Entities/utilisateur.entity';
+import { ChangePasswordDto } from './DTO/change-password.dto';
 
 @Injectable()
 export class UtilisateurService {
@@ -106,6 +107,32 @@ export class UtilisateurService {
 
       const result = await manager.query(query, values);
       return result[0];
+    }, sessionCode);
+  }
+
+  async changePassword(userId: number, changePasswordDto: ChangePasswordDto, sessionCode: string): Promise<{ message: string }> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const user = await manager.findOne(Utilisateur, { where: { id: userId } });
+
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
+
+      const isMatch = await bcrypt.compare(changePasswordDto.currentPassword, user.pwd);
+      if (!isMatch) {
+        throw new BadRequestException('Old password is incorrect');
+      }
+
+      const saltRounds = 10;
+      const salt = await bcrypt.genSalt(saltRounds);
+      const hashedNewPassword = await bcrypt.hash(changePasswordDto.newPassword, salt);
+
+      user.pwd = hashedNewPassword;
+      user.salt = salt;
+
+      await manager.save(user);
+
+      return { message: 'Password changed successfully' };
     }, sessionCode);
   }
 }

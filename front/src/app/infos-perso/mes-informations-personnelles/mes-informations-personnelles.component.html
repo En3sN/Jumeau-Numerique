@@ -9,7 +9,7 @@
                 <div>
                     <label class="col-form-label" for="inputPWD1"> Mot de passe actuel: </label>
                     <div class="d-flex justify-content-between align-items-center">
-                        <input [type]="currentPasswordFieldType" class="form-control" id="inputPWD1" placeholder="*****" autocomplete="off">
+                        <input [(ngModel)]="currentPassword" [type]="currentPasswordFieldType" class="form-control" id="inputPWD1" placeholder="*****" autocomplete="off">
                         <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('current')">
                             <i class="fa" [ngClass]="currentPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
                         </button>
@@ -17,20 +17,21 @@
                 </div>
                 <div>
                     <label class="col-form-label mt-4" for="inputPWD2"> Nouveau mot de passe: </label>
-                    <div class="has-success">
+                    <div [ngClass]="{'has-success': passwordMatch, 'has-error': !passwordMatch}">
                         <div class="d-flex justify-content-between align-items-center">
-                            <input [type]="newPasswordFieldType" class="form-control is-valid" id="inputPWD2" placeholder="*****" autocomplete="off">
+                            <input [(ngModel)]="newPassword" (input)="checkPasswordMatch()" [type]="newPasswordFieldType" class="form-control" id="inputPWD2" placeholder="*****" autocomplete="off">
                             <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('new')">
                                 <i class="fa" [ngClass]="newPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
                             </button>
                         </div>
-                        <div class="valid-feedback d-block">Les mots de passe correspondent !</div>
+                        <div *ngIf="passwordTyped && passwordMatch" class="valid-feedback d-block">Les mots de passe correspondent !</div>
+                        <div *ngIf="passwordTyped && !passwordMatch" class="invalid-feedback d-block">Les mots de passe ne correspondent pas !</div>
                     </div>
                 </div>
                 <div>
                     <label class="col-form-label" for="inputPWD3"> Confirmation mot de passe: </label>
                     <div class="d-flex justify-content-between align-items-center">
-                        <input [type]="confirmPasswordFieldType" class="form-control" id="inputPWD3" placeholder="*****" autocomplete="off">
+                        <input [(ngModel)]="confirmPassword" (input)="checkPasswordMatch()" [type]="confirmPasswordFieldType" class="form-control" id="inputPWD3" placeholder="*****" autocomplete="off">
                         <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility('confirm')">
                             <i class="fa" [ngClass]="confirmPasswordFieldType === 'password' ? 'fa-eye' : 'fa-eye-slash'"></i>
                         </button>
@@ -45,6 +46,18 @@
     </div>
 </div>
 
+<!-- Toast Notification -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="updateToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Notification</strong>
+        <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        Informations mises à jour avec succès.
+      </div>
+    </div>
+</div>
 
 <div class="col-12 mt-2">
     <h2 class="mlh_verdana">Mes Informations Personnelles</h2>
@@ -86,18 +99,5 @@
             <button type="button" class="btn btn-secondary me-auto p-2" id="btUserInfoPwd" (click)="changePassword()">Changer de mot de passe</button>
             <button type="button" class="btn btn-primary" (click)="saveUserInfo()">Enregistrer</button>
         </div>
-    </div>
-</div>
-
-
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="updateToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="toast-header">
-        <strong class="me-auto">Notification</strong>
-        <button type="button" class="btn-close ms-2 mb-1" data-bs-dismiss="toast" aria-label="Close"></button>
-      </div>
-      <div class="toast-body">
-        Informations mises à jour avec succès.
-      </div>
     </div>
 </div>
