@@ -1,11 +1,12 @@
-import { Component, AfterViewInit, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, AfterViewInit, ChangeDetectorRef, OnDestroy, OnInit, ViewChild, SimpleChanges, OnChanges } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ActiviteService } from 'src/app/Services/Activite.service';
-import { Calendar, EventApi } from '@fullcalendar/core';
+import { CalendarOptions, EventApi } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
+import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
+import { FullCalendarComponent } from '@fullcalendar/angular';
 import * as bootstrap from 'bootstrap';
 
 @Component({
@@ -13,18 +14,18 @@ import * as bootstrap from 'bootstrap';
   templateUrl: './details-activite.component.html',
   styleUrls: ['./details-activite.component.css']
 })
-export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnInit {
-  calendar: Calendar | undefined;
+export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnInit, OnChanges {
+  @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
   activePopover: bootstrap.Popover | null = null;
   activite: any;
 
-  calendarOptions = {
+  calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
     initialView: 'timeGridWeek',
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'timeGridDay,timeGridWeek'
+      right: 'timeGridWeek,timeGridDay'
     },
     editable: true,
     droppable: true,
@@ -34,7 +35,8 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     height: 'auto',
     eventDidMount: this.handleEventRender.bind(this),
     eventDrop: this.handleEventChange.bind(this),
-    eventResize: this.handleEventChange.bind(this)
+    eventResize: this.handleEventChange.bind(this),
+    drop: this.handleDrop.bind(this)
   };
 
   constructor(
@@ -55,6 +57,8 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
             user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
             prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
           };
+          this.cdr.detectChanges();  // Manually trigger change detection after data is loaded
+          this.initCalendar();
         },
         error: (err) => {
           console.error('Error fetching activity details:', err);
@@ -62,10 +66,16 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       });
     }
   }
-  
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['activite'] && this.activite) {
+      this.initCalendar();
+    }
+  }
+
   ngAfterViewInit() {
     setTimeout(() => {
-      this.initCalendar();
+      this.initExternalEvents();
       document.addEventListener('click', this.closePopoverOnClickOutside.bind(this));
     }, 0);
   }
@@ -74,10 +84,8 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     document.removeEventListener('click', this.closePopoverOnClickOutside.bind(this));
   }
 
-  initCalendar() {
+  initExternalEvents() {
     const containerEl = document.getElementById('external-events');
-    const calendarEl = document.getElementById('calendar');
-
     if (containerEl) {
       new Draggable(containerEl, {
         itemSelector: '.fc-event',
@@ -88,14 +96,25 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         }
       });
     }
+  }
 
-    if (calendarEl) {
-      this.calendar = new Calendar(calendarEl, this.calendarOptions);
-      this.calendar.render();
-      requestAnimationFrame(() => {
-        this.calendar?.updateSize();
-        this.cdr.detectChanges();
-      });
+  initCalendar() {
+    if (this.calendarComponent) {
+      this.calendarComponent.getApi().render();
+      this.cdr.detectChanges();
+    }
+  }
+
+  handleTabChange() {
+    setTimeout(() => {
+      this.calendarComponent.getApi().updateSize();
+    }, 0);
+  }
+
+  handleDrop(info: DropArg) {
+    const checkbox = document.getElementById('drop-remove') as HTMLInputElement;
+    if (checkbox?.checked) {
+      info.draggedEl.parentNode?.removeChild(info.draggedEl);
     }
   }
 
@@ -180,7 +199,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   back() {
     this.router.navigate(['/infos-perso'], { queryParams: { tab: 'activites' } });
   }
-
 
   editActivite(): void {
     this.router.navigate(['/modifier-activite', this.activite.id]);

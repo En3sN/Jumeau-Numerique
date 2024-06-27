@@ -1,19 +1,20 @@
-#calendar {
-  max-width: 1100px;
-  margin: 0 auto;
-  z-index: 1;
-  opacity: 1;
-  height: auto;
-  overflow: visible;
-}
-
 #external-events {
   padding: 10px;
-  width: 150px;
-  z-index: 1;
-  opacity: 1;
+  border: 1px solid #ccc;
+  background: #f4f4f4;
+  width: auto;
   height: auto;
-  overflow: visible;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+#external-events .fc-event {
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+#calendar {
+  margin-top: 20px;
 }
 
 .fc-event {
