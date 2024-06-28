@@ -39,20 +39,15 @@
     </div>
     <div class="row">
       <div class="col-md-6 mb-2">
-        <label for="inputDlgInscriptionCp" class="form-label">Code postal</label>
-        <input type="text" class="form-control" id="inputDlgInscriptionCp" placeholder="Code postal" formControlName="cp">
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-6 mb-2">
         <label for="inputDlgInscriptionStatut" class="form-label">Statut<span class="text-danger">*</span></label>
         <select class="form-select" id="inputDlgInscriptionStatut" formControlName="statut" [ngClass]="{'is-invalid': inscriptionForm.get('statut')?.invalid && (inscriptionForm.get('statut')?.touched || inscriptionForm.get('statut')?.dirty)}">
           <option *ngFor="let statut of statuts" [value]="statut">{{ statut }}</option>
         </select>
       </div>
+
       <div class="col-md-6 mb-2">
-        <label for="inputDlgInscriptionOrganisation" class="form-label">Organisation (facultatif)</label>
-        <input type="text" class="form-control" id="inputDlgInscriptionOrganisation" placeholder="Organisation" formControlName="organisation_nom">
+        <label for="inputDlgInscriptionCp" class="form-label">Code postal</label>
+        <input type="text" class="form-control" id="inputDlgInscriptionCp" placeholder="Code postal" formControlName="cp">
       </div>
     </div>
     <div class="row">

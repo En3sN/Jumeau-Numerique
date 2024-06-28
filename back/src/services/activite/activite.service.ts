@@ -19,17 +19,23 @@ export class ActiviteService {
     return this.entityManager.save(activite);
   }
 
-  async findAll(sessionCode: string): Promise<Activite[]> {
+  async findAll(sessionCode: string): Promise<any[]> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      return manager.find(Activite);
+      const query = `
+        SELECT a.*, o.nom as organisation_nom
+        FROM services.activite a
+        JOIN security.organisation o ON a.organisation = o.id;
+      `;
+      return manager.query(query);
     }, sessionCode);
   }
 
   async findUserActivities(sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const query = `
-        SELECT a.*
+        SELECT a.*, o.nom as organisation_nom
         FROM services.activite a
+        JOIN security.organisation o ON a.organisation = o.id
         JOIN security.users_table u ON a.organisation = u.organisation
         WHERE u.id = (SELECT security.get_user_from_code($1));
       `;
@@ -38,13 +44,19 @@ export class ActiviteService {
     }, sessionCode);
   }
 
-  async findOne(id: number, sessionCode: string): Promise<Activite> {
+  async findOne(id: number, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      const activite = await manager.findOne(Activite, { where: { id } });
-      if (!activite) {
+      const query = `
+        SELECT a.*, o.nom as organisation_nom
+        FROM services.activite a
+        JOIN security.organisation o ON a.organisation = o.id
+        WHERE a.id = $1;
+      `;
+      const result = await manager.query(query, [id]);
+      if (!result || result.length === 0) {
         throw new NotFoundException(`Activité avec l'ID ${id} non trouvée`);
       }
-      return activite;
+      return result[0];
     }, sessionCode);
   }
 
