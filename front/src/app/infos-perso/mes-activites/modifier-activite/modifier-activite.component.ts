@@ -11,6 +11,7 @@ import { ToastService } from 'src/app/Shared/Service/toast.service';
 export class ModifierActiviteComponent implements OnInit {
   activiteId!: number;
   activiteData: any = {};
+  newTag: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -40,6 +41,7 @@ export class ModifierActiviteComponent implements OnInit {
   updateActivite(): void {
     const updateData = { ...this.activiteData };
     delete updateData.id; 
+    delete updateData.organisation_nom; 
 
     this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
       next: (response) => {
@@ -48,6 +50,30 @@ export class ModifierActiviteComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error updating activity:', err);
+      }
+    });
+  }
+
+  addTag() {
+    if (this.newTag) {
+      this.activiteData.tags.push(this.newTag);
+      this.newTag = '';
+    }
+  }
+
+  removeTag(index: number) {
+    this.activiteData.tags.splice(index, 1);
+  }
+
+  saveTags() {
+    const updateData = { tags: this.activiteData.tags };
+    this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
+      next: (response) => {
+        console.log('Tags updated successfully:');
+        this.toastService.showToast('Succès', 'Mise à jour des tags réussie');
+      },
+      error: (err) => {
+        console.error('Error updating tags:', err);
       }
     });
   }

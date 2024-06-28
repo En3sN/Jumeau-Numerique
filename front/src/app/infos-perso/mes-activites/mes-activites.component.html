@@ -25,7 +25,7 @@
                 <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag }}</span>
               </p>
             </div>
-            <div>
+            <div class="border-start ps-3">
               <div class="d-flex justify-content-start align-items-center mb-2 btn btn-sm btn-outline-dark" (click)="editActivite(activity.id, $event)">
                 <i class="fa fa-pen me-2"></i>
                 <strong>modifier</strong>
