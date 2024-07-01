@@ -10,6 +10,8 @@ export class ToastComponent implements OnInit {
   show: boolean = false;
   title: string = '';
   message: string = '';
+  toastClass: string = '';
+  headerClass: string = '';
 
   constructor(private toastService: ToastService) {}
 
@@ -17,6 +19,8 @@ export class ToastComponent implements OnInit {
     this.toastService.toastState.subscribe(toast => {
       this.title = toast.title;
       this.message = toast.message;
+      this.toastClass = toast.toastClass;
+      this.headerClass = toast.headerClass;
       this.show = true;
       setTimeout(() => this.hideToast(), 3000);
     });

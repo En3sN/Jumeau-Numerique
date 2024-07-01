@@ -58,7 +58,7 @@ export class MesActivitesComponent implements OnInit {
     this.utilisateurService.hasOrganisation().subscribe({
       next: (response) => {
         if (!response.hasOrganisation) {
-          this.toastService.showToast('Erreur', 'Veuillez renseigner votre organisme avant de faire une demande d\'activation.', 'bg-danger');
+          this.toastService.showToast('Erreur', 'Veuillez renseigner votre organisme avant de faire une demande d\'activation.', 'toast', 'bg-danger text-white');
           return;
         }
 
