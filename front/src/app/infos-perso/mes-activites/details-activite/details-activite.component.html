@@ -54,6 +54,25 @@
                 <option *ngFor="let prerequis of activite?.prerequis | keyvalue">{{ prerequis.key }}: {{ prerequis.value }}</option>
               </select>
             </div>
+            <div class="tab-pane fade" id="services" role="tabpanel">
+              <div class="row">
+                <div class="col-12">
+                  <h4 class="mlh_verdana">Services associés</h4>
+                  <div *ngFor="let service of services" class="card mb-3">
+                    <div class="card-body d-flex">
+                      <img class="img-thumbnail me-3" [src]="service.logo" alt="logo" style="width: 150px; height: 150px;">
+                      <div class="flex-grow-1">
+                        <h4 class="card-title">{{ service.nom }}</h4>
+                        <p class="card-text">{{ service.description }}</p>
+                        <p>
+                          <span *ngFor="let tag of service.tags" class="badge bg-info me-1">{{ tag }}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="tab-pane fade mt-2" id="planning" role="tabpanel">
               <div class="mb-4 mt-2">
                 <h4>Informations rendez-vous</h4>

@@ -68,4 +68,11 @@ export class ActiviteController {
     await this.activiteService.remove(id, sessionCode);
     return { message: 'La suppression a été faite avec succès.' };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/services')
+  async getServicesByActiviteId(@Param('id') id: number, @Request() req): Promise<any> {
+    const sessionCode = req.user.sessionCode;
+    return this.activiteService.findServicesByActiviteId(id, sessionCode);
+  }
 }

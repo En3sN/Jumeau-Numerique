@@ -8,6 +8,7 @@ import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction
 import frLocale from '@fullcalendar/core/locales/fr';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import * as bootstrap from 'bootstrap';
+import { ServicesService } from 'src/app/Services/Services.service';
 
 @Component({
   selector: 'app-details-activite',
@@ -18,6 +19,8 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
   activePopover: bootstrap.Popover | null = null;
   activite: any;
+  services: any[] = []; 
+
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -43,7 +46,9 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     private router: Router, 
     private route: ActivatedRoute, 
     private activiteService: ActiviteService, 
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private servicesService: ServicesService
+
   ) {}
 
   ngOnInit() {
@@ -57,8 +62,9 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
             user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
             prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
           };
-          this.cdr.detectChanges();  // Manually trigger change detection after data is loaded
+          this.cdr.detectChanges();
           this.initCalendar();
+          this.loadServices(+id); 
         },
         error: (err) => {
           console.error('Error fetching activity details:', err);
@@ -71,6 +77,17 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     if (changes['activite'] && this.activite) {
       this.initCalendar();
     }
+  }
+
+  loadServices(activiteId: number) {
+    this.servicesService.getServicesByActiviteId(activiteId).subscribe({
+      next: (data) => {
+        this.services = data;
+      },
+      error: (err) => {
+        console.error('Error fetching services:', err);
+      }
+    });
   }
 
   ngAfterViewInit() {
