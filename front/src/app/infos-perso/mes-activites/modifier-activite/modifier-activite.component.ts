@@ -46,7 +46,7 @@ export class ModifierActiviteComponent implements OnInit {
     this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
       next: (response) => {
         console.log('Activity updated successfully:');
-        this.toastService.showToast('Succès', 'Mise à jour des données réussie');
+        this.toastService.showToast('Succès', 'Mise à jour des données réussie', 'bg-success');
       },
       error: (err) => {
         console.error('Error updating activity:', err);
@@ -70,7 +70,7 @@ export class ModifierActiviteComponent implements OnInit {
     this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
       next: (response) => {
         console.log('Tags updated successfully:');
-        this.toastService.showToast('Succès', 'Mise à jour des tags réussie');
+        this.toastService.showToast('Succès', 'Mise à jour des tags réussie', 'bg-success');
       },
       error: (err) => {
         console.error('Error updating tags:', err);

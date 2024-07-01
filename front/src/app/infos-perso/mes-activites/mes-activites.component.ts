@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
 import { ActiviteService } from 'src/app/Services/Activite.service';
+import { ToastService } from 'src/app/Shared/Service/toast.service';
 
 @Component({
   selector: 'app-mes-activites',
@@ -20,7 +21,8 @@ export class MesActivitesComponent implements OnInit {
   constructor(
     private utilisateurService: UtilisateurService,
     private activiteService: ActiviteService,
-    private router: Router
+    private router: Router,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -48,9 +50,26 @@ export class MesActivitesComponent implements OnInit {
   }
 
   openModal(): void {
-    const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
-    const modalInstance = new bootstrap.Modal(modalElement);
-    modalInstance.show();
+    if (this.userId === null) {
+      console.error('User ID is null');
+      return;
+    }
+
+    this.utilisateurService.hasOrganisation().subscribe({
+      next: (response) => {
+        if (!response.hasOrganisation) {
+          this.toastService.showToast('Erreur', 'Veuillez renseigner votre organisme avant de faire une demande d\'activation.', 'bg-danger');
+          return;
+        }
+
+        const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
+        const modalInstance = new bootstrap.Modal(modalElement);
+        modalInstance.show();
+      },
+      error: (err) => {
+        console.error('Error checking organisation:', err);
+      }
+    });
   }
 
   closeModal(): void {

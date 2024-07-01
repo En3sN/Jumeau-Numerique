@@ -27,6 +27,18 @@ export class UtilisateurService {
     }, sessionCode);
   }
 
+
+  async hasOrganisation(sessionCode: string): Promise<boolean> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const query = `SELECT organisation FROM security.user_my_infos`;
+      const result = await manager.query(query);
+      if (!result || result.length === 0) {
+        throw new NotFoundException(`No user found with sessionCode ${sessionCode}`);
+      }
+      return !!result[0].organisation;
+    }, sessionCode);
+  }
+
   async getUserBySessionCode(sessionCode: string): Promise<Utilisateur> {
     const query = `SELECT * FROM security.user_my_infos WHERE sessionCode = $1`;
     const result = await this.entityManager.query(query, [sessionCode]);
@@ -51,6 +63,8 @@ export class UtilisateurService {
       return result.map((row: { statut: string }) => row.statut);
     });
   }
+
+
 
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     const existingUser = await this.userRepository.findOne({ where: { email: createUtilisateurDto.email } });
@@ -135,4 +149,6 @@ export class UtilisateurService {
       return { message: 'Password changed successfully' };
     }, sessionCode);
   }
+
+  
 }

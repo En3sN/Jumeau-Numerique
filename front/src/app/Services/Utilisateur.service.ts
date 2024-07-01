@@ -70,4 +70,8 @@ export class UtilisateurService {
     }
     return this.http.patch(`${this.apiUrl}/utilisateur/password/${this.userId}`, { currentPassword, newPassword }, { withCredentials: true });
   }
+
+  hasOrganisation(): Observable<{ hasOrganisation: boolean }> {
+    return this.http.get<{ hasOrganisation: boolean }>(`${this.apiUrl}/utilisateur/hasOrganisation`, { withCredentials: true });
+  }
 }

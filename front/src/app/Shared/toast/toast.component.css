@@ -11,4 +11,14 @@
     justify-content: space-between;
     align-items: center;
   }
+
+  .toast.bg-danger {
+    background-color: #dc3545 !important;
+    color: white;
+  }
+  
+  .toast.bg-success {
+    background-color: #28a745 !important;
+    color: white;
+  }
   

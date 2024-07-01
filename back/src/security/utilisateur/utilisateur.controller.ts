@@ -94,4 +94,15 @@ export class UtilisateurController {
     }
     return await this.utilisateurService.changePassword(id, changePasswordDto, sessionCode);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('hasOrganisation')
+  async hasOrganisation(@Request() req): Promise<{ hasOrganisation: boolean }> {
+    const sessionCode = req.user.sessionCode;
+    if (!sessionCode) {
+      throw new Error('Session code is missing from the JWT payload.');
+    }
+    const hasOrganisation = await this.utilisateurService.hasOrganisation(sessionCode);
+    return { hasOrganisation };
+  }
 }

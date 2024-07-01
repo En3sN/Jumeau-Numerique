@@ -5,10 +5,10 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class ToastService {
-  private toastSubject = new Subject<{ title: string, message: string }>();
+  private toastSubject = new Subject<{ title: string, message: string, cssClass: string }>();
   toastState = this.toastSubject.asObservable();
 
-  showToast(title: string, message: string): void {
-    this.toastSubject.next({ title, message });
+  showToast(title: string, message: string, cssClass: string): void {
+    this.toastSubject.next({ title, message, cssClass });
   }
 }
