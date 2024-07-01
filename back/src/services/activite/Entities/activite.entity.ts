@@ -67,4 +67,7 @@ export class Activite {
 
   @Column({ type: 'real', nullable: true })
   rdv_duree: number;
+
+  @Column({ default: false })
+  public: boolean;
 }

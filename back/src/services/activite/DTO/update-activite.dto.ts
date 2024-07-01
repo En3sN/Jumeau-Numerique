@@ -83,4 +83,8 @@ export class UpdateActiviteDto extends PartialType(CreateActiviteDto) {
   @IsNumber()
   @IsOptional()
   rdv_duree?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  public: boolean;
 }

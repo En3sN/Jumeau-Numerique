@@ -81,4 +81,8 @@ export class CreateActiviteDto {
   @IsNumber()
   @IsOptional()
   rdv_duree: number;
+
+  @IsOptional()
+  @IsBoolean()
+  public: boolean;
 }
