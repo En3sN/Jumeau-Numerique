@@ -38,6 +38,8 @@ export class MesActivitesComponent implements OnInit {
     rdv_duree: ''
   };
   newTag: string = '';
+  newInfo: string = '';
+  newPrereq: string = '';
 
   constructor(
     private utilisateurService: UtilisateurService,
@@ -80,7 +82,7 @@ export class MesActivitesComponent implements OnInit {
   createActivity(): void {
     this.activiteService.createActivite(this.activiteData).subscribe({
       next: () => {
-        this.loadUserActivities(); 
+        this.loadUserActivities(); // Refresh the activities list
         const modalElement = document.getElementById('createActivityModal') as HTMLElement;
         const modalInstance = bootstrap.Modal.getInstance(modalElement);
         modalInstance?.hide();
@@ -103,6 +105,32 @@ export class MesActivitesComponent implements OnInit {
   removeTag(index: number): void {
     if (index >= 0 && index < this.activiteData.tags.length) {
       this.activiteData.tags.splice(index, 1);
+    }
+  }
+
+  addInfo(): void {
+    if (this.newInfo) {
+      this.activiteData.infos = [...this.activiteData.infos, this.newInfo];
+      this.newInfo = '';
+    }
+  }
+
+  removeInfo(): void {
+    if (this.activiteData.infos.length > 0) {
+      this.activiteData.infos.pop();
+    }
+  }
+
+  addPrereq(): void {
+    if (this.newPrereq) {
+      this.activiteData.prerequis = [...this.activiteData.prerequis, this.newPrereq];
+      this.newPrereq = '';
+    }
+  }
+
+  removePrereq(): void {
+    if (this.activiteData.prerequis.length > 0) {
+      this.activiteData.prerequis.pop();
     }
   }
 
