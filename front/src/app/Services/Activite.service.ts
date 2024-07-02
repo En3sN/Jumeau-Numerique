@@ -11,6 +11,10 @@ export class ActiviteService {
 
   constructor(private http: HttpClient) {}
 
+  createActivite(activiteData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/activite/create`, activiteData, { withCredentials: true });
+  }
+
   getPublicActivities(filters: any): Observable<any[]> {
     let params = new HttpParams();
     for (const key in filters) {

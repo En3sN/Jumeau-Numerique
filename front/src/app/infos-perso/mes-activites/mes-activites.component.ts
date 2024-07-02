@@ -17,6 +17,27 @@ export class MesActivitesComponent implements OnInit {
   userId: number | null = null;
   userActivities: any[] = [];
   activityToDelete: number | null = null;
+  activiteData: any = {
+    nom: '',
+    description: '',
+    type: '',
+    domaine: '',
+    tags: [],
+    logo: '',
+    organisation: '',
+    public: false,
+    reference: '',
+    url: '',
+    adresse: '',
+    cp: '',
+    commune: '',
+    infos: [],
+    prerequis: [],
+    rdv: false,
+    mail_rdv: '',
+    rdv_duree: ''
+  };
+  newTag: string = '';
 
   constructor(
     private utilisateurService: UtilisateurService,
@@ -35,6 +56,7 @@ export class MesActivitesComponent implements OnInit {
       this.userId = user.id;
       this.userRoles = user.roles || [];
       this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
+      this.activiteData.organisation = user.organisation;
     });
 
     this.utilisateurService.getUserRoles().subscribe(roles => {
@@ -47,6 +69,41 @@ export class MesActivitesComponent implements OnInit {
     this.activiteService.getUserActivities().subscribe(activities => {
       this.userActivities = activities;
     });
+  }
+
+  openCreateActivityModal(): void {
+    const modalElement = document.getElementById('createActivityModal') as HTMLElement;
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+
+  createActivity(): void {
+    this.activiteService.createActivite(this.activiteData).subscribe({
+      next: () => {
+        this.loadUserActivities(); 
+        const modalElement = document.getElementById('createActivityModal') as HTMLElement;
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        modalInstance?.hide();
+        this.toastService.showToast('Succès', 'Activité créée avec succès.', 'toast', 'bg-success text-white');
+      },
+      error: (err) => {
+        console.error('Error creating activity:', err);
+        this.toastService.showToast('Erreur', 'Erreur lors de la création de l\'activité.', 'toast', 'bg-danger text-white');
+      }
+    });
+  }
+
+  addTag(): void {
+    if (this.newTag && !this.activiteData.tags.includes(this.newTag)) {
+      this.activiteData.tags.push(this.newTag);
+      this.newTag = '';
+    }
+  }
+
+  removeTag(index: number): void {
+    if (index >= 0 && index < this.activiteData.tags.length) {
+      this.activiteData.tags.splice(index, 1);
+    }
   }
 
   openModal(): void {

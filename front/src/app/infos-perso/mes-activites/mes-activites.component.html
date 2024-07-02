@@ -8,9 +8,186 @@
   <div class="row">
     <div class="col-12 d-flex justify-content-between align-items-center mb-3">
       <h2 class="mlh_verdana">Mes Activités</h2>
-      <button type="button" class="btn btn-primary" id="btUserInfoPwd">Ajouter une activité</button>
+      <button type="button" class="btn btn-primary" (click)="openCreateActivityModal()">Ajouter une activité</button>
     </div>
   </div>
+<!-- Modal activite -->
+<div class="modal fade" id="createActivityModal" tabindex="-1" aria-labelledby="createActivityModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h5 class="modal-title text-center" id="createActivityModalLabel">Créer une nouvelle activité</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container mt-3">
+          <div class="row justify-content-center">
+            <div class="col-md-10">
+              <h2 class="mlh_verdana text-center mb-3">Description de l'activité</h2>
+
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="col-form-label" for="inputActNom">Nom de l'activité:</label>
+                      <input [(ngModel)]="activiteData.nom" type="text" class="form-control" id="inputActNom">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="col-form-label" for="inputActType">Type:</label>
+                      <input [(ngModel)]="activiteData.type" type="text" class="form-control" id="inputActType">
+                    </div>
+                  </div>
+                  <div class="row mt-3">
+                    <div class="col-md-12">
+                      <label class="col-form-label" for="inputActDesc">Descriptif:</label>
+                      <textarea [(ngModel)]="activiteData.description" class="form-control" id="inputActDesc" rows="3"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" [(ngModel)]="activiteData.public" id="flexCheckPublic">
+                    <label class="form-check-label" for="flexCheckPublic">Public</label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="mlh_verdana">Généralités</h3>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="col-form-label" for="inputActRef">Référence:</label>
+                      <input [(ngModel)]="activiteData.reference" type="text" class="form-control" id="inputActRef">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="col-form-label" for="inputActDomaine">Domaine:</label>
+                      <input [(ngModel)]="activiteData.domaine" type="text" class="form-control" id="inputActDomaine">
+                    </div>
+                  </div>
+                  <div class="row mt-3">
+                    <div class="col-md-6">
+                      <label class="col-form-label col-form-label-sm" for="inputOrgLogo">Logo (Facultatif):</label>
+                      <img class="form-control mlh_org_logo" [src]="activiteData.logo" alt="logo"/>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="col-form-label col-form-label-sm" for="inputActWeb">Site WEB:</label>
+                      <input [(ngModel)]="activiteData.url" type="text" class="form-control form-control-sm" id="inputActWeb">
+                    </div>
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary p-2" id="btActLogo">Charger le Logo</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="mlh_verdana">Document(s)</h3>
+                  <div class="d-flex">
+                    <select [(ngModel)]="activiteData.documents" multiple class="form-select" id="inputActDoc">
+                      <option *ngFor="let doc of activiteData.documents">{{ doc }}</option>
+                    </select>
+                    <button type="button" class="btn btn-info ms-2 p-2" id="btAddDoc"><strong> + </strong></button>
+                    <button type="button" class="btn btn-info ms-2 p-2" id="btDelDoc"><strong> - </strong></button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="mlh_verdana">Tags</h3>
+                  <div class="d-flex">
+                    <input type="text" [(ngModel)]="newTag" class="form-control me-1" placeholder="Ajouter un tag" />
+                    <button type="button" class="btn btn-info" (click)="addTag()">Ajouter</button>
+                  </div>
+                  <div class="mt-3">
+                    <span class="badge bg-info me-2" *ngFor="let tag of activiteData.tags; let i = index">
+                      {{ tag }}
+                      <div class="btn btn-sm btn-outline-light ms-2" (click)="removeTag(i)">
+                        <i class="fa fa-trash"></i>
+                      </div>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="mlh_verdana">Localisation</h3>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label class="col-form-label col-form-label-sm" for="inputActAdresse">Adresse:</label>
+                      <input [(ngModel)]="activiteData.adresse" type="text" class="form-control form-control-sm" id="inputActAdresse">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="col-form-label col-form-label-sm" for="inputActCp">Code postale:</label>
+                      <input [(ngModel)]="activiteData.cp" type="text" class="form-control form-control-sm" id="inputActCp">
+                    </div>
+                  </div>
+                  <div class="row mt-3">
+                    <div class="col-md-6">
+                      <label class="col-form-label col-form-label-sm" for="inputActCommune">Commune:</label>
+                      <input [(ngModel)]="activiteData.commune" type="text" class="form-control form-control-sm" id="inputActCommune">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="mlh_verdana">Prérequis</h3>
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <label class="col-form-label col-form-label-sm" for="inputActInfo">Informations complémentaires:</label>
+                      <div class="d-flex">
+                        <select [(ngModel)]="activiteData.infos" multiple class="form-select" id="inputActInfo">
+                          <option *ngFor="let info of activiteData.infos | keyvalue">{{ info.key }}: {{ info.value }}</option>
+                        </select>
+                        <button type="button" class="btn btn-info ms-2 p-2" id="btAddInfo"><strong> + </strong></button>
+                        <button type="button" class="btn btn-info ms-2 p-2" id="btDelInfo"><strong> - </strong></button>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <label class="col-form-label col-form-label-sm" for="inputActItem">Eléments nécessaires pour bénéficier de l'activité:</label>
+                      <div class="d-flex">
+                        <select [(ngModel)]="activiteData.prerequis" multiple class="form-select" id="inputActItem">
+                          <option *ngFor="let prereq of activiteData.prerequis | keyvalue">{{ prereq.key }}: {{ prereq.value }}</option>
+                        </select>
+                        <button type="button" class="btn btn-info ms-2 p-2" id="btAddItem"><strong> + </strong></button>
+                        <button type="button" class="btn btn-info ms-2 p-2" id="btDelItem"><strong> - </strong></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="mlh_verdana">Rendez-vous initial</h3>
+                  <p>Le rendez-vous initial est le passage obligé pour qu'une personne puisse bénéficier des services proposés dans le cadre de cette activité: C'est le responsable de l'activité qui activera l'accès pour l'utilisateur suite au rendez-vous.</p>
+                  <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" [(ngModel)]="activiteData.rdv" id="flexCheckCheckedRdv">
+                    <label class="form-check-label" for="flexCheckCheckedRdv">Rendez-vous initial</label>
+                  </div>
+                  <label class="col-form-label col-form-label-sm mt-2" for="inputActRdvBody">Corps du mail pour la demande de rendez-vous:</label>
+                  <textarea [(ngModel)]="activiteData.mail_rdv" class="form-control form-control-sm" id="inputActRdvBody" rows="3"></textarea>
+                  <label class="col-form-label col-form-label-sm mt-2" for="inputActRdvDuree">Durée du rendez-vous initial (en minutes):</label>
+                  <input [(ngModel)]="activiteData.rdv_duree" type="number" class="form-control form-control-sm" id="inputActRdvDuree">
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="d-flex justify-content-between mt-2 border-top pt-3">
+                  <button type="button" class="btn btn-primary p-2" (click)="createActivity()">Créer</button>
+                  <button type="button" class="btn btn-secondary p-2" data-bs-dismiss="modal">Annuler</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   <div class="row">
     <div class="col-12">
       <div class="d-flex flex-column">

@@ -1,10 +1,18 @@
 .card {
     transition: transform 0.2s;
     cursor: pointer;
-   width: 200px;
-   height: 200px;
+
 }
 
 .card:hover {
     transform: scale(1.01);
 }
+
+.modal-lg {
+    max-width: 90%;
+  }
+  
+.modal-content {
+    padding: 10px;
+  }
+  

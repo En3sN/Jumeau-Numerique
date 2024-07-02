@@ -35,7 +35,8 @@ export class ActiviteController {
     return await this.activiteService.findUserActivities(sessionCode);
   }
 
-  @Post()
+  @UseGuards(JwtAuthGuard)
+  @Post("create")
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createActiviteDto: CreateActiviteDto): Promise<any> {
     return await this.activiteService.create(createActiviteDto);
