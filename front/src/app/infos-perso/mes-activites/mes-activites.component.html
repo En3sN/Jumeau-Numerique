@@ -11,21 +11,22 @@
       <button type="button" class="btn btn-primary" (click)="openCreateActivityModal()">Ajouter une activité</button>
     </div>
   </div>
-<!-- Modal activite -->
+
+<!-- Modal for creating or editing an activity -->
 <div class="modal fade" id="createActivityModal" tabindex="-1" aria-labelledby="createActivityModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header text-center">
-        <h5 class="modal-title text-center" id="createActivityModalLabel">Créer une nouvelle activité</h5>
+      <div class="modal-header">
+        <h5 class="modal-title" id="createActivityModalLabel">Créer une nouvelle activité</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="container mt-3">
+        <div class="container mt-5">
           <div class="row justify-content-center">
             <div class="col-md-10">
-              <h2 class="mlh_verdana text-center mb-3">Description de l'activité</h2>
+              <h2 class="mlh_verdana text-center mb-4">Description de l'activité</h2>
 
-              <div class="card mb-3">
+              <div class="card mb-4">
                 <div class="card-body">
                   <div class="row">
                     <div class="col-md-6">
@@ -136,30 +137,36 @@
                 <div class="card-body">
                   <h3 class="mlh_verdana">Prérequis</h3>
                   <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-12 mb-3">
                       <label class="col-form-label col-form-label-sm" for="inputActInfo">Informations complémentaires:</label>
-                      <div class="d-flex">
+                      <div class="mb-2">
                         <select [(ngModel)]="activiteData.infos" multiple class="form-select" id="inputActInfo">
-                          <option *ngFor="let info of activiteData.infos | keyvalue">{{ info.key }}: {{ info.value }}</option>
+                          <option *ngFor="let info of activiteData.infos">{{ info }}</option>
                         </select>
-                        <button type="button" class="btn btn-info ms-2 p-2" id="btAddInfo"><strong> + </strong></button>
-                        <button type="button" class="btn btn-info ms-2 p-2" id="btDelInfo"><strong> - </strong></button>
+                      </div>
+                      <div class="input-group mb-2">
+                        <input type="text" [(ngModel)]="newInfo" class="form-control" placeholder="Ajouter une information" />
+                        <button type="button" class="btn btn-info" (click)="addInfo()"><strong> + </strong></button>
+                        <button type="button" class="btn btn-danger" (click)="removeInfo()"><strong> - </strong></button>
                       </div>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-12 mb-3">
                       <label class="col-form-label col-form-label-sm" for="inputActItem">Eléments nécessaires pour bénéficier de l'activité:</label>
-                      <div class="d-flex">
+                      <div class="mb-2">
                         <select [(ngModel)]="activiteData.prerequis" multiple class="form-select" id="inputActItem">
-                          <option *ngFor="let prereq of activiteData.prerequis | keyvalue">{{ prereq.key }}: {{ prereq.value }}</option>
+                          <option *ngFor="let prereq of activiteData.prerequis">{{ prereq }}</option>
                         </select>
-                        <button type="button" class="btn btn-info ms-2 p-2" id="btAddItem"><strong> + </strong></button>
-                        <button type="button" class="btn btn-info ms-2 p-2" id="btDelItem"><strong> - </strong></button>
+                      </div>
+                      <div class="input-group mb-2">
+                        <input type="text" [(ngModel)]="newPrereq" class="form-control" placeholder="Ajouter un élément" />
+                        <button type="button" class="btn btn-info" (click)="addPrereq()"><strong> + </strong></button>
+                        <button type="button" class="btn btn-danger" (click)="removePrereq()"><strong> - </strong></button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-
+              
               <div class="card mb-4">
                 <div class="card-body">
                   <h3 class="mlh_verdana">Rendez-vous initial</h3>
@@ -188,6 +195,7 @@
     </div>
   </div>
 </div>
+
   <div class="row">
     <div class="col-12">
       <div class="d-flex flex-column">
