@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger, Patch, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger, Patch, Delete, Query } from '@nestjs/common';
 import { ActiviteService } from './activite.service';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 import { CreateActiviteDto } from './DTO/create-activite.dto';
@@ -10,14 +10,9 @@ export class ActiviteController {
 
   constructor(private activiteService: ActiviteService) { }
 
-  @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Request() req): Promise<any> {
-    const sessionCode = req.user.sessionCode;
-    if (!sessionCode) {
-      throw new Error('Session code is missing from the JWT payload.');
-    }
-    return await this.activiteService.findAll(sessionCode);
+  async findAllPublic(@Query() queryParams: any): Promise<any[]> {
+    return await this.activiteService.findAllPublic(queryParams);
   }
 
   @UseGuards(JwtAuthGuard)

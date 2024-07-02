@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -11,6 +11,15 @@ export class ActiviteService {
 
   constructor(private http: HttpClient) {}
 
+  getPublicActivities(filters: any): Observable<any[]> {
+    let params = new HttpParams();
+    for (const key in filters) {
+      if (filters.hasOwnProperty(key)) {
+        params = params.append(key, filters[key]);
+      }
+    }
+    return this.http.get<any[]>(`${this.apiUrl}/activite`, { params });
+  }
   getUserActivities(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/activite/user/activities`, { withCredentials: true });
   }

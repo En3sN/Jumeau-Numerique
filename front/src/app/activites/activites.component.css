@@ -74,22 +74,19 @@
 .mlh_tags {
     padding: 2px;
     position: relative;
-    height: 12px; 
-    width: 12px; 
+    height: 12px;
+    width: 12px;
     right: -4px;
 }
 
 .mlh_bt_tag {
-    top: -7px; 
+    top: -7px;
     position: relative;
 }
 
+
 .mlh_card_action {
     font-size: smaller;
-}
-
-.mlh_bt_tags {
-    height: 15px; 
 }
 
 .mlh_bt_tags_plus {
@@ -145,3 +142,13 @@ body {
 #AccueilFiltre img {
     max-width: 25px; 
 }
+
+.filter-column {
+    flex: 0 0 25%; 
+    max-width: 25%; 
+  }
+  
+  .activity-column {
+    flex: 0 0 75%; 
+    max-width: 75%; 
+  }

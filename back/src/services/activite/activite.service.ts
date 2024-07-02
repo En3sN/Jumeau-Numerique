@@ -12,22 +12,53 @@ export class ActiviteService {
   constructor(
     private transactionManager: TransactionManager,
     private readonly entityManager: EntityManager
-  ) {}
+  ) { }
 
   async create(createActiviteDto: CreateActiviteDto): Promise<Activite> {
     const activite = this.entityManager.create(Activite, createActiviteDto);
     return this.entityManager.save(activite);
   }
 
-  async findAll(sessionCode: string): Promise<any[]> {
+  async findAllPublic(queryParams: any): Promise<any[]> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      const query = `
+      let query = `
         SELECT a.*, o.nom as organisation_nom
         FROM services.activite a
-        JOIN security.organisation o ON a.organisation = o.id;
+        JOIN security.organisation o ON a.organisation = o.id
+        WHERE a.public = true
       `;
-      return manager.query(query);
-    }, sessionCode);
+
+      const queryParamsKeys = Object.keys(queryParams);
+      const filters = [];
+      const values = [];
+
+      if (queryParams.nom) {
+        filters.push(`a.nom ILIKE $${filters.length + 1}`);
+        values.push(`%${queryParams.nom}%`);
+      }
+      if (queryParams.type) {
+        filters.push(`a.type ILIKE $${filters.length + 1}`);
+        values.push(`%${queryParams.type}%`);
+      }
+      if (queryParams.domaine) {
+        filters.push(`a.domaine ILIKE $${filters.length + 1}`);
+        values.push(`%${queryParams.domaine}%`);
+      }
+      if (queryParams.organisation_nom) {
+        filters.push(`o.nom ILIKE $${filters.length + 1}`);
+        values.push(`%${queryParams.organisation_nom}%`);
+      }
+      if (queryParams.tag) {
+        filters.push(`$${filters.length + 1} = ANY(a.tags)`);
+        values.push(queryParams.tag);
+      }
+
+      if (filters.length > 0) {
+        query += ` AND ${filters.join(' AND ')}`;
+      }
+
+      return manager.query(query, values);
+    });
   }
 
   async findUserActivities(sessionCode: string): Promise<any> {
