@@ -12,7 +12,11 @@ export class ServicesService {
 
   constructor(private http: HttpClient) {}
 
-  getServicesByActiviteId(activiteId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/activite/${activiteId}/services`, { withCredentials: true });
+  getAllServicesByActiviteId(activiteId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/activite/${activiteId}/all-services`, { withCredentials: true });
+  }
+
+  getServiceByActiviteId(activiteId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/activite/${activiteId}/service`, { withCredentials: true });
   }
 }

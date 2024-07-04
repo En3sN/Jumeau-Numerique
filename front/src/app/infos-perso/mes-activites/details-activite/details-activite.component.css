@@ -33,3 +33,13 @@
   align-items: center;
   justify-content: center;
 }
+
+.card {
+  transition: transform 0.2s;
+  cursor: pointer;
+
+}
+
+.card:hover {
+  transform: scale(1.01);
+}

@@ -11,6 +11,7 @@ import { AuthGuard } from './Services/Auth-guard.service';
 import { ModifierActiviteComponent } from './infos-perso/mes-activites/modifier-activite/modifier-activite.component';
 import { DetailsActiviteComponent } from './infos-perso/mes-activites/details-activite/details-activite.component';
 import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.component';
+import { DetailsServiceComponent } from './infos-perso/mes-activites/details-service/details-service.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/accueil', pathMatch: 'full', data: { animation: 'HomePage' } },
@@ -24,6 +25,8 @@ const routes: Routes = [
   { path: 'activites', component: ActivitesComponent, data: { animation: 'ActivitesPage' } },
   { path: 'modifier-activite/:id', component: ModifierActiviteComponent, canActivate: [AuthGuard], data: { animation: 'ModifierActivitePage' }},
   { path: 'details-activite/:id', component: DetailsActiviteComponent, canActivate: [AuthGuard], data: { animation: 'DetailsActivitePage' }},
+  { path: 'details-service/:id', component: DetailsServiceComponent, canActivate: [AuthGuard], data: { animation: 'DetailsServicePage' }}
+
 ];
 
 @NgModule({

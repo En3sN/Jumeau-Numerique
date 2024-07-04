@@ -51,7 +51,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.activiteService.getActiviteById(+id).subscribe({
@@ -73,22 +73,24 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     }
   }
 
+  loadServices(activiteId: number): void {
+    this.servicesService.getAllServicesByActiviteId(activiteId).subscribe({
+      next: (services: any[]) => {
+        this.services = services;
+      },
+      error: (err: any) => {
+        console.error('Error fetching services:', err);
+      }
+    });
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['activite'] && this.activite) {
       this.initCalendar();
     }
   }
 
-  loadServices(activiteId: number) {
-    this.servicesService.getServicesByActiviteId(activiteId).subscribe({
-      next: (data) => {
-        this.services = data;
-      },
-      error: (err) => {
-        console.error('Error fetching services:', err);
-      }
-    });
-  }
+  
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -219,5 +221,9 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
   editActivite(): void {
     this.router.navigate(['/modifier-activite', this.activite.id]);
+  }
+
+  viewServiceDetails(serviceId: number) {
+    this.router.navigate(['/details-service', serviceId]);
   }
 }

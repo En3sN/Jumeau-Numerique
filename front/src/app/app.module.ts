@@ -32,6 +32,7 @@ import { DashboardComponent } from './infos-perso/dashboard/dashboard.component'
 import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.component';
 import { ToastComponent } from './Shared/toast/toast.component';
 import { ToastService } from './Shared/Service/toast.service';
+import { DetailsServiceComponent } from './infos-perso/mes-activites/details-service/details-service.component';
 
 
 
@@ -58,6 +59,7 @@ import { ToastService } from './Shared/Service/toast.service';
     ModifierActiviteComponent,
     DetailsActiviteComponent,
     ToastComponent,
+    DetailsServiceComponent,
   ],
   imports: [
     BrowserModule,
