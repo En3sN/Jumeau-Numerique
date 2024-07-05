@@ -74,7 +74,7 @@ export class FilesService {
   async downloadFilesByActiviteId(activiteId: number, res: Response) {
     const documents = await this.getDocumentsByActiviteId(activiteId);
     const archive = archiver('zip', {
-      zlib: { level: 9 } // Niveau de compression
+      zlib: { level: 9 } 
     });
 
     res.setHeader('Content-Type', 'application/zip');
@@ -90,5 +90,15 @@ export class FilesService {
     }
 
     await archive.finalize();
+  }
+
+  async deleteFile(documentId: number): Promise<void> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const document = await manager.findOne(Document, { where: { id: documentId } });
+      if (!document) {
+        throw new NotFoundException('Document not found');
+      }
+      await manager.remove(Document, document);
+    });
   }
 }

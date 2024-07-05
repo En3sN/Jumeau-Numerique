@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFiles, Get, Param, Res, UseGuards } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFiles, Get, Param, Res, UseGuards, Delete } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { FilesService } from './files.service';
 import { Response } from 'express';
@@ -41,5 +41,11 @@ export class FilesController {
   @UseGuards(JwtAuthGuard)
   async downloadFilesByActiviteId(@Param('activiteId') activiteId: number, @Res() res: Response) {
     return this.filesService.downloadFilesByActiviteId(activiteId, res);
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  async deleteFile(@Param('id') id: number) {
+    return this.filesService.deleteFile(id);
   }
 }

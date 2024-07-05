@@ -57,24 +57,45 @@
                                 id="inputActWeb">
                         </div>
                     </div>
-                    <div>
-                        <input class="form-control" type="file" id="formFile">
-                    </div>
                 </div>
             </div>
 
             <div class="card mb-4">
                 <div class="card-body">
-                    <h3 class="mlh_verdana">Document(s)</h3>
-                    <div class="d-flex">
-                        <select [(ngModel)]="activiteData.documents" multiple class="form-select" id="inputActDoc">
-                            <option *ngFor="let doc of activiteData.documents">{{ doc }}</option>
-                        </select>
-                        <button type="button" class="btn btn-info ms-2 p-2" id="btAddDoc"><strong> + </strong></button>
-                        <button type="button" class="btn btn-info ms-2 p-2" id="btDelDoc"><strong> - </strong></button>
+                  <h3 class="mlh_verdana">Documents</h3>
+                  <div class="accordion mt-3" id="documentsAccordion">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingDocuments">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments">
+                          Voir les documents
+                        </button>
+                      </h2>
+                      <div id="collapseDocuments" class="accordion-collapse collapse show" aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
+                        <div class="accordion-body">
+                          <ul class="list-group" *ngIf="documents.length > 0; else noDocuments">
+                            <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let doc of documents">
+                              {{ doc.titre }}
+                              <div>
+                                <button class="btn btn-primary btn-sm ms-2" (click)="downloadDocument(doc.id, doc.titre)">
+                                  <i class="fa fa-download"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm ms-2" (click)="openConfirmationModal(doc.id, $event)">
+                                  <i class="fa fa-trash"></i>
+                                </button>
+                              </div>
+                            </li>
+                          </ul>
+                          <ng-template #noDocuments>
+                            <p class="text-center">Aucun document</p>
+                          </ng-template>
+                          <input type="file" (change)="uploadDocuments($event)" multiple class="form-control mt-4" />
+                          <button class="btn btn-secondary btn-sm mt-3" (click)="downloadAllDocuments()" [disabled]="documents.length === 0">Télécharger tout</button>
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 </div>
-            </div>
+              </div>
 
             <div class="card mb-4">
                 <div class="card-body">
@@ -90,7 +111,6 @@
                             <div class="btn btn-sm btn-outline-light ms-2" (click)="removeTag(i)">
                                 <i class="fa fa-trash"></i>
                             </div>
-
                         </span>
                     </div>
                 </div>
@@ -181,6 +201,24 @@
                 </div>
             </div>
 
+            <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="confirmationModalLabel">Confirmation de suppression</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      Êtes-vous sûr de vouloir supprimer ce document ?
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                      <button type="button" class="btn btn-primary" (click)="confirmDelete()">Supprimer</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             <div class="row">
                 <div class="d-flex justify-content-between mt-2 border-top pt-3">
                     <button type="button" class="btn btn-primary p-2" id="btActOk"
@@ -191,3 +229,4 @@
         </div>
     </div>
 </div>
+

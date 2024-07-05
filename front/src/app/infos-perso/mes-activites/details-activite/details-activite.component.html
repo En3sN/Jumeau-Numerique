@@ -1,130 +1,153 @@
 <div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-10">
-      <div class="d-flex justify-content-between align-items-center mt-4">
-        <img class="img-thumbnail" [src]="activite?.logo" alt="logo" style="width: 150px; height: auto;">
-        <h2 class="mlh_verdana m-3">
-          {{ activite?.nom }} : <br> {{ activite?.description }}
-        </h2>
-        <a [href]="activite?.url" class="btn btn-outline-info" target="_blank">Site Web</a>
-      </div>
-      <div class="row mt-4">
-        <div class="col-12 mlh_block_data">
-          {{ activite?.description }}
-        </div>
-      </div>
-      <div class="row mt-4">
-        <div class="col-12 mlh_block_data border-bottom">
-          <ul class="nav nav-tabs" role="tablist">
-            <li class="nav-item" role="presentation">
-              <a class="nav-link active" data-bs-toggle="tab" href="#Generalite" aria-selected="true" role="tab">Généralités</a>
-            </li>
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" data-bs-toggle="tab" href="#InfoGen" aria-selected="false" role="tab">Informations requises</a>
-            </li>
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" data-bs-toggle="tab" href="#services" aria-selected="false" role="tab">Services associés</a>
-            </li>
-            <li class="nav-item" role="presentation">
-              <a class="nav-link" data-bs-toggle="tab" href="#planning" aria-selected="false" role="tab" (click)="handleTabChange()">Planning</a>
-            </li>
-          </ul>
-          <div class="tab-content p-3 border border-top-0">
-            <div class="tab-pane fade show active mb-3" id="Generalite" role="tabpanel">
-              <p class="card-text">
-                Organisme : <a href="#"> {{ activite?.organisation_nom }} </a>
-              </p>
-              <label class="col-form-label me-1">Référence :</label>
-              <strong>{{ activite?.reference }}</strong> <br>
-              <label class="col-form-label">Documents :</label>
-              <div class="accordion" id="documentsAccordion">
-                <div class="accordion-item">
-                  <h2 class="accordion-header" id="headingDocuments">
-                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments">
-                      Voir les documents
-                    </button>
-                  </h2>
-                  <div id="collapseDocuments" class="accordion-collapse collapse show" aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
-                    <div class="accordion-body">
-                      <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let doc of documents">
-                          {{ doc.titre }}
-                          <button class="btn btn-primary btn-sm ms-2" (click)="downloadDocument(doc.id, doc.titre)">
-                            <i class="fa fa-download"></i>
-                          </button>
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <img class="img-thumbnail" [src]="activite?.logo" alt="logo" style="width: 150px; height: auto;">
+                <h2 class="mlh_verdana m-3">
+                    {{ activite?.nom }} : <br> {{ activite?.description }}
+                </h2>
+                <a [href]="activite?.url" class="btn btn-outline-info" target="_blank">Site Web</a>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 mlh_block_data">
+                    {{ activite?.description }}
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12 mlh_block_data border-bottom">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#Generalite" aria-selected="true"
+                                role="tab">Généralités</a>
                         </li>
-                      </ul>
-                      <button class="btn btn-secondary btn-sm mt-2" (click)="downloadAllDocuments()">Télécharger tout</button>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" data-bs-toggle="tab" href="#InfoGen" aria-selected="false"
+                                role="tab">Informations requises</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" data-bs-toggle="tab" href="#services" aria-selected="false"
+                                role="tab">Services associés</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <a class="nav-link" data-bs-toggle="tab" href="#planning" aria-selected="false" role="tab"
+                                (click)="handleTabChange()">Planning</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content p-3 border border-top-0">
+                        <div class="tab-pane fade show active mb-3" id="Generalite" role="tabpanel">
+                            <p class="card-text">
+                                Organisme : <a href="#"> {{ activite?.organisation_nom }} </a>
+                            </p>
+                            <label class="col-form-label me-1">Référence :</label>
+                            <strong>{{ activite?.reference }}</strong> <br>
+                            <label class="col-form-label mt-1">Documents :</label>
+                            <div class="accordion" id="documentsAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingDocuments">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                            data-bs-target="#collapseDocuments" aria-expanded="true"
+                                            aria-controls="collapseDocuments">
+                                            Voir les documents
+                                        </button>
+                                    </h2>
+                                    <div id="collapseDocuments" class="accordion-collapse collapse show"
+                                        aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
+                                        <div class="accordion-body">
+                                            <ul class="list-group" *ngIf="documents.length > 0; else noDocuments">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center"
+                                                    *ngFor="let doc of documents">
+                                                    {{ doc.titre }}
+                                                    <button class="btn btn-primary btn-sm ms-2"
+                                                        (click)="downloadDocument(doc.id, doc.titre)">
+                                                        <i class="fa fa-download"></i>
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                            <ng-template #noDocuments>
+                                                <p class="text-center">Aucun document</p>
+                                            </ng-template>
+                                            <button *ngIf="documents.length > 0" class="btn btn-secondary btn-sm mt-2"
+                                                (click)="downloadAllDocuments()">Télécharger tout</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <label class="col-form-label mt-2">Adresse :</label>
+                            <strong>{{ activite?.adresse }}, {{ activite?.cp }} {{ activite?.commune }}</strong>
+                        </div>
+                        <div class="tab-pane fade mt-3" id="InfoGen" role="tabpanel">
+                            <p>Cette activité nécessitera un rendez-vous initial pour pouvoir accéder aux différents
+                                services proposés.</p>
+                            <label class="col-form-label">Informations complémentaires demandées :</label>
+                            <select multiple class="form-select" id="inputActInfo">
+                                <option *ngFor="let info of activite?.user_infos | keyvalue">{{ info.key }}:
+                                    {{ info.value }}</option>
+                            </select>
+                            <label class="col-form-label mt-2">Éléments à fournir :</label>
+                            <select multiple class="form-select" id="inputActItem">
+                                <option *ngFor="let prerequis of activite?.prerequis | keyvalue">{{ prerequis.key }}:
+                                    {{ prerequis.value }}</option>
+                            </select>
+                        </div>
+                        <div class="tab-pane fade" id="services" role="tabpanel">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h4 class="mlh_verdana mb-3">Services associés</h4>
+                                    <div *ngFor="let service of services" class="card mb-3"
+                                        (click)="viewServiceDetails(service.id)">
+                                        <div class="card-body d-flex">
+                                            <img class="img-thumbnail me-3" [src]="service.logo" alt="logo"
+                                                style="width: 150px; height: 150px;">
+                                            <div class="flex-grow-1">
+                                                <h4 class="card-title">{{ service.nom }}</h4>
+                                                <p class="card-text">{{ service.description }}</p>
+                                                <p>
+                                                    <span *ngFor="let tag of service.tags"
+                                                        class="badge bg-info me-1">{{ tag }}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade mt-2" id="planning" role="tabpanel">
+                            <div class="mb-4 mt-2">
+                                <h4>Informations rendez-vous</h4>
+                                <p>La durée d'un rendez-vous est définie dans l'activité à
+                                    <strong>{{ activite?.rdv_duree }}</strong> minutes. Les plages de rendez-vous seront
+                                    divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas
+                                    utilisés.</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2 d-flex align-items-center">
+                                    <div id="external-events" class="bg-light p-2">
+                                        <h4>Draggable Events</h4>
+                                        <div id="external-events-list">
+                                            <div class="fc-event" title="My Event 1">My Event 1</div>
+                                            <div class="fc-event" title="My Event 2">My Event 2</div>
+                                            <div class="fc-event" title="My Event 3">My Event 3</div>
+                                            <div class="fc-event" title="My Event 4">My Event 4</div>
+                                            <div class="fc-event" title="My Event 5">My Event 5</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <h3 class="mlh_verdana text-center mb-2"><u>Planning</u></h3>
+                                    <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
-              <label class="col-form-label">Adresse :</label>
-              <strong>{{ activite?.adresse }}, {{ activite?.cp }} {{ activite?.commune }}</strong>
             </div>
-            <div class="tab-pane fade mt-3" id="InfoGen" role="tabpanel">
-              <p>Cette activité nécessitera un rendez-vous initial pour pouvoir accéder aux différents services proposés.</p>
-              <label class="col-form-label">Informations complémentaires demandées :</label>
-              <select multiple class="form-select" id="inputActInfo">
-                <option *ngFor="let info of activite?.user_infos | keyvalue">{{ info.key }}: {{ info.value }}</option>
-              </select>
-              <label class="col-form-label mt-2">Éléments à fournir :</label>
-              <select multiple class="form-select" id="inputActItem">
-                <option *ngFor="let prerequis of activite?.prerequis | keyvalue">{{ prerequis.key }}: {{ prerequis.value }}</option>
-              </select>
-            </div>
-            <div class="tab-pane fade" id="services" role="tabpanel">
-              <div class="row">
-                <div class="col-12">
-                  <h4 class="mlh_verdana mb-3">Services associés</h4>
-                  <div *ngFor="let service of services" class="card mb-3" (click)="viewServiceDetails(service.id)">
-                    <div class="card-body d-flex">
-                      <img class="img-thumbnail me-3" [src]="service.logo" alt="logo" style="width: 150px; height: 150px;">
-                      <div class="flex-grow-1">
-                        <h4 class="card-title">{{ service.nom }}</h4>
-                        <p class="card-text">{{ service.description }}</p>
-                        <p>
-                          <span *ngFor="let tag of service.tags" class="badge bg-info me-1">{{ tag }}</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+            <div class="row border-bottom mlh_block_data">
+                <div class="d-flex mb-1 justify-content-end">
+                    <button type="button" class="btn btn-secondary me-2" id="btActModif"
+                        (click)="editActivite()">Modifier l'activité</button>
+                    <button type="button" class="btn btn-primary" id="btActBack" (click)="back()">Retour</button>
                 </div>
-              </div>
             </div>
-            <div class="tab-pane fade mt-2" id="planning" role="tabpanel">
-              <div class="mb-4 mt-2">
-                <h4>Informations rendez-vous</h4>
-                <p>La durée d'un rendez-vous est définie dans l'activité à <strong>{{ activite?.rdv_duree }}</strong> minutes. Les plages de rendez-vous seront divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas utilisés.</p>
-              </div>
-              <div class="row">
-                <div class="col-md-2 d-flex align-items-center">
-                  <div id="external-events" class="bg-light p-2">
-                    <h4>Draggable Events</h4>
-                    <div id="external-events-list">
-                      <div class="fc-event" title="My Event 1">My Event 1</div>
-                      <div class="fc-event" title="My Event 2">My Event 2</div>
-                      <div class="fc-event" title="My Event 3">My Event 3</div>
-                      <div class="fc-event" title="My Event 4">My Event 4</div>
-                      <div class="fc-event" title="My Event 5">My Event 5</div>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-9">
-                  <h3 class="mlh_verdana text-center mb-2"><u>Planning</u></h3>
-                  <full-calendar #calendar [options]="calendarOptions"></full-calendar>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
-      <div class="row border-bottom mlh_block_data">
-        <div class="d-flex mb-1 justify-content-end">
-          <button type="button" class="btn btn-secondary me-2" id="btActModif" (click)="editActivite()">Modifier l'activité</button>
-          <button type="button" class="btn btn-primary" id="btActBack" (click)="back()">Retour</button>
-        </div>
-      </div>
     </div>
-  </div>
 </div>

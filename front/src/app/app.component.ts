@@ -18,7 +18,7 @@ export class AppComponent {
   ngOnInit(): void {
     this.authService.onLogout.subscribe(() => {
       const currentUrl = this.router.url;
-      const protectedRoutes = ['/tableau-de-bord', '/planning', '/infos-perso'];
+      const protectedRoutes = ['/infos-perso', '/planning', '/infos-perso', '/modifier-activite', '/details-activite', '/details-service'];
 
       if (protectedRoutes.includes(currentUrl)) {
         this.router.navigate(['/accueil']);

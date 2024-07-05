@@ -15,6 +15,14 @@ export class FilesService {
     return this.http.get<any[]>(`${this.apiUrl}/files/documents/${activiteId}`, { withCredentials: true });
   }
 
+  uploadDocuments(formData: FormData, activiteId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/files/upload/${activiteId}`, formData, { withCredentials: true });
+  }
+
+  deleteDocument(documentId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/files/${documentId}`, { withCredentials: true });
+  }
+
   downloadDocument(documentId: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/files/document/${documentId}`, { responseType: 'blob', withCredentials: true });
   }

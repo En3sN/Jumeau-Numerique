@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActiviteService } from 'src/app/Services/Activite.service';
 import { ToastService } from 'src/app/Shared/Service/toast.service';
+import { FilesService } from 'src/app/Services/files.service';
+import * as bootstrap from 'bootstrap'; 
 
 @Component({
   selector: 'app-modifier-activite',
@@ -14,10 +16,13 @@ export class ModifierActiviteComponent implements OnInit {
   newTag: string = '';
   userInfosKeys: string[] = [];
   prerequisKeys: string[] = [];
+  documents: any[] = [];
+  documentToDelete!: number; 
 
   constructor(
     private route: ActivatedRoute,
     private activiteService: ActiviteService,
+    private filesService: FilesService,
     private router: Router,
     private toastService: ToastService
   ) {}
@@ -26,6 +31,7 @@ export class ModifierActiviteComponent implements OnInit {
     this.route.paramMap.subscribe(params => {
       this.activiteId = +params.get('id')!;
       this.loadActivite();
+      this.loadDocuments();
     });
   }
 
@@ -40,6 +46,17 @@ export class ModifierActiviteComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching activity details:', err);
+      }
+    });
+  }
+
+  loadDocuments(): void {
+    this.filesService.getDocumentsByActiviteId(this.activiteId).subscribe({
+      next: (docs) => {
+        this.documents = docs;
+      },
+      error: (err) => {
+        console.error('Error fetching documents:', err);
       }
     });
   }
@@ -136,7 +153,87 @@ export class ModifierActiviteComponent implements OnInit {
     });
   }
 
-  back() {
-    this.router.navigate(['/infos-perso'], { queryParams: { tab: 'activites' } });
+  uploadDocuments(event: any): void {
+    const files: File[] = event.target.files;
+    const formData: FormData = new FormData();
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i], files[i].name);
+    }
+    this.filesService.uploadDocuments(formData, this.activiteId).subscribe({
+      next: (res: any) => {
+        this.loadDocuments();
+        this.toastService.showToast('Succès', 'Fichiers téléchargés avec succès', 'toast', 'bg-info text-white');
+      },
+      error: (err: any) => {
+        console.error('Error uploading files:', err);
+        this.toastService.showToast('Erreur', 'Erreur lors du téléchargement des fichiers', 'toast', 'bg-danger text-white');
+      }
+    });
   }
+
+  openConfirmationModal(documentId: number, event: MouseEvent) {
+    event.stopPropagation();
+    this.documentToDelete = documentId;
+    const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+
+  confirmDelete() {
+    this.deleteDocument(this.documentToDelete);
+    const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+  }
+
+  deleteDocument(documentId: number) {
+    this.filesService.deleteDocument(documentId).subscribe({
+      next: () => {
+        this.loadDocuments();
+        this.toastService.showToast('Succès', 'Document supprimé avec succès', 'toast', 'bg-info text-white');
+      },
+      error: (err) => {
+        console.error('Error deleting document:', err);
+        this.toastService.showToast('Erreur', 'Erreur lors de la suppression du document', 'toast', 'bg-danger text-white');
+      }
+    });
+  }
+
+  downloadDocument(documentId: number, filename: string) {
+    this.filesService.downloadDocument(documentId).subscribe({
+      next: (blob) => {
+        const a = document.createElement('a');
+        const objectUrl = URL.createObjectURL(blob);
+        a.href = objectUrl;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(objectUrl);
+      },
+      error: (err) => {
+        console.error('Error downloading document:', err);
+      }
+    });
+  }
+
+  downloadAllDocuments() {
+    this.filesService.downloadAllDocuments(this.activiteId).subscribe({
+      next: (blob) => {
+        const a = document.createElement('a');
+        const objectUrl = URL.createObjectURL(blob);
+        a.href = objectUrl;
+        a.download = 'documents.zip';
+        a.click();
+        URL.revokeObjectURL(objectUrl);
+      },
+      error: (err) => {
+        console.error('Error downloading all documents:', err);
+      }
+    });
+  }
+
+  back() {
+    this.router.navigate(['/infos-perso'], { queryParams: { tab: 'activites' } }); 
+   }
 }
