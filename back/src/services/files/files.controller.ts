@@ -1,5 +1,5 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Get, Param, Res, UseGuards } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Post, UseInterceptors, UploadedFiles, Get, Param, Res, UseGuards } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { FilesService } from './files.service';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
@@ -14,12 +14,12 @@ export class FilesController {
 
   @Post('upload/:activiteId')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File, @Param('activiteId') activiteId: number) {
-    return this.filesService.uploadFile(file, activiteId);
+  @UseInterceptors(FilesInterceptor('files', 10))
+  async uploadFiles(@UploadedFiles() files: Express.Multer.File[], @Param('activiteId') activiteId: number) {
+    return this.filesService.uploadFiles(files, activiteId);
   }
 
-  @Get(':id')
+  @Get('document/:id')
   @UseGuards(JwtAuthGuard)
   async downloadFile(@Param('id') id: number, @Res() res: Response) {
     const { document, decryptedData } = await this.filesService.downloadFile(id);
@@ -29,5 +29,17 @@ export class FilesController {
       'Content-Disposition': `attachment; filename="${document.titre}"`,
     });
     res.send(decryptedData);
+  }
+
+  @Get('documents/:activiteId')
+  @UseGuards(JwtAuthGuard)
+  async getDocumentsByActiviteId(@Param('activiteId') activiteId: number) {
+    return this.filesService.getDocumentsByActiviteId(activiteId);
+  }
+
+  @Get('allDownload/:activiteId')
+  @UseGuards(JwtAuthGuard)
+  async downloadFilesByActiviteId(@Param('activiteId') activiteId: number, @Res() res: Response) {
+    return this.filesService.downloadFilesByActiviteId(activiteId, res);
   }
 }

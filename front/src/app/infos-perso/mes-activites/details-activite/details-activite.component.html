@@ -36,10 +36,29 @@
               </p>
               <label class="col-form-label me-1">Référence :</label>
               <strong>{{ activite?.reference }}</strong> <br>
-              <label class="col-form-label">Quelques documents :</label>
-              <select multiple class="form-select" id="inputActDoc">
-                <option *ngFor="let doc of activite?.documents">{{ doc }}</option>
-              </select>
+              <label class="col-form-label">Documents :</label>
+              <div class="accordion" id="documentsAccordion">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingDocuments">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments">
+                      Voir les documents
+                    </button>
+                  </h2>
+                  <div id="collapseDocuments" class="accordion-collapse collapse show" aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
+                    <div class="accordion-body">
+                      <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let doc of documents">
+                          {{ doc.titre }}
+                          <button class="btn btn-primary btn-sm ms-2" (click)="downloadDocument(doc.id, doc.titre)">
+                            <i class="fa fa-download"></i>
+                          </button>
+                        </li>
+                      </ul>
+                      <button class="btn btn-secondary btn-sm mt-2" (click)="downloadAllDocuments()">Télécharger tout</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <label class="col-form-label">Adresse :</label>
               <strong>{{ activite?.adresse }}, {{ activite?.cp }} {{ activite?.commune }}</strong>
             </div>
@@ -72,7 +91,7 @@
                   </div>
                 </div>
               </div>
-            </div>            
+            </div>
             <div class="tab-pane fade mt-2" id="planning" role="tabpanel">
               <div class="mb-4 mt-2">
                 <h4>Informations rendez-vous</h4>

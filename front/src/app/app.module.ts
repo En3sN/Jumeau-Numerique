@@ -33,6 +33,7 @@ import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.compo
 import { ToastComponent } from './Shared/toast/toast.component';
 import { ToastService } from './Shared/Service/toast.service';
 import { DetailsServiceComponent } from './infos-perso/mes-activites/details-service/details-service.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 
@@ -69,7 +70,8 @@ import { DetailsServiceComponent } from './infos-perso/mes-activites/details-ser
     CommonModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    FullCalendarModule 
+    FullCalendarModule,
+    NgbModule 
   ],
   providers: [AuthService, CookieService,ToastService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]

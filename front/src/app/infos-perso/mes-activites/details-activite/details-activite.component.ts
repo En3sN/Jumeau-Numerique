@@ -9,6 +9,7 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import * as bootstrap from 'bootstrap';
 import { ServicesService } from 'src/app/Services/Services.service';
+import { FilesService } from 'src/app/Services/files.service';
 
 @Component({
   selector: 'app-details-activite',
@@ -19,8 +20,40 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
   activePopover: bootstrap.Popover | null = null;
   activite: any;
-  services: any[] = []; 
+  services: any[] = [];
+  documents: any[] = [];
 
+  constructor(
+    private router: Router, 
+    private route: ActivatedRoute, 
+    private activiteService: ActiviteService, 
+    private cdr: ChangeDetectorRef,
+    private servicesService: ServicesService,
+    private filesService: FilesService
+  ) {}
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.activiteService.getActiviteById(+id).subscribe({
+        next: (data) => {
+          this.activite = {
+            ...data,
+            documents: Array.isArray(data.documents) ? data.documents : [],
+            user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
+            prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
+          };
+          this.loadDocuments(+id);
+          this.cdr.detectChanges();
+          this.initCalendar();
+          this.loadServices(+id);
+        },
+        error: (err) => {
+          console.error('Error fetching activity details:', err);
+        }
+      });
+    }
+  }
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -42,35 +75,52 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     drop: this.handleDrop.bind(this)
   };
 
-  constructor(
-    private router: Router, 
-    private route: ActivatedRoute, 
-    private activiteService: ActiviteService, 
-    private cdr: ChangeDetectorRef,
-    private servicesService: ServicesService
 
-  ) {}
+  loadDocuments(activiteId: number): void {
+    this.filesService.getDocumentsByActiviteId(activiteId).subscribe({
+      next: (documents: any[]) => {
+        this.documents = documents;
+      },
+      error: (err: any) => {
+        console.error('Error fetching documents:', err);
+      }
+    });
+  }
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.activiteService.getActiviteById(+id).subscribe({
-        next: (data) => {
-          this.activite = {
-            ...data,
-            documents: Array.isArray(data.documents) ? data.documents : [],
-            user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
-            prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
-          };
-          this.cdr.detectChanges();
-          this.initCalendar();
-          this.loadServices(+id); 
-        },
-        error: (err) => {
-          console.error('Error fetching activity details:', err);
-        }
-      });
-    }
+  downloadDocument(documentId: number, filename: string) {
+    this.filesService.downloadDocument(documentId).subscribe(
+      (response: Blob) => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      (error) => {
+        console.error('Error downloading document:', error);
+      }
+    );
+  }
+
+  downloadAllDocuments() {
+    this.filesService.downloadAllDocuments(this.activite.id).subscribe(
+      (response: Blob) => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'all_documents.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      (error: any) => {
+        console.error('Error downloading all documents:', error);
+      }
+    );
   }
 
   loadServices(activiteId: number): void {
@@ -89,8 +139,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       this.initCalendar();
     }
   }
-
-  
 
   ngAfterViewInit() {
     setTimeout(() => {

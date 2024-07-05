@@ -6,6 +6,8 @@ import * as crypto from 'crypto';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 import { Express } from 'express';
 import { ConfigService } from '@nestjs/config';
+import * as archiver from 'archiver';
+import { Response } from 'express';
 
 @Injectable()
 export class FilesService {
@@ -24,21 +26,28 @@ export class FilesService {
     }
   }
 
-  async uploadFile(file: Express.Multer.File, activiteId: number): Promise<Document> {
+  async uploadFiles(files: Express.Multer.File[], activiteId: number): Promise<Document[]> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      const iv = crypto.randomBytes(16);
-      const cipher = crypto.createCipheriv('aes-256-ctr', this.cryptoSecretKey, iv);
-      const encrypted_data = Buffer.concat([cipher.update(file.buffer), cipher.final()]);
+      const uploadedDocuments: Document[] = [];
 
-      const newDocument = this.documentRepository.create({
-        activite: { id: activiteId },
-        titre: file.originalname,
-        mimetype: file.mimetype,
-        iv: iv.toString('hex'),
-        encrypted_data,
-      });
+      for (const file of files) {
+        const iv = crypto.randomBytes(16);
+        const cipher = crypto.createCipheriv('aes-256-ctr', this.cryptoSecretKey, iv);
+        const encryptedData = Buffer.concat([cipher.update(file.buffer), cipher.final()]);
 
-      return manager.save(Document, newDocument);
+        const newDocument = this.documentRepository.create({
+          activite: { id: activiteId },
+          titre: file.originalname,
+          mimetype: file.mimetype,
+          iv: iv.toString('hex'),
+          encrypted_data: encryptedData,
+        });
+
+        const savedDocument = await manager.save(Document, newDocument);
+        uploadedDocuments.push(savedDocument);
+      }
+
+      return uploadedDocuments;
     });
   }
 
@@ -54,5 +63,32 @@ export class FilesService {
 
       return { document, decryptedData };
     });
+  }
+
+  async getDocumentsByActiviteId(activiteId: number): Promise<Document[]> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      return manager.find(Document, { where: { activite: { id: activiteId } } });
+    });
+  }
+
+  async downloadFilesByActiviteId(activiteId: number, res: Response) {
+    const documents = await this.getDocumentsByActiviteId(activiteId);
+    const archive = archiver('zip', {
+      zlib: { level: 9 } // Niveau de compression
+    });
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="documents_${activiteId}.zip"`);
+
+    archive.pipe(res);
+
+    for (const document of documents) {
+      const decipher = crypto.createDecipheriv('aes-256-ctr', this.cryptoSecretKey, Buffer.from(document.iv, 'hex'));
+      const decryptedData = Buffer.concat([decipher.update(document.encrypted_data), decipher.final()]);
+
+      archive.append(decryptedData, { name: document.titre });
+    }
+
+    await archive.finalize();
   }
 }
