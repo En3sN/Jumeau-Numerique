@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
-import { Document } from './entities/document.entity';
+import { Document } from './Entities/document.entity';
 import * as crypto from 'crypto';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
 import { Express } from 'express';
