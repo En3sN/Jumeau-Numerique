@@ -73,6 +73,25 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     });
   }
 
+  loadServiceLogo(serviceId: number): void {
+    this.servicesService.getLogo(serviceId).subscribe({
+      next: (logoBlob: Blob) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const service = this.services.find(s => s.id === serviceId);
+          if (service) {
+            service.logoUrl = reader.result as string;
+            this.cdr.detectChanges();
+          }
+        };
+        reader.readAsDataURL(logoBlob);
+      },
+      error: (err: any) => {
+        console.error(`Error fetching logo for service ${serviceId}:`, err);
+      }
+    });
+  }
+
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
     initialView: 'timeGridWeek',
@@ -144,6 +163,9 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     this.servicesService.getAllServicesByActiviteId(activiteId).subscribe({
       next: (services: any[]) => {
         this.services = services;
+        this.services.forEach(service => {
+          this.loadServiceLogo(service.id);
+        });
       },
       error: (err: any) => {
         console.error('Error fetching services:', err);

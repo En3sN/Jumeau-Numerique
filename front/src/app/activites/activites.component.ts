@@ -5,7 +5,7 @@ import * as bootstrap from 'bootstrap';
 import { ActiviteService } from '../Services/Activite.service';
 import { FormControl } from '@angular/forms';
 import { Observable, combineLatest } from 'rxjs';
-import { debounceTime, startWith, switchMap } from 'rxjs/operators';
+import { debounceTime, startWith, switchMap, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-activites',
@@ -57,7 +57,21 @@ export class ActivitesComponent implements OnInit {
           tag,
           statut
         })
-      )
+      ),
+      map((activities: any[]) => {
+        return activities.map(activity => {
+          if (activity.logo) {
+            this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
+              const reader = new FileReader();
+              reader.onload = (e: any) => {
+                activity.logoUrl = e.target.result;
+              };
+              reader.readAsDataURL(logoBlob);
+            });
+          }
+          return activity;
+        });
+      })
     );
   }
 
@@ -85,7 +99,22 @@ export class ActivitesComponent implements OnInit {
   }
 
   loadPublicActivities(): void {
-    this.publicActivities$ = this.activiteService.getPublicActivities(this.filters);
+    this.publicActivities$ = this.activiteService.getPublicActivities(this.filters).pipe(
+      map((activities: any[]) => {
+        return activities.map(activity => {
+          if (activity.logo) {
+            this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
+              const reader = new FileReader();
+              reader.onload = (e: any) => {
+                activity.logoUrl = e.target.result;
+              };
+              reader.readAsDataURL(logoBlob);
+            });
+          }
+          return activity;
+        });
+      })
+    );
   }
 
   openModal(): void {

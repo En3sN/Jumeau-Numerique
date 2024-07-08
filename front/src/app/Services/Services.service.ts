@@ -19,4 +19,8 @@ export class ServicesService {
   getServiceByActiviteId(activiteId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/activite/${activiteId}/service`, { withCredentials: true });
   }
+
+  getLogo(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/services/logo/${id}`, { responseType: 'blob' });
+  }
 }

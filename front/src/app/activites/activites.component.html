@@ -109,7 +109,7 @@
 
         <div class="offcanvas offcanvas-start mlh_panneau_info" tabindex="-1" id="offcanvasActivite" aria-labelledby="offcanvasServiceLabel">
           <div class="offcanvas-header">
-            <img class="form-control" src="{{ selectedActivity?.logo }}" alt="logo" style="max-width: 150px;">
+            <img class="form-control" [src]="selectedActivity?.logoUrl" alt="logo" style="max-width: 150px; max-height: 150px;">
             <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
           </div>
           <div class="offcanvas-body">
@@ -175,7 +175,7 @@
             <div class="card border-2 border-info" type="button" (click)="selectActivity(activity)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite" aria-controls="offcanvasActivite">
               <div class="card-body row">
                 <div class="col-2">
-                  <img class="form-control" [src]="activity.logo" alt="logo">
+                  <img class="img-thumbnail" [src]="activity.logoUrl" alt="logo" style="width: auto; height: auto; object-fit: cover;">
                 </div>
                 <div class="col-10">
                   <h4 class="card-title">{{ activity.nom }}</h4>
@@ -191,6 +191,7 @@
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   </div>
