@@ -23,7 +23,6 @@ export class MesActivitesComponent implements OnInit {
     type: '',
     domaine: '',
     tags: [],
-    logo: '',
     organisation: '',
     public: false,
     reference: '',
@@ -70,6 +69,20 @@ export class MesActivitesComponent implements OnInit {
   loadUserActivities(): void {
     this.activiteService.getUserActivities().subscribe(activities => {
       this.userActivities = activities;
+      this.userActivities.forEach(activity => {
+        this.loadActivityLogo(activity);
+      });
+    });
+  }
+
+  
+  loadActivityLogo(activity: any): void {
+    this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        activity.logo = e.target.result;
+      };
+      reader.readAsDataURL(logoBlob);
     });
   }
 
@@ -82,7 +95,7 @@ export class MesActivitesComponent implements OnInit {
   createActivity(): void {
     this.activiteService.createActivite(this.activiteData).subscribe({
       next: () => {
-        this.loadUserActivities(); // Refresh the activities list
+        this.loadUserActivities(); 
         const modalElement = document.getElementById('createActivityModal') as HTMLElement;
         const modalInstance = bootstrap.Modal.getInstance(modalElement);
         modalInstance?.hide();

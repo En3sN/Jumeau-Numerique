@@ -22,6 +22,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   activite: any;
   services: any[] = [];
   documents: any[] = [];
+  logoUrl: string | null = null;
 
   constructor(
     private router: Router, 
@@ -44,6 +45,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
             prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
           };
           this.loadDocuments(+id);
+          this.loadLogo(+id);
           this.cdr.detectChanges();
           this.initCalendar();
           this.loadServices(+id);
@@ -53,6 +55,22 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         }
       });
     }
+  }
+
+  loadLogo(activiteId: number): void {
+    this.activiteService.getLogo(activiteId).subscribe({
+      next: (logoBlob: Blob) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.logoUrl = reader.result as string;
+          this.cdr.detectChanges();
+        };
+        reader.readAsDataURL(logoBlob);
+      },
+      error: (err: any) => {
+        console.error('Error fetching logo:', err);
+      }
+    });
   }
 
   calendarOptions: CalendarOptions = {
@@ -74,7 +92,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     eventResize: this.handleEventChange.bind(this),
     drop: this.handleDrop.bind(this)
   };
-
 
   loadDocuments(activiteId: number): void {
     this.filesService.getDocumentsByActiviteId(activiteId).subscribe({

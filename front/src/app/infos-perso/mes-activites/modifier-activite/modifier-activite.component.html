@@ -47,9 +47,17 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label class="col-form-label col-form-label-sm" for="inputOrgLogo">Logo
-                                (Facultatif):</label>
-                            <img class="form-control mlh_org_logo" [src]="activiteData.logo" alt="logo" />
+                            <label class="col-form-label col-form-label-sm" for="inputOrgLogo">Logo (Facultatif):</label>
+                            <div *ngIf="activiteData.logoUrl; else noLogo" class="d-flex row align-items-center">
+                              <img class="form-control mlh_org_logo" [src]="activiteData.logoUrl" alt="logo" />
+                              <button class="btn btn-primary btn-sm" (click)="deleteLogo()" style="border-radius: 50%; width: 30px; height: 30px;">
+                                <i class="fa fa-trash"></i>
+                              </button>
+                            </div>
+                            <ng-template #noLogo>
+                              <p class="text-center">Aucun logo</p>
+                            </ng-template>
+                            <input type="file" (change)="uploadLogo($event)" class="form-control mt-2" />
                         </div>
                         <div class="col-md-6">
                             <label class="col-form-label col-form-label-sm" for="inputActWeb">Site WEB:</label>

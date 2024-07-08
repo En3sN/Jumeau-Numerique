@@ -94,7 +94,6 @@ export class ActiviteController {
     return this.activiteService.deleteLogo(id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('logo/:id')
   async getLogo(@Param('id') id: number, @Res() res: Response) {
     const logo = await this.activiteService.getLogo(id);

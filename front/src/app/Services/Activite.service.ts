@@ -24,6 +24,7 @@ export class ActiviteService {
     }
     return this.http.get<any[]>(`${this.apiUrl}/activite`, { params });
   }
+
   getUserActivities(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/activite/user/activities`, { withCredentials: true });
   }
@@ -39,4 +40,18 @@ export class ActiviteService {
   supprimerActivite(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/activite/${id}`, { withCredentials: true });
   }
+
+  uploadLogo(id: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<any>(`${this.apiUrl}/activite/logo/${id}`, formData, { withCredentials: true });
+  }
+
+  deleteLogo(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/activite/logo/${id}`, { withCredentials: true });
+  }
+  getLogo(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/activite/logo/${id}`, { responseType: 'blob', withCredentials: true });
+  }
+
 }

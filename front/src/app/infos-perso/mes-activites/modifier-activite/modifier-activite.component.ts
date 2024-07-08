@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ActiviteService } from 'src/app/Services/Activite.service';
 import { ToastService } from 'src/app/Shared/Service/toast.service';
 import { FilesService } from 'src/app/Services/files.service';
-import * as bootstrap from 'bootstrap'; 
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-modifier-activite',
@@ -17,7 +17,7 @@ export class ModifierActiviteComponent implements OnInit {
   userInfosKeys: string[] = [];
   prerequisKeys: string[] = [];
   documents: any[] = [];
-  documentToDelete!: number; 
+  documentToDelete!: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -43,6 +43,7 @@ export class ModifierActiviteComponent implements OnInit {
         this.activiteData.prerequis = this.ensureJsonParsed(this.activiteData.prerequis);
         this.userInfosKeys = Object.keys(this.activiteData.user_infos);
         this.prerequisKeys = Object.keys(this.activiteData.prerequis);
+        this.loadLogo();
       },
       error: (err) => {
         console.error('Error fetching activity details:', err);
@@ -57,6 +58,51 @@ export class ModifierActiviteComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching documents:', err);
+      }
+    });
+  }
+
+  loadLogo(): void {
+    this.activiteService.getLogo(this.activiteId).subscribe({
+      next: (blob: Blob) => {
+        const reader = new FileReader();
+        reader.onload = (event: any) => {
+          this.activiteData.logoUrl = event.target.result;
+        };
+        reader.readAsDataURL(blob);
+      },
+      error: (err) => {
+        console.error('Error loading logo:', err);
+        this.activiteData.logoUrl = null;
+      }
+    });
+  }
+
+  uploadLogo(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.activiteService.uploadLogo(this.activiteId, file).subscribe({
+        next: () => {
+          this.loadLogo();
+          this.toastService.showToast('Succès', 'Logo téléchargé avec succès', 'toast', 'bg-info text-white');
+        },
+        error: (err) => {
+          console.error('Error uploading logo:', err);
+          this.toastService.showToast('Erreur', 'Erreur lors du téléchargement du logo', 'toast', 'bg-danger text-white');
+        }
+      });
+    }
+  }
+
+  deleteLogo(): void {
+    this.activiteService.deleteLogo(this.activiteId).subscribe({
+      next: () => {
+        this.activiteData.logoUrl = null;
+        this.toastService.showToast('Succès', 'Logo supprimé avec succès', 'toast', 'bg-info text-white');
+      },
+      error: (err) => {
+        console.error('Error deleting logo:', err);
+        this.toastService.showToast('Erreur', 'Erreur lors de la suppression du logo', 'toast', 'bg-danger text-white');
       }
     });
   }
@@ -85,6 +131,8 @@ export class ModifierActiviteComponent implements OnInit {
       };
       delete updateData.id; 
       delete updateData.organisation_nom;
+      delete updateData.logo;
+      delete updateData.logoUrl;
 
       this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
         next: (response) => {
@@ -235,5 +283,5 @@ export class ModifierActiviteComponent implements OnInit {
 
   back() {
     this.router.navigate(['/infos-perso'], { queryParams: { tab: 'activites' } }); 
-   }
+  }
 }
