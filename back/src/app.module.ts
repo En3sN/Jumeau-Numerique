@@ -11,6 +11,7 @@ import { AuthModule } from './security/authentification/auth.module';
 import { ActiviteController } from './services/activite/activite.controller';
 import { ActiviteModule } from './services/activite/activite.module';
 import { FilesModule } from './services/files/files.module';
+import { ServicesModule } from './services/service/services.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { FilesModule } from './services/files/files.module';
     UtilisateurModule,
     ActiviteModule,
     FilesModule,
+    ServicesModule,
   ],
   controllers: [AppController, CsrfController],
   providers: [AppService],

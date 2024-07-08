@@ -27,10 +27,6 @@ export class UpdateActiviteDto extends PartialType(CreateActiviteDto) {
   @IsOptional()
   domaine?: string;
 
-  @IsArray()
-  @IsOptional()
-  documents?: string[];
-
   @IsString()
   @IsOptional()
   url?: string;

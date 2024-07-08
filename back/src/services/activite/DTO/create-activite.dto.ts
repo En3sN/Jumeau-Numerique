@@ -25,10 +25,6 @@ export class CreateActiviteDto {
   @IsNotEmpty()
   domaine: string;
 
-  @IsArray()
-  @IsOptional()
-  documents: string[];
-
   @IsString()
   @IsOptional()
   url: string;
