@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger, Patch, Delete, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger, Patch, Delete, Query, UseInterceptors, UploadedFile, Res, NotFoundException } from '@nestjs/common';
 import { ActiviteService } from './activite.service';
+import { Response } from 'express';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 import { CreateActiviteDto } from './DTO/create-activite.dto';
 import { UpdateActiviteDto } from './DTO/update-activite.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('activite')
 export class ActiviteController {
@@ -77,5 +79,29 @@ export class ActiviteController {
   async getServiceByActivityId(@Param('id') id: number, @Request() req): Promise<any> {
     const sessionCode = req.user.sessionCode;
     return this.activiteService.findServicesByActiviteId(id, sessionCode);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logo/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadLogo(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) {
+    return this.activiteService.uploadLogo(id, file.buffer);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('logo/:id')
+  async deleteLogo(@Param('id') id: number) {
+    return this.activiteService.deleteLogo(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('logo/:id')
+  async getLogo(@Param('id') id: number, @Res() res: Response) {
+    const logo = await this.activiteService.getLogo(id);
+    if (!logo) {
+      throw new NotFoundException('Logo non trouvé');
+    }
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.send(logo);
   }
 }

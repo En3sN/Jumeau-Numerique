@@ -13,10 +13,6 @@ export class UpdateActiviteDto extends PartialType(CreateActiviteDto) {
 
   @IsString()
   @IsOptional()
-  logo?: string;
-
-  @IsString()
-  @IsOptional()
   reference?: string;
 
   @IsString()

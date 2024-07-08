@@ -11,10 +11,6 @@ export class CreateActiviteDto {
 
   @IsString()
   @IsOptional()
-  logo: string;
-
-  @IsString()
-  @IsOptional()
   reference: string;
 
   @IsString()

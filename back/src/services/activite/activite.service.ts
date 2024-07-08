@@ -150,4 +150,34 @@ export class ActiviteService {
       }
     }, sessionCode);
   }
+
+  async uploadLogo(id: number, logoBuffer: Buffer): Promise<Activite> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const activite = await this.findOne(id, '');
+      if (activite) {
+        activite.logo = logoBuffer;
+        return manager.save(Activite, activite);
+      }
+      throw new NotFoundException('Activité non trouvée');
+    });
+  }
+
+  async deleteLogo(id: number): Promise<void> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const activite = await this.findOne(id, '');
+      if (!activite) {
+        throw new NotFoundException('Activité non trouvée');
+      }
+      activite.logo = null;
+      await manager.save(Activite, activite);
+    });
+  }
+
+  async getLogo(id: number): Promise<Buffer> {
+    const activite = await this.findOne(id, '');
+    if (!activite || !activite.logo) {
+      throw new NotFoundException('Logo non trouvé');
+    }
+    return activite.logo;
+  }
 }

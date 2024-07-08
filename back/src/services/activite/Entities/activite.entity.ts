@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Document } from 'src/services/files/Entities/document.entity';
 
 @Entity('activite', { schema: 'services' })
 export class Activite {
@@ -11,8 +12,8 @@ export class Activite {
   @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ type: 'text', nullable: true })
-  logo: string;
+  @Column({ type: 'bytea', nullable: true })
+  logo: Buffer;
 
   @Column({ type: 'text', nullable: true })
   reference: string;
@@ -22,9 +23,6 @@ export class Activite {
 
   @Column({ type: 'text' })
   domaine: string;
-
-  @Column({ type: 'text', array: true, nullable: true })
-  documents: string[];
 
   @Column({ type: 'text', nullable: true })
   url: string;
@@ -70,4 +68,7 @@ export class Activite {
 
   @Column({ default: false })
   public: boolean;
+
+  @OneToMany(() => Document, document => document.activite)
+  documents: Document[];
 }
