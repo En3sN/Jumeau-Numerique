@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, Request } from '@nestjs/common';
 import { OrganisationService } from './organisation.service';
 import { CreateOrganisationDto } from './dto/create-organisation.dto';
 import { UpdateOrganisationDto } from './dto/update-organisation.dto';
@@ -15,24 +15,21 @@ export class OrganisationController {
   @UseInterceptors(FileInterceptor('logo'))
   async create(
     @Body() createOrganisationDto: CreateOrganisationDto,
-    @UploadedFile() file: Express.Multer.File
+    @UploadedFile() file: Express.Multer.File,
+    @Request() req
   ) {
+    const userId = req.user.id;
     if (file) {
       createOrganisationDto.logo = file.buffer;
     }
-    return this.organisationService.create(createOrganisationDto);
+    return this.organisationService.create(createOrganisationDto, userId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
-  async findAll() {
-    return this.organisationService.findAll();
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.organisationService.findOne(+id);
+  @Get('myOrganisation')
+  async findByUser(@Request() req) {
+    const userId = req.user.id;
+    return this.organisationService.findByUserId(userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -48,7 +45,7 @@ export class OrganisationController {
     }
     return this.organisationService.update(+id, updateOrganisationDto);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async remove(@Param('id') id: string) {

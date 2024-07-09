@@ -11,6 +11,7 @@ import { ChangePasswordDto } from './DTO/change-password.dto';
 @Injectable()
 export class UtilisateurService {
   private readonly logger = new Logger(UtilisateurService.name);
+  updateOrganisation: any;
 
   constructor(
     private transactionManager: TransactionManager,
