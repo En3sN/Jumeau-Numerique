@@ -12,6 +12,7 @@ import { ActiviteController } from './services/activite/activite.controller';
 import { ActiviteModule } from './services/activite/activite.module';
 import { FilesModule } from './services/files/files.module';
 import { ServicesModule } from './services/service/services.module';
+import { OrganisationModule } from './security/organisation/organisation.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ServicesModule } from './services/service/services.module';
     ActiviteModule,
     FilesModule,
     ServicesModule,
+    OrganisationModule,
   ],
   controllers: [AppController, CsrfController],
   providers: [AppService],
