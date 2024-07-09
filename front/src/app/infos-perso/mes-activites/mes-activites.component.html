@@ -64,17 +64,20 @@
                     </div>
                   </div>
                   <div class="row mt-3">
+                    <label class="col-form-label col-form-label-sm" for="inputOrgLogo">Logo (Facultatif):</label>
                     <div class="col-md-6">
-                      <label class="col-form-label col-form-label-sm" for="inputOrgLogo">Logo (Facultatif):</label>
-                      <img class="form-control mlh_org_logo" [src]="activiteData.logo" alt="logo"/>
+                      <img class="img-thumbnail mb-2" [src]="activiteData.logoUrl" alt="logo" style="width: 100px; height: auto;">
+                      <div class="d-flex align-items-center">
+                        <input type="file" (change)="uploadLogo($event)" accept="image/*" class="form-control form-control-sm">
+                        <button type="button" class="btn btn-danger btn-sm ms-2" (click)="deleteLogo()">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </div>
                     </div>
                     <div class="col-md-6">
                       <label class="col-form-label col-form-label-sm" for="inputActWeb">Site WEB:</label>
                       <input [(ngModel)]="activiteData.url" type="text" class="form-control form-control-sm" id="inputActWeb">
                     </div>
-                  </div>
-                  <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-secondary p-2" id="btActLogo">Charger le Logo</button>
                   </div>
                 </div>
               </div>
