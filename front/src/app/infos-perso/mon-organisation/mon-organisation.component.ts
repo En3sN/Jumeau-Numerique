@@ -23,8 +23,8 @@ export class MonOrganisationComponent implements OnInit {
         if (data) {
           this.organisation = data;
           this.hasOrganisation = true;
-          if (this.organisation.logo) {
-            this.loadLogo(this.organisation.logo);
+          if (this.organisation.logo && this.organisation.logo.data) {
+            this.loadLogo(this.organisation.logo.data);
           }
         } else {
           this.hasOrganisation = false;
@@ -37,8 +37,9 @@ export class MonOrganisationComponent implements OnInit {
     );
   }
 
-  loadLogo(logoBuffer: ArrayBuffer): void {
-    const blob = new Blob([logoBuffer], { type: 'image/png' });
+  loadLogo(logoData: number[]): void {
+    const byteArray = new Uint8Array(logoData);
+    const blob = new Blob([byteArray], { type: 'image/png' });
     const reader = new FileReader();
     reader.onload = () => {
       const dataURL = reader.result as string;
