@@ -39,6 +39,7 @@ export class MesActivitesComponent implements OnInit {
   newTag: string = '';
   newInfo: string = '';
   newPrereq: string = '';
+  logoFile: File | null = null;
 
   constructor(
     private utilisateurService: UtilisateurService,
@@ -75,7 +76,6 @@ export class MesActivitesComponent implements OnInit {
     });
   }
 
-  
   loadActivityLogo(activity: any): void {
     this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
       const reader = new FileReader();
@@ -95,17 +95,58 @@ export class MesActivitesComponent implements OnInit {
   createActivity(): void {
     this.activiteService.createActivite(this.activiteData).subscribe({
       next: () => {
-        this.loadUserActivities(); 
-        const modalElement = document.getElementById('createActivityModal') as HTMLElement;
-        const modalInstance = bootstrap.Modal.getInstance(modalElement);
-        modalInstance?.hide();
-        this.toastService.showToast('Succès', 'Activité créée avec succès.', 'toast', 'bg-success text-white');
+        if (this.logoFile) {
+          this.uploadLogoFile();
+        } else {
+          this.loadUserActivities();
+          this.hideCreateActivityModal();
+          this.toastService.showToast('Succès', 'Activité créée avec succès.', 'toast', 'bg-success text-white');
+        }
       },
       error: (err) => {
         console.error('Error creating activity:', err);
         this.toastService.showToast('Erreur', 'Erreur lors de la création de l\'activité.', 'toast', 'bg-danger text-white');
       }
     });
+  }
+
+  uploadLogoFile(): void {
+    if (this.logoFile) {
+      this.activiteService.uploadLogo(this.activiteData.id, this.logoFile).subscribe({
+        next: () => {
+          this.loadUserActivities();
+          this.hideCreateActivityModal();
+          this.toastService.showToast('Succès', 'Logo téléchargé avec succès.', 'toast', 'bg-success text-white');
+        },
+        error: (err) => {
+          console.error('Error uploading logo:', err);
+          this.toastService.showToast('Erreur', 'Erreur lors du téléchargement du logo.', 'toast', 'bg-danger text-white');
+        }
+      });
+    }
+  }
+
+  uploadLogo(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.logoFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.activiteData.logoUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  deleteLogo(): void {
+    this.activiteData.logoUrl = null;
+    this.logoFile = null;
+  }
+
+  hideCreateActivityModal(): void {
+    const modalElement = document.getElementById('createActivityModal') as HTMLElement;
+    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    modalInstance?.hide();
   }
 
   addTag(): void {
