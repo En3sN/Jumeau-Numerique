@@ -4,50 +4,52 @@
     <div class="row border-bottom mlh_block_data">
       <div class="col-6">
         <label class="col-form-label uniform-text" for="inputOrgNom"> Nom : </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgNom" [(ngModel)]="organisation.nom">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgNom" [(ngModel)]="organisation.nom">
   
         <label class="col-form-label uniform-text" for="inputOrgActivite"> Activité : </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgActivite" [(ngModel)]="organisation.activite">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgActivite" [(ngModel)]="organisation.activite">
   
         <label class="col-form-label uniform-text" for="inputOrgEmail"> Email : </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgEmail" [(ngModel)]="organisation.email">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgEmail" [(ngModel)]="organisation.email">
   
         <label class="col-form-label uniform-text" for="inputOrgWeb"> Site WEB (Facultatif) : </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgWeb" [(ngModel)]="organisation.web">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgWeb" [(ngModel)]="organisation.web">
   
         <label class="col-form-label uniform-text" for="inputOrgSiret">Siret (Facultatif) : </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgSiret" [(ngModel)]="organisation.siret">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgSiret" [(ngModel)]="organisation.siret">
   
         <label class="col-form-label uniform-text" for="inputOrgDesc"> Descriptif (Facultatif) : </label>
-        <textarea class="form-control uniform-input" id="inputOrgDesc" rows="3" [(ngModel)]="organisation.descriptif"></textarea>
+        <textarea class="form-control uniform-input mb-2" id="inputOrgDesc" rows="3" [(ngModel)]="organisation.descriptif"></textarea>
       </div>
   
       <div class="col-6">
         <label class="col-form-label uniform-text" for="inputOrgAdresse"> Adresse (Facultatif) : </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgAdresse" [(ngModel)]="organisation.adresse">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgAdresse" [(ngModel)]="organisation.adresse">
   
         <label class="col-form-label uniform-text" for="inputOrgCp"> Code postal (Facultatif): </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgCp" [(ngModel)]="organisation.cp">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgCp" [(ngModel)]="organisation.cp">
   
         <label class="col-form-label uniform-text" for="inputOrgTelephone">Telephone (Facultatif): </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgTelephone" [(ngModel)]="organisation.tel">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgTelephone" [(ngModel)]="organisation.tel">
   
         <label class="col-form-label uniform-text" for="inputOrgCommune"> Commune (Facultatif): </label>
-        <input type="text" class="form-control uniform-input" id="inputOrgCommune" [(ngModel)]="organisation.commune">
+        <input type="text" class="form-control uniform-input mb-2" id="inputOrgCommune" [(ngModel)]="organisation.commune">
   
         <label class="col-form-label uniform-text" for="inputOrgCommentaire"> Commentaire (Facultatif) : </label>
-        <textarea class="form-control uniform-input" id="inputOrgCommentaire" rows="3" [(ngModel)]="organisation.commentaire"></textarea>
-  
-        <label class="col-form-label uniform-text" for="inputOrgLogo"> Logo (Facultatif): </label>
-        <img id="logoPreview" class="form-control mlh_org_logo" alt="logo">
+        <textarea class="form-control uniform-input mb-2" id="inputOrgCommentaire" rows="1" [(ngModel)]="organisation.commentaire"></textarea>
       </div>
     </div>
+    
     <div class="d-flex flex-column bd-highlight mt-2 border-bottom mlh_block_data">
       <label for="formFile" class="form-label ms-1">Charger le Logo</label>
-      <div class="d-flex justify-content-between align-items-center w-100">
-        <input class="form-control uniform-input w-50" type="file" id="formFile" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)">
-        <button type="button" class="btn btn-primary p-2" id="btUserInfoOk" (click)="DlgUserInfoSave()">Enregistrer</button>
+      <div class="d-flex justify-content-start align-items-center w-100">
+        <img id="logoPreview" class="form-control mlh_org_logo me-3" alt="logo" style="width: 130px; height: auto;">
+        <input class="form-control uniform-input w-50 me-3" type="file" id="formFile" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)">
       </div>
+    </div>
+    
+    <div class="d-flex justify-content-end">
+      <button type="button" class="btn mt-2 btn-primary p-2" id="btUserInfoOk" (click)="DlgUserInfoSave()">Enregistrer</button>
     </div>
   </div>
   
