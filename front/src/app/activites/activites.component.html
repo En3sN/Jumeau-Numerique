@@ -100,7 +100,6 @@
         <div class="card border-3 border-info mb-3 p-3">Autres activités</div>
       </div>
     </div>
-
     <div class="col-9 activity-column">
       <div class="row mt-2">
         <div class="p-2">
@@ -117,17 +116,37 @@
             <h5 class="offcanvas-title" id="offcanvasServiceLabel"><a href="#">Ref : {{ selectedActivity?.reference }}</a></h5>
             <p>{{ selectedActivity?.description }}</p>
             <p>
-              <div><u> Organisation :</u> <a href="#">{{ selectedActivity?.organisation_nom }}</a></div>
-              <div><u> Type :</u> {{ selectedActivity?.type }}</div>
-              <div><u> Domaine :</u> {{ selectedActivity?.domaine }}</div>
+              <div class="mb-1"><u> Organisation</u>: <a href="#">{{ selectedActivity?.organisation_nom }}</a></div>
+              <div class="mb-1"><u> Type</u>: {{ selectedActivity?.type }}</div>
+              <div class="mb-1"><u> Domaine</u>: {{ selectedActivity?.domaine }}</div>
+              <div class="mb-1"><u> Documents</u>:</div>
             <p>
-            <p>
-              <label class="col-form-label" for="inputActRef"><u> Documents :</u></label>
-              <select multiple="" class="form-select" id="inputActInfo">
-                <option *ngFor="let doc of selectedActivity?.documents">{{ doc }}</option>
-              </select>
-            </p>
-            <u> Information complémentaires :</u>
+            <div class="accordion mb-2" id="documentsAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingDocuments">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseDocuments" aria-expanded="true"
+                    aria-controls="collapseDocuments">
+                    Voir les documents
+                  </button>
+                </h2>
+                <div id="collapseDocuments" class="accordion-collapse collapse show"
+                  aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
+                  <div class="accordion-body">
+                    <ul class="list-group" *ngIf="selectedActivity?.documents?.length > 0; else noDocuments">
+                      <li class="list-group-item d-flex justify-content-between align-items-center"
+                        *ngFor="let doc of selectedActivity?.documents">
+                        {{ doc.titre }}
+                      </li>
+                    </ul>
+                    <ng-template #noDocuments>
+                      <p class="text-center">Aucun document</p>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <u> Informations complémentaires :</u>
             <p>
               <div class="d-flex justify-content-start align-items-center">
                 <h3>
@@ -136,29 +155,25 @@
                 Cette activité nécessitera un rendez initial avec le référent pour bénéficier des services attenants. Le rendez-vous sera pris lors de la demande d'abonnement.
               </div>
             <p>
-
+            <div class="d-flex justify-content-start align-items-center">
+              <h3>
+                <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+              </h3>
+              Des informations complémentaires seront demandées lors de l'inscription :
+            </div>
+            <select multiple="" class="form-select" id="inputActInfo">
+              <option *ngFor="let info of selectedActivity?.infos">{{ info }}</option>
+            </select>
             <p>
-              <div class="d-flex justify-content-start align-items-center">
-                <h3>
-                  <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
-                </h3>
-                Des informations complémentaires seront demandées lors de l'inscription :
-              </div>
-              <select multiple="" class="form-select" id="inputActInfo">
-                <option *ngFor="let info of selectedActivity?.infos">{{ info }}</option>
-              </select>
-            <p>
-            <p>
-              <div class="d-flex justify-content-start align-items-center">
-                <h3>
-                  <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
-                </h3>
-                Des documents seront à fournir pour valider l'abonnement :
-              </div>
-              <select multiple="" class="form-select" id="inputActItem">
-                <option *ngFor="let doc of selectedActivity?.prerequis">{{ doc }}</option>
-              </select>
-            <p>
+            <div class="d-flex justify-content-start align-items-center">
+              <h3>
+                <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+              </h3>
+              Des documents seront à fournir pour valider l'abonnement :
+            </div>
+            <select multiple="" class="form-select" id="inputActItem">
+              <option *ngFor="let doc of selectedActivity?.prerequis">{{ doc }}</option>
+            </select>
             <p>
               <span *ngFor="let tag of selectedActivity?.tags" class="badge bg-info">{{ tag }}</span>
             </p>
