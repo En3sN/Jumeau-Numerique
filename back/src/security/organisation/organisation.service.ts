@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
-import { Organisation } from './entities/organisation.entity';
+import { Organisation } from './Entities/organisation.entity';
 import { CreateOrganisationDto } from './DTO/create-organisation.dto';
 import { UpdateOrganisationDto } from './DTO/update-organisation.dto';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
