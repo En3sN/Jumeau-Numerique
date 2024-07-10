@@ -77,4 +77,11 @@ export class CreateActiviteDto {
   @IsOptional()
   @IsBoolean()
   public: boolean;
+
+  @IsOptional()
+  logo?: Express.Multer.File;
+
+  @IsArray()
+  @IsOptional()
+  documents?: Express.Multer.File[];
 }

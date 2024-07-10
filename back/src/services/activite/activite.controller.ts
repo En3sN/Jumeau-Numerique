@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger, Patch, Delete, Query, UseInterceptors, UploadedFile, Res, NotFoundException } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards, Request, HttpCode, HttpStatus, Put, Param, Logger, Patch, Delete, Query, UseInterceptors, UploadedFile, Res, NotFoundException, UploadedFiles } from '@nestjs/common';
 import { ActiviteService } from './activite.service';
 import { Response } from 'express';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 import { CreateActiviteDto } from './DTO/create-activite.dto';
 import { UpdateActiviteDto } from './DTO/update-activite.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('activite')
 export class ActiviteController {
@@ -38,9 +38,20 @@ export class ActiviteController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post("create")
+  @Post('create')
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createActiviteDto: CreateActiviteDto): Promise<any> {
+  @UseInterceptors(FilesInterceptor('documents'), FileInterceptor('logo'))
+  async create(
+    @Body() createActiviteDto: CreateActiviteDto,
+    @UploadedFiles() documents: Express.Multer.File[],
+    @UploadedFile() logo: Express.Multer.File
+  ): Promise<any> {
+    if (logo) {
+      createActiviteDto.logo = logo;
+    }
+    if (documents && documents.length > 0) {
+      createActiviteDto.documents = documents;
+    }
     return await this.activiteService.create(createActiviteDto);
   }
 

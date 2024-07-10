@@ -4,21 +4,60 @@ import { TransactionManager } from 'src/Shared/TransactionManager/TransactionMan
 import { Activite } from './Entities/activite.entity';
 import { CreateActiviteDto } from './DTO/create-activite.dto';
 import { UpdateActiviteDto } from './DTO/update-activite.dto';
+import { Document } from 'src/services/files/Entities/document.entity';
+import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
+
 
 @Injectable()
 export class ActiviteService {
   private readonly logger = new Logger(ActiviteService.name);
+  private readonly cryptoSecretKey: Buffer;
 
   constructor(
     private transactionManager: TransactionManager,
-    private readonly entityManager: EntityManager
-  ) { }
-
-  async create(createActiviteDto: CreateActiviteDto): Promise<Activite> {
-    const activite = this.entityManager.create(Activite, createActiviteDto);
-    return this.entityManager.save(activite);
+    private readonly entityManager: EntityManager,
+    private readonly configService: ConfigService
+  ) {
+    this.cryptoSecretKey = Buffer.from(this.configService.get<string>('CRYPTO_SECRET_KEY'), 'hex');
+    if (this.cryptoSecretKey.length !== 32) {
+      throw new Error('Invalid key length. CRYPTO_SECRET_KEY must be a 32-byte key.');
+    }
   }
 
+  async create(createActiviteDto: CreateActiviteDto): Promise<Activite> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const activite = new Activite();
+      Object.assign(activite, createActiviteDto);
+
+      if (createActiviteDto.logo) {
+        activite.logo = createActiviteDto.logo.buffer;
+      }
+
+      const savedActivite = await manager.save(activite);
+
+      if (createActiviteDto.documents && createActiviteDto.documents.length > 0) {
+        const documents = createActiviteDto.documents.map(file => {
+          const iv = crypto.randomBytes(16);
+          const cipher = crypto.createCipheriv('aes-256-ctr', this.cryptoSecretKey, iv);
+          const encryptedData = Buffer.concat([cipher.update(file.buffer), cipher.final()]);
+
+          const document = new Document();
+          document.titre = file.originalname;
+          document.mimetype = file.mimetype;
+          document.iv = iv.toString('hex');
+          document.encrypted_data = encryptedData;
+          document.activite = savedActivite;
+          return document;
+        });
+        await manager.save(documents);
+      }
+
+      return savedActivite;
+    });
+  }
+
+  
   async findAllPublic(queryParams: any): Promise<any[]> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       let query = `

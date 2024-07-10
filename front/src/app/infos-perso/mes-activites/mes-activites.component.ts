@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
 import { ActiviteService } from 'src/app/Services/Activite.service';
 import { ToastService } from 'src/app/Shared/Service/toast.service';
+import { FilesService } from 'src/app/Services/files.service';
 
 @Component({
   selector: 'app-mes-activites',
@@ -11,12 +12,16 @@ import { ToastService } from 'src/app/Shared/Service/toast.service';
   styleUrls: ['./mes-activites.component.css']
 })
 export class MesActivitesComponent implements OnInit {
+  @ViewChild('fileInput') fileInput!: ElementRef;
+  
   showConfirmationToast: boolean = false;
   hasPermission: boolean = false;
   userRoles: string[] = [];
   userId: number | null = null;
   userActivities: any[] = [];
   activityToDelete: number | null = null;
+  documents: File[] = [];
+  documentToDelete: number | null = null;
   activiteData: any = {
     nom: '',
     description: '',
@@ -45,7 +50,8 @@ export class MesActivitesComponent implements OnInit {
     private utilisateurService: UtilisateurService,
     private activiteService: ActiviteService,
     private router: Router,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private filesService: FilesService
   ) {}
 
   ngOnInit(): void {
@@ -93,15 +99,19 @@ export class MesActivitesComponent implements OnInit {
   }
 
   createActivity(): void {
-    this.activiteService.createActivite(this.activiteData).subscribe({
-      next: () => {
+    const { logoUrl, ...createActiviteDto } = this.activiteData; 
+    this.activiteService.createActivite(createActiviteDto).subscribe({
+      next: (res: any) => {
+        const activiteId = res.id;
         if (this.logoFile) {
-          this.uploadLogoFile();
-        } else {
-          this.loadUserActivities();
-          this.hideCreateActivityModal();
-          this.toastService.showToast('Succès', 'Activité créée avec succès.', 'toast', 'bg-success text-white');
+          this.uploadLogoFile(activiteId);
         }
+        if (this.documents.length > 0) {
+          this.uploadDocumentsToActivity(activiteId);
+        }
+        this.loadUserActivities();
+        this.hideCreateActivityModal();
+        this.toastService.showToast('Succès', 'Activité créée avec succès.', 'toast', 'bg-success text-white');
       },
       error: (err) => {
         console.error('Error creating activity:', err);
@@ -110,12 +120,11 @@ export class MesActivitesComponent implements OnInit {
     });
   }
 
-  uploadLogoFile(): void {
+  uploadLogoFile(activiteId: number): void {
     if (this.logoFile) {
-      this.activiteService.uploadLogo(this.activiteData.id, this.logoFile).subscribe({
+      this.activiteService.uploadLogo(activiteId, this.logoFile).subscribe({
         next: () => {
           this.loadUserActivities();
-          this.hideCreateActivityModal();
           this.toastService.showToast('Succès', 'Logo téléchargé avec succès.', 'toast', 'bg-success text-white');
         },
         error: (err) => {
@@ -141,6 +150,68 @@ export class MesActivitesComponent implements OnInit {
   deleteLogo(): void {
     this.activiteData.logoUrl = null;
     this.logoFile = null;
+  }
+
+  onDocumentSelected(event: any): void {
+    const files: File[] = Array.from(event.target.files);
+    this.documents = [...this.documents, ...files];
+  }
+
+  removeDocument(document: File): void {
+    this.documents = this.documents.filter(doc => doc !== document);
+    this.clearFileInputIfEmpty();
+  }
+
+  clearFileInputIfEmpty(): void {
+    if (this.documents.length === 0 && this.fileInput) {
+      this.fileInput.nativeElement.value = '';
+    }
+  }
+
+  uploadDocumentsToActivity(activiteId: number): void {
+    const formData: FormData = new FormData();
+    this.documents.forEach(file => {
+      formData.append('files', file, file.name);
+    });
+    this.filesService.uploadDocuments(formData, activiteId).subscribe({
+      next: () => {
+        this.loadUserActivities();
+        this.toastService.showToast('Succès', 'Documents téléchargés avec succès.', 'toast', 'bg-success text-white');
+      },
+      error: (err) => {
+        console.error('Error uploading documents:', err);
+        this.toastService.showToast('Erreur', 'Erreur lors du téléchargement des documents.', 'toast', 'bg-danger text-white');
+      }
+    });
+  }
+
+  deleteDocument(documentId: number) {
+    this.filesService.deleteDocument(documentId).subscribe({
+      next: () => {
+        this.loadUserActivities();
+        this.toastService.showToast('Succès', 'Document supprimé avec succès.', 'toast', 'bg-info text-white');
+      },
+      error: (err) => {
+        console.error('Error deleting document:', err);
+        this.toastService.showToast('Erreur', 'Erreur lors de la suppression du document.', 'toast', 'bg-danger text-white');
+      }
+    });
+  }
+
+  downloadDocument(documentId: number, filename: string) {
+    this.filesService.downloadDocument(documentId).subscribe({
+      next: (blob) => {
+        const a = document.createElement('a');
+        const objectUrl = URL.createObjectURL(blob);
+        a.href = objectUrl;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(objectUrl);
+      },
+      error: (err) => {
+        console.error('Error downloading document:', err);
+      }
+    });
   }
 
   hideCreateActivityModal(): void {
@@ -274,5 +345,13 @@ export class MesActivitesComponent implements OnInit {
 
   viewDetails(id: number) {
     this.router.navigate(['/details-activite', id]);
+  }
+
+  openConfirmationModal(documentId: number, event: MouseEvent) {
+    event.stopPropagation();
+    this.documentToDelete = documentId;
+    const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
   }
 }
