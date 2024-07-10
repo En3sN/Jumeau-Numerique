@@ -31,18 +31,18 @@ export class OrganisationService {
     });
   }
 
-  async findByUserId(userId: number): Promise<Organisation> {
+  async findByUserId(userId: number): Promise<Organisation | null> {
     const user = await this.organisationRepository.query(
       `SELECT organisation FROM security.users_table WHERE id = $1`, 
       [userId]
     );
-    if (!user || user.length === 0) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
+    if (!user || user.length === 0 || !user[0].organisation) {
+      return null;
     }
     const organisationId = user[0].organisation;
     const organisation = await this.organisationRepository.findOne({ where: { id: organisationId } });
     if (!organisation) {
-      throw new NotFoundException('Organisation not found');
+      return null;
     }
     return organisation;
   }
