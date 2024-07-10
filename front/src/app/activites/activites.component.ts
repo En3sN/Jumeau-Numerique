@@ -3,6 +3,7 @@ import { UtilisateurService } from '../Services/Utilisateur.service';
 import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { ActiviteService } from '../Services/Activite.service';
+import { FilesService } from '../Services/files.service';
 import { FormControl } from '@angular/forms';
 import { Observable, combineLatest } from 'rxjs';
 import { debounceTime, startWith, switchMap, map } from 'rxjs/operators';
@@ -35,6 +36,7 @@ export class ActivitesComponent implements OnInit {
   constructor(
     private utilisateurService: UtilisateurService,
     private activiteService: ActiviteService,
+    private filesService: FilesService,
     private router: Router
   ) {}
 
@@ -135,6 +137,18 @@ export class ActivitesComponent implements OnInit {
 
   selectActivity(activity: any): void {
     this.selectedActivity = activity;
+    this.loadActivityDocuments(activity.id); 
+  }
+
+  loadActivityDocuments(activityId: number): void {
+    this.filesService.getDocumentsByActiviteId(activityId).subscribe({
+      next: (documents) => {
+        this.selectedActivity.documents = documents;
+      },
+      error: (err) => {
+        console.error('Error fetching documents:', err);
+      }
+    });
   }
 
   removeFilter(filterName: string, value: any) {
