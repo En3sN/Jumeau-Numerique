@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, Request } from '@nestjs/common';
 import { OrganisationService } from './organisation.service';
-import { CreateOrganisationDto } from './dto/create-organisation.dto';
-import { UpdateOrganisationDto } from './dto/update-organisation.dto';
+import { CreateOrganisationDto } from './DTO/create-organisation.dto';
+import { UpdateOrganisationDto } from './DTO/update-organisation.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { JwtAuthGuard } from '../jwt-auth.guard/jwt-auth.guard';
