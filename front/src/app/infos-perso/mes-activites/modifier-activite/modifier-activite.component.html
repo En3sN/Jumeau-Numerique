@@ -149,43 +149,48 @@
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-body">
+            <div class="container mt-4">
+                <div class="card mb-4">
+                  <div class="card-body">
                     <h3 class="mlh_verdana">Prérequis</h3>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="col-form-label col-form-label-sm">Informations complémentaires:</label>
-                            <div *ngFor="let key of userInfosKeys; let i = index">
-                                <div class="d-flex">
-                                    <input [(ngModel)]="userInfosKeys[i]" class="form-control me-2"
-                                        placeholder="Information" />
-                                    <input [(ngModel)]="activiteData.user_infos[userInfosKeys[i]]" class="form-control"
-                                        placeholder="État" />
-                                    <button (click)="removeUserInfoKey(i)"
-                                        class="btn btn-danger btn-sm ms-2">Supprimer</button>
-                                </div>
-                            </div>
-                            <button (click)="addUserInfoKey()" class="btn btn-primary mt-2">Ajouter Information</button>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="col-form-label col-form-label-sm">Éléments nécessaires pour bénéficier de
-                                l'activité:</label>
-                            <div *ngFor="let key of prerequisKeys; let i = index">
-                                <div class="d-flex">
-                                    <input [(ngModel)]="prerequisKeys[i]" class="form-control me-2"
-                                        placeholder="Compétences" />
-                                    <input [(ngModel)]="activiteData.prerequis[prerequisKeys[i]]" class="form-control"
-                                        placeholder="Niveau" />
-                                    <button (click)="removePrerequisKey(i)"
-                                        class="btn btn-danger btn-sm ms-2">Supprimer</button>
-                                </div>
-                            </div>
-                            <button (click)="addPrerequisKey()" class="btn btn-primary mt-2">Ajouter Élément</button>
-                        </div>
+                    <div class="list-group">
+                      <a *ngFor="let key of prerequisKeys; let i = index"  class="list-group-item list-group-item-action" (dblclick)="editPrerequis(i)">
+                        {{key}}: {{activiteData.prerequis[key]}}
+                        <button class="btn btn-danger btn-sm ms-2 float-end" (click)="removePrerequisKey(i, $event)">
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </a>
+                      <div *ngIf="newPrerequisKey !== null" class="d-flex align-items-center mt-2">
+                        <input type="text" class="form-control form-control-sm me-2" placeholder="Connaissance" [(ngModel)]="newPrerequisKey" style="width: 30%;">
+                        <input type="text" class="form-control form-control-sm me-2" placeholder="Niveau" [(ngModel)]="newPrerequisValue" style="width: 50%;">
+                        <button (click)="saveNewPrerequis()" class="btn btn-primary btn-sm me-2">Enregistrer</button>
+                        <button (click)="cancelNewPrerequis()" class="btn btn-secondary btn-sm">Annuler</button>
+                      </div>
                     </div>
+                    <button (click)="addPrerequisKey()" class="btn btn-primary mt-2">Ajouter Élément</button>
+                  </div>
                 </div>
-            </div>
-
+              
+                <div class="card mb-4">
+                  <div class="card-body">
+                    <h3 class="mlh_verdana">Informations complémentaires</h3>
+                    <div class="list-group">
+                      <a *ngFor="let key of userInfosKeys; let i = index"  class="list-group-item list-group-item-action" (dblclick)="editUserInfo(i)">
+                        {{key}}: {{activiteData.user_infos[key]}}
+                        <!-- <button class="btn btn-danger btn-sm ms-2 float-end" (click)="removeUserInfoKey(i, $event)"> -->
+                          <!-- <i class="fa fa-trash"></i> -->
+                        <!-- </button> -->
+                      </a>
+                      <div *ngIf="newUserInfoKey !== null" class="d-flex align-items-center mt-2">
+                        <input type="text" class="form-control form-control-sm me-2" placeholder="Clé" [(ngModel)]="newUserInfoKey" style="width: 30%;">
+                        <input type="text" class="form-control form-control-sm me-2" placeholder="Valeur" [(ngModel)]="newUserInfoValue" style="width: 50%;">
+                        <button (click)="saveNewUserInfo()" class="btn btn-primary btn-sm me-2">Enregistrer</button>
+                        <button (click)="cancelNewUserInfo()" class="btn btn-secondary btn-sm">Annuler</button>
+                      </div>
+                    </div>
+                    <button (click)="addUserInfoKey()" class="btn btn-primary mt-2">Ajouter Élément</button>
+                  </div>
+                </div>
 
             <div class="card mb-4">
                 <div class="card-body">
