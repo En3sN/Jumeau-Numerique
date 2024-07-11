@@ -18,6 +18,10 @@ export class ModifierActiviteComponent implements OnInit {
   prerequisKeys: string[] = [];
   documents: any[] = [];
   documentToDelete!: number;
+  newUserInfoKey: string | null = null;
+  newUserInfoValue: string | null = null;
+  newPrerequisKey: string | null = null;
+  newPrerequisValue: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -158,47 +162,71 @@ export class ModifierActiviteComponent implements OnInit {
   }
 
   addUserInfoKey() {
-    this.userInfosKeys.push('');
+    this.newUserInfoKey = '';
+    this.newUserInfoValue = '';
   }
 
-  removeUserInfoKey(index: number) {
+  saveNewUserInfo() {
+    if (this.newUserInfoKey && this.newUserInfoValue) {
+      this.activiteData.user_infos[this.newUserInfoKey] = this.newUserInfoValue;
+      this.userInfosKeys.push(this.newUserInfoKey);
+      this.newUserInfoKey = null;
+      this.newUserInfoValue = null;
+    }
+  }
+
+  cancelNewUserInfo() {
+    this.newUserInfoKey = null;
+    this.newUserInfoValue = null;
+  }
+
+  removeUserInfoKey(index: number, event: Event) {
+    event.stopPropagation();
     const key = this.userInfosKeys[index];
     delete this.activiteData.user_infos[key];
     this.userInfosKeys.splice(index, 1);
   }
 
   addPrerequisKey() {
-    this.prerequisKeys.push('');
+    this.newPrerequisKey = '';
+    this.newPrerequisValue = '';
   }
 
-  removePrerequisKey(index: number) {
+  saveNewPrerequis() {
+    if (this.newPrerequisKey && this.newPrerequisValue) {
+      this.activiteData.prerequis[this.newPrerequisKey] = this.newPrerequisValue;
+      this.prerequisKeys.push(this.newPrerequisKey);
+      this.newPrerequisKey = null;
+      this.newPrerequisValue = null;
+    }
+  }
+
+  cancelNewPrerequis() {
+    this.newPrerequisKey = null;
+    this.newPrerequisValue = null;
+  }
+
+  removePrerequisKey(index: number, event: Event) {
+    event.stopPropagation();
     const key = this.prerequisKeys[index];
     delete this.activiteData.prerequis[key];
     this.prerequisKeys.splice(index, 1);
   }
 
-  addTag() {
-    if (this.newTag) {
-      this.activiteData.tags.push(this.newTag);
-      this.newTag = '';
+  editUserInfo(index: number): void {
+    const key = this.userInfosKeys[index];
+    const newValue = prompt('Modifier la valeur:', this.activiteData.user_infos[key]);
+    if (newValue !== null) {
+      this.activiteData.user_infos[key] = newValue;
     }
   }
 
-  removeTag(index: number) {
-    this.activiteData.tags.splice(index, 1);
-  }
-
-  saveTags() {
-    const updateData = { tags: this.activiteData.tags };
-    this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
-      next: (response) => {
-        console.log('Tags updated successfully:');
-        this.toastService.showToast('Succès', 'Mise à jour des tags réussie', 'toast', 'bg-info text-white');
-      },
-      error: (err) => {
-        console.error('Error updating tags:', err);
-      }
-    });
+  editPrerequis(index: number): void {
+    const key = this.prerequisKeys[index];
+    const newValue = prompt('Modifier la valeur:', this.activiteData.prerequis[key]);
+    if (newValue !== null) {
+      this.activiteData.prerequis[key] = newValue;
+    }
   }
 
   uploadDocuments(event: any): void {
@@ -284,4 +312,16 @@ export class ModifierActiviteComponent implements OnInit {
   back() {
     this.router.navigate(['/infos-perso'], { queryParams: { tab: 'activites' } }); 
   }
+
+  addTag() {
+    if (this.newTag) {
+      this.activiteData.tags.push(this.newTag);
+      this.newTag = '';
+    }
+  }
+
+  removeTag(index: number) {
+    this.activiteData.tags.splice(index, 1);
+  }
+
 }
