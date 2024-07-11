@@ -145,16 +145,16 @@ export class ActiviteService {
     }, sessionCode);
   }
 
-  async findServicesByActiviteId(activiteId: number, sessionCode: string): Promise<any> {
+  async findServiceById(serviceId: number, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const query = `
         SELECT *
         FROM services.service
-        WHERE activite_id = $1;
+        WHERE id = $1;
       `;
-      const result = await manager.query(query, [activiteId]);
+      const result = await manager.query(query, [serviceId]);
       if (!result || result.length === 0) {
-        throw new NotFoundException(`Service not found for activite ID ${activiteId}`);
+        throw new NotFoundException(`Service not found for ID ${serviceId}`);
       }
       return result[0];
     }, sessionCode);

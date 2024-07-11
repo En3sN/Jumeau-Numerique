@@ -87,11 +87,10 @@ export class ActiviteController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id/service')
-  async getServiceByActivityId(@Param('id') id: number, @Request() req): Promise<any> {
+  async getServiceById(@Param('id') id: number, @Request() req): Promise<any> {
     const sessionCode = req.user.sessionCode;
-    return this.activiteService.findServicesByActiviteId(id, sessionCode);
+    return this.activiteService.findServiceById(id, sessionCode);
   }
-
   @UseGuards(JwtAuthGuard)
   @Post('logo/:id')
   @UseInterceptors(FileInterceptor('file'))
