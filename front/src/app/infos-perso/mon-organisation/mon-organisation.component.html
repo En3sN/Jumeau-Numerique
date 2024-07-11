@@ -41,10 +41,9 @@
   </div>
   
   <div class="d-flex flex-column bd-highlight mt-2 border-bottom mlh_block_data">
-    <label for="formFile" class="form-label ms-1">Charger le Logo</label>
-    <div class="d-flex justify-content-start align-items-center w-100">
-      <img id="logoPreview" class="form-control mlh_org_logo me-3" alt="logo" style="width: 130px; height: auto;">
+    <div class="d-flex  align-items-end w-100">
       <input class="form-control uniform-input w-50 me-3" type="file" id="formFile" accept=".png, .jpeg, .jpg" (change)="onFileSelected($event)">
+      <img id="logoPreview" class="form-control mlh_org_logo ms-3" alt="logo" style="width: 130px; height: auto;">
     </div>
   </div>
   
