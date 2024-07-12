@@ -49,7 +49,7 @@
                         <div class="col-md-6">
                             <label class="col-form-label col-form-label-sm" for="inputOrgLogo">Logo (Facultatif):</label>
                             <div *ngIf="activiteData.logoUrl; else noLogo" class="d-flex row align-items-center">
-                              <img class="form-control mlh_org_logo" [src]="activiteData.logoUrl" alt="logo" />
+                              <img class="form-control ms-3  mlh_org_logo" [src]="activiteData.logoUrl" alt="logo" />
                               <button class="btn btn-primary btn-sm" (click)="deleteLogo()" style="border-radius: 50%; width: 30px; height: 30px;">
                                 <i class="fa fa-trash"></i>
                               </button>
