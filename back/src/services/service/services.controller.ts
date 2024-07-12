@@ -10,10 +10,10 @@ import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createServiceDto: CreateServiceDto) {
-    return this.servicesService.create(createServiceDto);
+  @UseInterceptors(FileInterceptor('logo'))
+  create(@Body() createServiceDto: CreateServiceDto, @UploadedFile() logo: Express.Multer.File) {
+    return this.servicesService.create(createServiceDto, logo);
   }
 
   @UseGuards(JwtAuthGuard)

@@ -15,13 +15,15 @@ export class ServicesService {
     private readonly entityManager: EntityManager
   ) {}
 
-  async create(createServiceDto: CreateServiceDto): Promise<Service> {
+  async create(createServiceDto: CreateServiceDto, logo: Express.Multer.File): Promise<Service> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const service = this.serviceRepository.create(createServiceDto);
+      if (logo) {
+        service.logo = logo.buffer;
+      }
       return manager.save(Service, service);
     });
   }
-
   async findAll(): Promise<Service[]> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       return manager.find(Service);

@@ -23,7 +23,21 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   services: any[] = [];
   documents: any[] = [];
   logoUrl: string | null = null;
+  logoPreviewUrl: string | null = null;
+  logoFile: File | null = null; 
 
+  newService: any = {
+    nom: '',
+    description: '',
+    reference: '',
+    type: '',
+    medias: '',
+    tags: '',
+    validation: false,
+    template: '',
+    is_pack: false
+  };
+  
   constructor(
     private router: Router, 
     private route: ActivatedRoute, 
@@ -323,5 +337,70 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
   viewServiceDetails(serviceId: number) {
     this.router.navigate(['/details-service', serviceId]);
+  }
+
+  openCreateServiceModal() {
+    const modalElement = document.getElementById('createServiceModal') as HTMLElement;
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.logoFile = input.files[0];
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.logoPreviewUrl = reader.result as string;
+      };
+      reader.readAsDataURL(this.logoFile);
+    }
+  }
+
+  removeLogo(): void {
+    this.logoFile = null;
+    this.logoPreviewUrl = null;
+  }
+
+  createService() {
+    const formData = new FormData();
+    formData.append('activite_id', this.activite.id);
+    formData.append('nom', this.newService.nom);
+    formData.append('description', this.newService.description);
+    formData.append('reference', this.newService.reference);
+    formData.append('type', this.newService.type);
+    formData.append('medias', this.newService.medias);
+    formData.append('tags', this.newService.tags);
+    formData.append('validation', this.newService.validation.toString());
+    formData.append('template', this.newService.template);
+    formData.append('is_pack', this.newService.is_pack.toString());
+    if (this.logoFile) {
+      formData.append('logo', this.logoFile, this.logoFile.name);
+    }
+
+    this.servicesService.createService(formData).subscribe({
+      next: (res) => {
+        this.loadServices(this.activite.id);
+        this.newService = {
+          nom: '',
+          description: '',
+          reference: '',
+          type: '',
+          medias: '',
+          tags: '',
+          validation: false,
+          template: '',
+          is_pack: false
+        };
+        this.logoFile = null;
+        const modalElement = document.getElementById('createServiceModal') as HTMLElement;
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        modalInstance?.hide();
+      },
+      error: (err) => {
+        console.error('Error creating service:', err);
+      }
+    });
   }
 }
