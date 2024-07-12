@@ -13,7 +13,7 @@ import { FilesService } from 'src/app/Services/files.service';
 })
 export class MesActivitesComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
-  
+
   showConfirmationToast: boolean = false;
   hasPermission: boolean = false;
   userRoles: string[] = [];
@@ -89,6 +89,8 @@ export class MesActivitesComponent implements OnInit {
         activity.logo = e.target.result;
       };
       reader.readAsDataURL(logoBlob);
+    }, error => {
+      console.error('Erreur lors du chargement du logo de l\'activité:', error);
     });
   }
 
@@ -114,7 +116,7 @@ export class MesActivitesComponent implements OnInit {
         this.toastService.showToast('Succès', 'Activité créée avec succès.', 'toast', 'bg-success text-white');
       },
       error: (err) => {
-        console.error('Error creating activity:', err);
+        console.error('Erreur lors de la création de l\'activité:', err);
         this.toastService.showToast('Erreur', 'Erreur lors de la création de l\'activité.', 'toast', 'bg-danger text-white');
       }
     });
@@ -128,7 +130,7 @@ export class MesActivitesComponent implements OnInit {
           this.toastService.showToast('Succès', 'Logo téléchargé avec succès.', 'toast', 'bg-success text-white');
         },
         error: (err) => {
-          console.error('Error uploading logo:', err);
+          console.error('Erreur lors du téléchargement du logo:', err);
           this.toastService.showToast('Erreur', 'Erreur lors du téléchargement du logo.', 'toast', 'bg-danger text-white');
         }
       });
@@ -179,7 +181,7 @@ export class MesActivitesComponent implements OnInit {
         this.toastService.showToast('Succès', 'Documents téléchargés avec succès.', 'toast', 'bg-success text-white');
       },
       error: (err) => {
-        console.error('Error uploading documents:', err);
+        console.error('Erreur lors du téléchargement des documents:', err);
         this.toastService.showToast('Erreur', 'Erreur lors du téléchargement des documents.', 'toast', 'bg-danger text-white');
       }
     });
@@ -192,7 +194,7 @@ export class MesActivitesComponent implements OnInit {
         this.toastService.showToast('Succès', 'Document supprimé avec succès.', 'toast', 'bg-info text-white');
       },
       error: (err) => {
-        console.error('Error deleting document:', err);
+        console.error('Erreur lors de la suppression du document:', err);
         this.toastService.showToast('Erreur', 'Erreur lors de la suppression du document.', 'toast', 'bg-danger text-white');
       }
     });
@@ -209,7 +211,7 @@ export class MesActivitesComponent implements OnInit {
         URL.revokeObjectURL(objectUrl);
       },
       error: (err) => {
-        console.error('Error downloading document:', err);
+        console.error('Erreur lors du téléchargement du document:', err);
       }
     });
   }
@@ -261,7 +263,7 @@ export class MesActivitesComponent implements OnInit {
 
   openModal(): void {
     if (this.userId === null) {
-      console.error('User ID is null');
+      console.error('L\'ID utilisateur est nul');
       return;
     }
 
@@ -277,7 +279,7 @@ export class MesActivitesComponent implements OnInit {
         modalInstance.show();
       },
       error: (err) => {
-        console.error('Error checking organisation:', err);
+        console.error('Erreur lors de la vérification de l\'organisation:', err);
       }
     });
   }
@@ -290,7 +292,7 @@ export class MesActivitesComponent implements OnInit {
 
   saveModal(): void {
     if (this.userId === null) {
-      console.error('User ID is null');
+      console.error('L\'ID utilisateur est nul');
       return;
     }
     const roles = ['Activite'].filter(role => role && role.trim());
@@ -304,7 +306,7 @@ export class MesActivitesComponent implements OnInit {
         setTimeout(() => this.showConfirmationToast = false, 4000);
       },
       error: (err: any) => {
-        console.error('Error:', err);
+        console.error('Erreur:', err);
       }
     });
   }
@@ -337,7 +339,7 @@ export class MesActivitesComponent implements OnInit {
           modalInstance?.hide();
         },
         error: (err: any) => {
-          console.error('Error deleting activity:', err);
+          console.error('Erreur lors de la suppression de l\'activité:', err);
         }
       });
     }
