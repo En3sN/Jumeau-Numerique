@@ -36,24 +36,35 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.activiteService.getActiviteById(+id).subscribe({
-        next: (data) => {
-          this.activite = {
-            ...data,
-            documents: Array.isArray(data.documents) ? data.documents : [],
-            user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
-            prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
-          };
-          this.loadDocuments(+id);
-          this.loadLogo(+id);
-          this.cdr.detectChanges();
-          this.initCalendar();
-          this.loadServices(+id);
-        },
-        error: (err) => {
-          console.error('Error fetching activity details:', err);
-        }
-      });
+        this.activiteService.getActiviteById(+id).subscribe({
+            next: (data) => {
+                this.activite = {
+                    ...data,
+                    documents: Array.isArray(data.documents) ? data.documents : [],
+                    user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
+                    prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
+                };
+                this.loadDocuments(+id);
+                this.loadLogo(+id);
+                this.cdr.detectChanges();
+                this.initCalendar();
+                this.loadServices(+id);
+                this.route.queryParams.subscribe(params => {
+                    const tab = params['tab'];
+                    if (tab) {
+                        setTimeout(() => {
+                            const tabElement = document.querySelector(`a[href="#${tab}"]`) as HTMLElement;
+                            if (tabElement) {
+                                tabElement.click();
+                            }
+                        }, 0);
+                    }
+                });
+            },
+            error: (err) => {
+                console.error('Error fetching activity details:', err);
+            }
+        });
     }
   }
 

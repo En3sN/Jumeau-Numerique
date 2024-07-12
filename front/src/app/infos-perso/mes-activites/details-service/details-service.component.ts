@@ -1,4 +1,3 @@
-// details-service.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServicesService } from 'src/app/Services/Services.service';
@@ -54,6 +53,6 @@ export class DetailsServiceComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/details-activite', this.service.activite_id]);
+    this.router.navigate(['/details-activite', this.service.activite_id], { queryParams: { tab: 'services' } });
   }
 }
