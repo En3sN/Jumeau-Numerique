@@ -25,6 +25,8 @@ export class ServicesService {
   getServiceByActiviteId(activiteId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/activite/${activiteId}/service`, { withCredentials: true });
   }
-
+  deleteService(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/services/${id}`, { withCredentials: true });
+  }
  
 }

@@ -39,6 +39,8 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     template: '',
     is_pack: false
   };
+
+  serviceToDelete: number | null = null;
   
   constructor(
     private router: Router, 
@@ -213,6 +215,36 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     });
   }
 
+  showDeleteConfirmation(serviceId: number, event: Event): void {
+    event.stopPropagation();
+    this.serviceToDelete = serviceId;
+    const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  }
+
+  confirmDelete(): void {
+    if (this.serviceToDelete !== null) {
+      this.servicesService.deleteService(this.serviceToDelete).subscribe({
+        next: () => {
+          this.loadServices(this.activite.id);
+          this.serviceToDelete = null;
+          const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+          const modalInstance = bootstrap.Modal.getInstance(modalElement);
+          modalInstance?.hide();
+        },
+        error: (err) => {
+          console.error('Error deleting service:', err);
+        }
+      });
+    }
+  }
+
+  editService(serviceId: number, event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/details-service', serviceId]);
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['activite'] && this.activite) {
       this.initCalendar();
@@ -369,7 +401,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       reader.onload = () => {
         this.logoPreviewUrl = reader.result as string;
       };
-      reader.readAsDataURL(this.logoFile);
+        reader.readAsDataURL(this.logoFile);
     }
   }
 
