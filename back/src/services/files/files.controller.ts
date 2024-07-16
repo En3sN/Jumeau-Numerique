@@ -15,8 +15,15 @@ export class FilesController {
   @Post('upload/:activiteId')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor('files', 10))
-  async uploadFiles(@UploadedFiles() files: Express.Multer.File[], @Param('activiteId') activiteId: number) {
+  async uploadFilesForActivite(@UploadedFiles() files: Express.Multer.File[], @Param('activiteId') activiteId: number) {
     return this.filesService.uploadFiles(files, activiteId);
+  }
+
+  @Post('upload-service/:serviceId')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('files', 10))
+  async uploadFilesForService(@UploadedFiles() files: Express.Multer.File[], @Param('serviceId') serviceId: number) {
+    return this.filesService.uploadFiles(files, undefined, serviceId);
   }
 
   @Get('document/:id')
@@ -37,10 +44,22 @@ export class FilesController {
     return this.filesService.getDocumentsByActiviteId(activiteId);
   }
 
+  @Get('service-documents/:serviceId')
+  @UseGuards(JwtAuthGuard)
+  async getDocumentsByServiceId(@Param('serviceId') serviceId: number) {
+    return this.filesService.getDocumentsByServiceId(serviceId);
+  }
+
   @Get('allDownload/:activiteId')
   @UseGuards(JwtAuthGuard)
   async downloadFilesByActiviteId(@Param('activiteId') activiteId: number, @Res() res: Response) {
     return this.filesService.downloadFilesByActiviteId(activiteId, res);
+  }
+
+  @Get('service-allDownload/:serviceId')
+  @UseGuards(JwtAuthGuard)
+  async downloadFilesByServiceId(@Param('serviceId') serviceId: number, @Res() res: Response) {
+    return this.filesService.downloadFilesByServiceId(serviceId, res);
   }
 
   @Delete(':id')

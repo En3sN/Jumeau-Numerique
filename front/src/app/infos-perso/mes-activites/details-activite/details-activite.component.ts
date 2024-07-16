@@ -25,14 +25,16 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   logoUrl: string | null = null;
   logoPreviewUrl: string | null = null;
   logoFile: File | null = null; 
+  documentFiles: File[] = [];
+  newTag: string = ''; 
 
   newService: any = {
     nom: '',
     description: '',
     reference: '',
     type: '',
-    medias: '',
-    tags: '',
+    documents: '',
+    tags: [],
     validation: false,
     template: '',
     is_pack: false
@@ -146,6 +148,19 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         console.error('Error fetching documents:', err);
       }
     });
+  }
+
+  onDocumentsSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      for (const file of Array.from(input.files)) {
+        this.documentFiles.push(file);
+      }
+    }
+  }
+
+  removeDocument(doc: File): void {
+    this.documentFiles = this.documentFiles.filter(file => file !== doc);
   }
 
   downloadDocument(documentId: number, filename: string) {
@@ -370,15 +385,17 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     formData.append('description', this.newService.description);
     formData.append('reference', this.newService.reference);
     formData.append('type', this.newService.type);
-    formData.append('medias', this.newService.medias);
-    formData.append('tags', this.newService.tags);
+    formData.append('tags', this.newService.tags.join(',')); 
     formData.append('validation', this.newService.validation.toString());
     formData.append('template', this.newService.template);
     formData.append('is_pack', this.newService.is_pack.toString());
     if (this.logoFile) {
       formData.append('logo', this.logoFile, this.logoFile.name);
     }
-
+    for (const file of this.documentFiles) {
+      formData.append('documents', file, file.name);
+    }
+  
     this.servicesService.createService(formData).subscribe({
       next: (res) => {
         this.loadServices(this.activite.id);
@@ -387,13 +404,14 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
           description: '',
           reference: '',
           type: '',
-          medias: '',
-          tags: '',
+          documents: '',
+          tags: [],
           validation: false,
           template: '',
           is_pack: false
         };
         this.logoFile = null;
+        this.documentFiles = [];
         const modalElement = document.getElementById('createServiceModal') as HTMLElement;
         const modalInstance = bootstrap.Modal.getInstance(modalElement);
         modalInstance?.hide();
@@ -402,5 +420,16 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         console.error('Error creating service:', err);
       }
     });
+  }
+
+  addTag() {
+    if (this.newTag && !this.newService.tags.includes(this.newTag)) {
+      this.newService.tags.push(this.newTag);
+      this.newTag = '';
+    }
+  }
+
+  removeTag(index: number) {
+    this.newService.tags.splice(index, 1);
   }
 }

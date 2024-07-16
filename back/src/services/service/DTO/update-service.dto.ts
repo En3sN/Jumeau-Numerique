@@ -25,11 +25,6 @@ export class UpdateServiceDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  medias?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
   tags?: string[];
 
   @IsOptional()

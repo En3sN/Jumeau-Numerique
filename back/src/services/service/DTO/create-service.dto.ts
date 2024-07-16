@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, IsBoolean, IsArray, IsInt } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsString, IsNotEmpty, IsOptional, IsArray, IsInt, IsBoolean } from 'class-validator';
 
 export class CreateServiceDto {
   @IsNotEmpty()
@@ -25,11 +24,6 @@ export class CreateServiceDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  medias?: string[];
-
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
   tags?: string[];
 
   @IsOptional()
@@ -45,5 +39,9 @@ export class CreateServiceDto {
   is_pack?: boolean;
 
   @IsOptional()
-  logo?: Buffer;
+  logo?: Express.Multer.File;
+
+  @IsOptional()
+  @IsArray()
+  documents?: Express.Multer.File[];
 }

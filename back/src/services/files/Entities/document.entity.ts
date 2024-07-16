@@ -1,5 +1,6 @@
-import { Activite } from 'src/services/activite/Entities/activite.entity';
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Activite } from 'src/services/activite/Entities/activite.entity';
+import { Service } from 'src/services/service/Entities/service.entity';
 
 @Entity('documents', { schema: 'services' })
 export class Document {
@@ -9,6 +10,10 @@ export class Document {
   @ManyToOne(() => Activite, activite => activite.documents, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'activite_id' })
   activite: Activite;
+
+  @ManyToOne(() => Service, service => service.documents, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'service_id' })
+  service: Service;
 
   @Column({ type: 'text' })
   titre: string;

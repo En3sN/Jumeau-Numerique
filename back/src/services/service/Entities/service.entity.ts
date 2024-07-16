@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Document } from 'src/services/files/Entities/document.entity';
 
 @Entity('service', { schema: 'services' })
 export class Service {
@@ -20,9 +21,6 @@ export class Service {
   @Column({ type: 'text', nullable: true })
   type: string;
 
-  @Column({ type: 'text', array: true, nullable: true })
-  medias: string[];
-
   @Column({ type: 'bytea', nullable: true })
   logo: Buffer;
 
@@ -37,4 +35,7 @@ export class Service {
 
   @Column({ type: 'boolean', default: false })
   is_pack: boolean;
+
+  @OneToMany(() => Document, document => document.service)
+  documents: Document[];
 }

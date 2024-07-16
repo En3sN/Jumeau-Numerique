@@ -26,7 +26,7 @@ export class FilesService {
     }
   }
 
-  async uploadFiles(files: Express.Multer.File[], activiteId: number): Promise<Document[]> {
+  async uploadFiles(files: Express.Multer.File[], activiteId?: number, serviceId?: number): Promise<Document[]> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const uploadedDocuments: Document[] = [];
 
@@ -36,7 +36,8 @@ export class FilesService {
         const encryptedData = Buffer.concat([cipher.update(file.buffer), cipher.final()]);
 
         const newDocument = this.documentRepository.create({
-          activite: { id: activiteId },
+          activite: activiteId ? { id: activiteId } : undefined,
+          service: serviceId ? { id: serviceId } : undefined,
           titre: file.originalname,
           mimetype: file.mimetype,
           iv: iv.toString('hex'),
@@ -71,14 +72,41 @@ export class FilesService {
     });
   }
 
+  async getDocumentsByServiceId(serviceId: number): Promise<Document[]> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      return manager.find(Document, { where: { service: { id: serviceId } } });
+    });
+  }
+
   async downloadFilesByActiviteId(activiteId: number, res: Response) {
     const documents = await this.getDocumentsByActiviteId(activiteId);
     const archive = archiver('zip', {
-      zlib: { level: 9 } 
+      zlib: { level: 9 }
     });
 
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', `attachment; filename="documents_${activiteId}.zip"`);
+
+    archive.pipe(res);
+
+    for (const document of documents) {
+      const decipher = crypto.createDecipheriv('aes-256-ctr', this.cryptoSecretKey, Buffer.from(document.iv, 'hex'));
+      const decryptedData = Buffer.concat([decipher.update(document.encrypted_data), decipher.final()]);
+
+      archive.append(decryptedData, { name: document.titre });
+    }
+
+    await archive.finalize();
+  }
+
+  async downloadFilesByServiceId(serviceId: number, res: Response) {
+    const documents = await this.getDocumentsByServiceId(serviceId);
+    const archive = archiver('zip', {
+      zlib: { level: 9 }
+    });
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="documents_${serviceId}.zip"`);
 
     archive.pipe(res);
 
