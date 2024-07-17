@@ -14,10 +14,12 @@ export class AuthGuard implements CanActivate {
     canActivate(
         route: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean> {
+            const allowedWithoutLogin = ['/activites', '/inscription', '/accueil', '/contacts', '/aide'];
+
         return this.authService.isLoggedIn().pipe(
             map(isLoggedIn => {
-                if (!isLoggedIn) {
-                    this.router.navigate(['/']);
+                if (!isLoggedIn && !allowedWithoutLogin.includes(state.url)) {
+                    this.router.navigate(['/accueil']);
                     return false;
                 }
                 return true;

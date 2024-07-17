@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './Services/Auth.service';
-import { filter } from 'rxjs';
 import { fadeAnimation } from './animations';
+import { filter } from 'rxjs/operators';
+import { NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -17,16 +18,18 @@ export class AppComponent {
 
   ngOnInit(): void {
     this.authService.onLogout.subscribe(() => {
-      const currentUrl = this.router.url;
-      const protectedRoutes = ['/infos-perso', '/planning', '/infos-perso', '/modifier-activite', '/details-activite', '/details-service'];
-
-      if (protectedRoutes.includes(currentUrl)) {
-        this.router.navigate(['/accueil']);
-      }
+      this.router.navigate(['/accueil']);
     });
 
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
-      this.authService.checkLoginStatus().subscribe();
+      this.authService.isLoggedIn().subscribe(isLoggedIn => {
+        const currentUrl = this.router.url;
+        const allowedWithoutLogin = ['/activites', '/inscription', '/accueil','/contacts', '/aide'];
+
+        if (!isLoggedIn && !allowedWithoutLogin.includes(currentUrl)) {
+          this.router.navigate(['/accueil']);
+        }
+      });
     });
   }
 
