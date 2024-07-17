@@ -24,9 +24,9 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   documents: any[] = [];
   logoUrl: string | null = null;
   logoPreviewUrl: string | null = null;
-  logoFile: File | null = null; 
+  logoFile: File | null = null;
   documentFiles: File[] = [];
-  newTag: string = ''; 
+  newTag: string = '';
 
   newService: any = {
     nom: '',
@@ -41,48 +41,48 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   };
 
   serviceToDelete: number | null = null;
-  
+
   constructor(
-    private router: Router, 
-    private route: ActivatedRoute, 
-    private activiteService: ActiviteService, 
+    private router: Router,
+    private route: ActivatedRoute,
+    private activiteService: ActiviteService,
     private cdr: ChangeDetectorRef,
     private servicesService: ServicesService,
     private filesService: FilesService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-        this.activiteService.getActiviteById(+id).subscribe({
-            next: (data) => {
-                this.activite = {
-                    ...data,
-                    documents: Array.isArray(data.documents) ? data.documents : [],
-                    user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
-                    prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
-                };
-                this.loadDocuments(+id);
-                this.loadLogo(+id);
-                this.cdr.detectChanges();
-                this.initCalendar();
-                this.loadServices(+id);
-                this.route.queryParams.subscribe(params => {
-                    const tab = params['tab'];
-                    if (tab) {
-                        setTimeout(() => {
-                            const tabElement = document.querySelector(`a[href="#${tab}"]`) as HTMLElement;
-                            if (tabElement) {
-                                tabElement.click();
-                            }
-                        }, 0);
-                    }
-                });
-            },
-            error: (err) => {
-                console.error('Error fetching activity details:', err);
+      this.activiteService.getActiviteById(+id).subscribe({
+        next: (data) => {
+          this.activite = {
+            ...data,
+            documents: Array.isArray(data.documents) ? data.documents : [],
+            user_infos: typeof data.user_infos === 'object' ? data.user_infos : {},
+            prerequis: typeof data.prerequis === 'object' ? data.prerequis : {}
+          };
+          this.loadDocuments(+id);
+          this.loadLogo(+id);
+          this.cdr.detectChanges();
+          this.initCalendar();
+          this.loadServices(+id);
+          this.route.queryParams.subscribe(params => {
+            const tab = params['tab'];
+            if (tab) {
+              setTimeout(() => {
+                const tabElement = document.querySelector(`a[href="#${tab}"]`) as HTMLElement;
+                if (tabElement) {
+                  tabElement.click();
+                }
+              }, 0);
             }
-        });
+          });
+        },
+        error: (err) => {
+          console.error('Error fetching activity details:', err);
+        }
+      });
     }
   }
 
@@ -240,10 +240,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     }
   }
 
-  editService(serviceId: number, event: Event): void {
-    event.stopPropagation();
-    this.router.navigate(['/details-service', serviceId]);
-  }
+
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['activite'] && this.activite) {
@@ -267,7 +264,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     if (containerEl) {
       new Draggable(containerEl, {
         itemSelector: '.fc-event',
-        eventData: function(eventEl: any) {
+        eventData: function (eventEl: any) {
           return {
             title: eventEl.innerText
           };
@@ -386,6 +383,11 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     this.router.navigate(['/details-service', serviceId]);
   }
 
+  editService(serviceId: number, event: Event): void {
+    event.stopPropagation();
+    this.router.navigate(['/modifier-service', serviceId]);
+  }
+
   openCreateServiceModal() {
     const modalElement = document.getElementById('createServiceModal') as HTMLElement;
     const modalInstance = new bootstrap.Modal(modalElement);
@@ -401,7 +403,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       reader.onload = () => {
         this.logoPreviewUrl = reader.result as string;
       };
-        reader.readAsDataURL(this.logoFile);
+      reader.readAsDataURL(this.logoFile);
     }
   }
 
@@ -417,7 +419,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     formData.append('description', this.newService.description);
     formData.append('reference', this.newService.reference);
     formData.append('type', this.newService.type);
-    formData.append('tags', this.newService.tags.join(',')); 
+    formData.append('tags', this.newService.tags.join(','));
     formData.append('validation', this.newService.validation.toString());
     formData.append('template', this.newService.template);
     formData.append('is_pack', this.newService.is_pack.toString());
@@ -427,7 +429,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     for (const file of this.documentFiles) {
       formData.append('documents', file, file.name);
     }
-  
+
     this.servicesService.createService(formData).subscribe({
       next: (res) => {
         this.loadServices(this.activite.id);

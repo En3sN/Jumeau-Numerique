@@ -12,6 +12,7 @@ import { ModifierActiviteComponent } from './infos-perso/mes-activites/modifier-
 import { DetailsActiviteComponent } from './infos-perso/mes-activites/details-activite/details-activite.component';
 import { MesAbonnementsComponent } from './mes-abonnements/mes-abonnements.component';
 import { DetailsServiceComponent } from './infos-perso/mes-activites/details-service/details-service.component';
+import { ModifierServiceComponent } from './infos-perso/mes-activites/modifier-service/modifier-service.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/accueil', pathMatch: 'full', data: { animation: 'HomePage' } },
@@ -25,7 +26,9 @@ const routes: Routes = [
   { path: 'activites', component: ActivitesComponent, data: { animation: 'ActivitesPage' } },
   { path: 'modifier-activite/:id', component: ModifierActiviteComponent, canActivate: [AuthGuard], data: { animation: 'ModifierActivitePage' }},
   { path: 'details-activite/:id', component: DetailsActiviteComponent, canActivate: [AuthGuard], data: { animation: 'DetailsActivitePage' }},
-  { path: 'details-service/:id', component: DetailsServiceComponent, canActivate: [AuthGuard], data: { animation: 'DetailsServicePage' }}
+  { path: 'details-service/:id', component: DetailsServiceComponent, canActivate: [AuthGuard], data: { animation: 'DetailsServicePage' }},
+  { path: 'modifier-service/:id', component: ModifierServiceComponent, canActivate: [AuthGuard], data: { animation: 'ModifierServicePage' } },
+
 
 ];
 

@@ -41,6 +41,7 @@ export class ServicesService {
       return service;
     });
   }
+  
 
   async getLogo(id: number): Promise<Buffer> {
     const service = await this.findOne(id);
@@ -50,7 +51,6 @@ export class ServicesService {
     return service.logo;
   }
 
- 
   async create(createServiceDto: CreateServiceDto): Promise<Service> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const service = new Service();
@@ -82,14 +82,34 @@ export class ServicesService {
       return savedService;
     });
   }
-  
 
   async update(id: number, updateServiceDto: UpdateServiceDto): Promise<Service> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
-      await manager.update(Service, id, updateServiceDto);
+      const existingService = await this.findOne(id);
+      if (!existingService) {
+        throw new NotFoundException('Service not found');
+      }
+  
+      const updateValues = Object.entries(updateServiceDto).reduce((acc, [key, value]) => {
+        if (value !== null && value !== undefined) {
+          if (key === 'logo' && value instanceof Buffer) {
+            acc[key] = value;
+          } else {
+            acc[key] = value;
+          }
+        }
+        return acc;
+      }, {});
+  
+      if (Object.keys(updateValues).length === 0) {
+        throw new Error('No valid update values provided');
+      }
+  
+      await manager.update(Service, id, updateValues);
       return this.findOne(id);
     });
   }
+  
 
   async remove(id: number): Promise<void> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {

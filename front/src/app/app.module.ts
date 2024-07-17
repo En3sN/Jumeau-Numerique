@@ -34,6 +34,7 @@ import { ToastComponent } from './Shared/toast/toast.component';
 import { ToastService } from './Shared/Service/toast.service';
 import { DetailsServiceComponent } from './infos-perso/mes-activites/details-service/details-service.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { ModifierServiceComponent } from './infos-perso/mes-activites/modifier-service/modifier-service.component';
 
 
 
@@ -61,6 +62,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     DetailsActiviteComponent,
     ToastComponent,
     DetailsServiceComponent,
+    ModifierServiceComponent,
   ],
   imports: [
     BrowserModule,

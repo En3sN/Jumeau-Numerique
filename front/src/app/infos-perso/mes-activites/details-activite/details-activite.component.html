@@ -94,7 +94,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <div class="card mb-3" *ngFor="let service of services">
+                                    <div class="card mb-3" *ngFor="let service of services"  (click)="viewServiceDetails(service.id)">
                                         <div class="card-body d-flex">
                                           <div *ngIf="service.logoUrl" class="me-3">
                                             <img [src]="service.logoUrl" alt="Logo du service" style="width: 130px; height: 130px; object-fit: cover;">

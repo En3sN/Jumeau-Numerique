@@ -323,5 +323,4 @@ export class ModifierActiviteComponent implements OnInit {
   removeTag(index: number) {
     this.activiteData.tags.splice(index, 1);
   }
-
 }

@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, UploadedFile, UseInterceptors, Res, NotFoundException, UseGuards, HttpStatus, HttpCode, UploadedFiles } from '@nestjs/common';
-import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { Controller, Get, Post, Body, Param, Delete, Put, UploadedFile, UseInterceptors, Res, NotFoundException, UseGuards, HttpStatus, HttpCode, UploadedFiles, Patch } from '@nestjs/common';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { ServicesService } from './services.service';
 import { CreateServiceDto } from './DTO/create-service.dto';
@@ -50,11 +50,43 @@ export class ServicesController {
     return await this.servicesService.create(createServiceDto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Body() updateServiceDto: UpdateServiceDto
+  ) {
+    const updatedService = await this.servicesService.update(+id, updateServiceDto);
+    return updatedService;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('logo/:id')
+  @UseInterceptors(FileInterceptor('logo'))
+  async updateLogo(
+    @Param('id') id: string,
+    @UploadedFile() logo: Express.Multer.File
+  ) {
+    const updatedService = await this.servicesService.uploadLogo(+id, logo.buffer);
+    return updatedService;
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.servicesService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.servicesService.findOne(+id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.servicesService.remove(+id);
   }
 
   @Get('logo/:id')
@@ -65,24 +97,6 @@ export class ServicesController {
     }
     res.setHeader('Content-Type', 'image/jpeg'); 
     res.send(logo);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.servicesService.findOne(+id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateServiceDto: UpdateServiceDto) {
-    return this.servicesService.update(+id, updateServiceDto);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.servicesService.remove(+id);
   }
 
   @UseGuards(JwtAuthGuard)
