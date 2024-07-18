@@ -41,6 +41,14 @@ export class ServicesService {
     return this.http.patch(`${this.apiUrl}/services/logo/${id}`, formData, { withCredentials: true });
   }
 
+  updateDocuments(id: number, documentFiles: File[]): Observable<any> {
+    const formData = new FormData();
+    documentFiles.forEach(file => {
+      formData.append('documents', file);
+    });
+    return this.http.patch(`${this.apiUrl}/services/documents/${id}`, formData, { withCredentials: true });
+  }
+
   findOne(id: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/services/${id}`, { withCredentials: true });
   }

@@ -31,9 +31,15 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h3 class="mlh_verdana">Généralités</h3>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="col-form-label" for="inputServiceRef1">Référence:</label>
+                            <input [(ngModel)]="serviceData.reference" type="text" class="form-control" id="inputServiceRef1">
+                        </div>
+                    </div>
                     <div class="row mt-3">
                         <div class="col-md-6">
-                            <label class="col-form-label col-form-label-sm ms-2" for="inputServiceLogo">Logo (Facultatif):</label>
+                            <label class="col-form-label col-form-label-sm" for="inputServiceLogo">Logo (Facultatif):</label>
                             <div *ngIf="logoPreview || serviceData.logoUrl; else noLogo" class="d-flex row align-items-center">
                                 <img class="form-control ms-3  mlh_org_logo" [src]="logoPreview || serviceData.logoUrl" alt="logo" style="max-width: 120px; max-height: 120px;" />
                                 <button class="btn btn-primary btn-sm  ms-2" (click)="deleteLogo()" style="border-radius: 50%; width: 30px; height: 30px;">
@@ -45,11 +51,9 @@
                             </ng-template>
                             <input type="file" (change)="uploadLogo($event)" class="form-control mt-3" />
                         </div>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="col-form-label mt-3  ms-2" for="inputServiceRef">Référence:</label>
-                                <input [(ngModel)]="serviceData.reference" type="text" class="form-control" id="inputServiceRef">
-                            </div>
+                        <div class="col-md-6">
+                            <label class="col-form-label mt-3  ms-2" for="inputServiceRef">Référence:</label>
+                            <input [(ngModel)]="serviceData.reference" type="text" class="form-control" id="inputServiceRef">
                         </div>
                     </div>
                 </div>
@@ -73,11 +77,66 @@
                 </div>
             </div>
 
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h3 class="mlh_verdana">Documents</h3>
+                    <div class="accordion mt-3" id="documentsAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingDocuments">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments">
+                                    Voir les documents
+                                </button>
+                            </h2>
+                            <div id="collapseDocuments" class="accordion-collapse collapse show" aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
+                                <div class="accordion-body">
+                                    <ul class="list-group" *ngIf="allDocuments.length > 0; else noDocuments">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let doc of allDocuments">
+                                            {{ doc.titre || doc.name }}
+                                            <div>
+                                                <button class="btn btn-primary btn-sm ms-2" (click)="downloadDocument(doc.id || doc.name, doc.titre || doc.name)">
+                                                    <i class="fa fa-download"></i>
+                                                </button>
+                                                <button class="btn btn-danger btn-sm ms-2" (click)="removeDocument(doc)">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <ng-template #noDocuments>
+                                        <p class="text-center">Aucun document</p>
+                                    </ng-template>
+                                    <input type="file" (change)="onDocumentsSelected($event)" multiple class="form-control mt-4" />
+                                    <button class="btn btn-secondary btn-sm mt-3" (click)="downloadAllDocuments()" [disabled]="allDocuments.length === 0">Télécharger tout</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="d-flex justify-content-between mt-2 border-top pt-3">
                     <button type="button" class="btn btn-primary p-2" id="btServiceOk" (click)="updateService()">Enregistrer</button>
                     <button type="button" class="btn btn-secondary p-2" id="btServiceBack" (click)="back()">Retour</button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation de suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer ce document ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" (click)="confirmDelete()">Supprimer</button>
             </div>
         </div>
     </div>

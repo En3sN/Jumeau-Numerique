@@ -142,4 +142,33 @@ export class ServicesService {
       throw new NotFoundException('Service not found');
     });
   }
+
+
+  async updateDocuments(id: number, files: Express.Multer.File[]): Promise<Service> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const service = await this.findOne(id);
+      if (!service) {
+        throw new NotFoundException('Service not found');
+      }
+
+      await manager.delete(Document, { service });
+
+      const documents = files.map(file => {
+        const iv = crypto.randomBytes(16);
+        const cipher = crypto.createCipheriv('aes-256-ctr', this.cryptoSecretKey, iv);
+        const encryptedData = Buffer.concat([cipher.update(file.buffer), cipher.final()]);
+
+        const document = new Document();
+        document.titre = file.originalname;
+        document.mimetype = file.mimetype;
+        document.iv = iv.toString('hex');
+        document.encrypted_data = encryptedData;
+        document.service = service;
+        return document;
+      });
+
+      await manager.save(documents);
+      return service;
+    });
+  }
 }

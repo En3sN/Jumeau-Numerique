@@ -30,4 +30,19 @@ export class FilesService {
   downloadAllDocuments(activiteId: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/files/allDownload/${activiteId}`, { responseType: 'blob', withCredentials: true });
   }
+
+  getDocumentsByServiceId(serviceId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/files/service-documents/${serviceId}`, { withCredentials: true });
+  }
+
+  uploadDocumentsForService(formData: FormData, serviceId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/files/upload-service/${serviceId}`, formData, { withCredentials: true });
+  }
+
+  downloadDocumentForService(documentId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/files/service-documents/${documentId}`, { responseType: 'blob', withCredentials: true });
+  }
+  downloadAllDocumentsForService(serviceId: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/files/service-allDownload/${serviceId}`, { responseType: 'blob', withCredentials: true });
+  }
 }

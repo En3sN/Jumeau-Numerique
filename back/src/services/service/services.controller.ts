@@ -72,6 +72,17 @@ export class ServicesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch('documents/:id')
+  @UseInterceptors(AnyFilesInterceptor())
+  async updateDocuments(
+    @Param('id') id: string,
+    @UploadedFiles() files: Express.Multer.File[]
+  ) {
+    const updatedService = await this.servicesService.updateDocuments(+id, files);
+    return updatedService;
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.servicesService.findAll();
