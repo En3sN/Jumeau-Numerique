@@ -65,8 +65,6 @@ export class UtilisateurService {
     });
   }
 
-
-
   async createUser(createUtilisateurDto: CreateUtilisateurDto): Promise<any> {
     const existingUser = await this.userRepository.findOne({ where: { email: createUtilisateurDto.email } });
     if (existingUser) {

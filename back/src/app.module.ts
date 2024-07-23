@@ -13,6 +13,10 @@ import { ActiviteModule } from './services/activite/activite.module';
 import { FilesModule } from './services/files/files.module';
 import { ServicesModule } from './services/service/services.module';
 import { OrganisationModule } from './security/organisation/organisation.module';
+import { CreneauAdminModule } from './planning/creneau-admin/creneau-admin.module';
+import { CreneauServiceModule } from './planning/creneau-service/creneau-service.module';
+import { RdvModule } from './planning/rdv/rdv.module';
+import { ReservationModule } from './planning/reservation/reservation.module';
 
 @Module({
   imports: [
@@ -38,6 +42,10 @@ import { OrganisationModule } from './security/organisation/organisation.module'
     FilesModule,
     ServicesModule,
     OrganisationModule,
+    CreneauAdminModule,
+    CreneauServiceModule,
+    RdvModule,
+    ReservationModule,
   ],
   controllers: [AppController, CsrfController],
   providers: [AppService],
