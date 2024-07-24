@@ -17,27 +17,7 @@ export class CreneauServiceController {
     return await this.creneauServiceService.create(createCreneauServiceDto, sessionCode);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Get('service-creneaux')
-  async getServiceCreneaux(
-    @Query('serviceId') serviceId: string,
-    @Query('semaine') semaine: string,
-    @Query('year') year: string,
-    @Query('duree') duree: string,
-    @Request() req
-  ) {
-    const sessionCode = req.user.sessionCode;
-    const parsedServiceId = parseInt(serviceId, 10);
-    const parsedSemaine = semaine ? parseInt(semaine, 10) : undefined;
-    const parsedYear = year ? parseInt(year, 10) : undefined;
-    const parsedDuree = duree ? parseInt(duree, 10) : undefined;
 
-    if (isNaN(parsedServiceId) || (semaine && isNaN(parsedSemaine)) || (year && isNaN(parsedYear)) || (duree && isNaN(parsedDuree))) {
-      throw new BadRequestException('Invalid parameters');
-    }
-
-    return this.creneauServiceService.getServiceCreneaux(parsedServiceId, parsedSemaine, parsedYear, parsedDuree, sessionCode);
-  }
 
   @UseGuards(JwtAuthGuard)
   @Get()

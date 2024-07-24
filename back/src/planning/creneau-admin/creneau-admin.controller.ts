@@ -6,7 +6,6 @@ import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 
 @Controller('creneau-admin')
 export class CreneauAdminController {
-  private readonly logger = new Logger(CreneauAdminController.name);
 
   constructor(private readonly creneauAdminService: CreneauAdminService) {}
 
@@ -16,21 +15,6 @@ export class CreneauAdminController {
   async create(@Body() createCreneauAdminDto: CreateCreneauAdminDto, @Request() req) {
     const sessionCode = req.user.sessionCode;
     return this.creneauAdminService.create(createCreneauAdminDto, sessionCode);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('rdv-creneaux')
-  async getRdvCreneaux(@Query('activiteId') activiteId: string, @Request() req) {
-    const sessionCode = req.user.sessionCode;
-    const parsedActiviteId = parseInt(activiteId, 10);
-
-    if (isNaN(parsedActiviteId)) {
-      this.logger.error(`Invalid activiteId: ${activiteId}`);
-      throw new BadRequestException('Paramètre activiteId invalide');
-    }
-
-    this.logger.debug(`Session code: ${sessionCode}`);
-    return this.creneauAdminService.getRdvCreneauxByActivite(parsedActiviteId, sessionCode);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -44,7 +28,6 @@ export class CreneauAdminController {
   async findOne(@Param('id') id: string) {
     const parsedId = parseInt(id, 10);
     if (isNaN(parsedId)) {
-      this.logger.error(`Invalid id: ${id}`);
       throw new BadRequestException('Paramètre id invalide');
     }
     return this.creneauAdminService.findOne(parsedId);
@@ -56,7 +39,6 @@ export class CreneauAdminController {
   async update(@Param('id') id: string, @Body() updateCreneauAdminDto: UpdateCreneauAdminDto, @Request() req) {
     const parsedId = parseInt(id, 10);
     if (isNaN(parsedId)) {
-      this.logger.error(`Invalid id: ${id}`);
       throw new BadRequestException('Paramètre id invalide');
     }
     const sessionCode = req.user.sessionCode;
@@ -69,7 +51,6 @@ export class CreneauAdminController {
   async remove(@Param('id') id: string, @Request() req) {
     const parsedId = parseInt(id, 10);
     if (isNaN(parsedId)) {
-      this.logger.error(`Invalid id: ${id}`);
       throw new BadRequestException('Paramètre id invalide');
     }
     const sessionCode = req.user.sessionCode;
