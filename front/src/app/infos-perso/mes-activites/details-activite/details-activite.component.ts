@@ -240,8 +240,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     }
   }
 
-
-
   ngOnChanges(changes: SimpleChanges) {
     if (changes['activite'] && this.activite) {
       this.initCalendar();

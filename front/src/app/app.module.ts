@@ -35,6 +35,7 @@ import { ToastService } from './Shared/Service/toast.service';
 import { DetailsServiceComponent } from './infos-perso/mes-activites/details-service/details-service.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModifierServiceComponent } from './infos-perso/mes-activites/modifier-service/modifier-service.component';
+import { SharedModule } from "./Shared/shared.module";
 
 
 
@@ -73,8 +74,9 @@ import { ModifierServiceComponent } from './infos-perso/mes-activites/modifier-s
     ReactiveFormsModule,
     BrowserAnimationsModule,
     FullCalendarModule,
-    NgbModule 
-  ],
+    NgbModule,
+    SharedModule
+],
   providers: [AuthService, CookieService,ToastService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]
 })
