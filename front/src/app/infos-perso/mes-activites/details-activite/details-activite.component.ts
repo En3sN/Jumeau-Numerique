@@ -9,7 +9,10 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import * as bootstrap from 'bootstrap';
 import { ServicesService } from 'src/app/Services/Services.service';
+import { AuthService } from 'src/app/Services/Auth.service';
+import { CreneauAdminService } from 'src/app/Services/Creneau-admin.service';
 import { FilesService } from 'src/app/Services/Files.service';
+import { TypesService } from 'src/app/Services/Types.service';
 
 @Component({
   selector: 'app-details-activite',
@@ -27,6 +30,9 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   logoFile: File | null = null;
   documentFiles: File[] = [];
   newTag: string = '';
+  userId: number | null = null;
+  creneaux: any[] = [];
+  typesCreneaux: string[] = [];
 
   newService: any = {
     nom: '',
@@ -48,7 +54,10 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     private activiteService: ActiviteService,
     private cdr: ChangeDetectorRef,
     private servicesService: ServicesService,
-    private filesService: FilesService
+    private filesService: FilesService,
+    private authService: AuthService,
+    private creneauAdminService: CreneauAdminService,
+    private typesService: TypesService
   ) { }
 
   ngOnInit(): void {
@@ -67,6 +76,8 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
           this.cdr.detectChanges();
           this.initCalendar();
           this.loadServices(+id);
+          this.loadCreneaux(+id);
+          this.loadTypesCreneaux();
           this.route.queryParams.subscribe(params => {
             const tab = params['tab'];
             if (tab) {
@@ -84,6 +95,28 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         }
       });
     }
+
+    this.authService.checkLoginStatus().subscribe({
+      next: (response) => {
+        if (response.loggedIn) {
+          this.userId = response.user.id;
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching user details:', error);
+      }
+    });
+  }
+
+  loadTypesCreneaux(): void {
+    this.typesService.getAllTypes().subscribe({
+      next: (types) => {
+        this.typesCreneaux = types;
+      },
+      error: (err) => {
+        console.error('Error fetching types:', err);
+      }
+    });
   }
 
   loadLogo(activiteId: number): void {
@@ -135,6 +168,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     slotMinTime: '07:00:00',
     slotMaxTime: '20:00:00',
     height: 'auto',
+    events: this.creneaux,
     eventDidMount: this.handleEventRender.bind(this),
     eventDrop: this.handleEventChange.bind(this),
     eventResize: this.handleEventChange.bind(this),
@@ -215,6 +249,24 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     });
   }
 
+  loadCreneaux(activiteId: number): void {
+    this.creneauAdminService.getRdvCreneaux(activiteId).subscribe({
+      next: (creneaux: any[]) => {
+        this.creneaux = creneaux.map(creneau => ({
+          id: creneau.id,
+          title: creneau.type_creneau,
+          start: creneau.date_debut,
+          end: creneau.date_fin
+        }));
+        this.calendarOptions.events = this.creneaux;
+        this.calendarComponent.getApi().refetchEvents();
+      },
+      error: (err: any) => {
+        console.error('Error fetching creneaux:', err);
+      }
+    });
+  }
+
   showDeleteConfirmation(serviceId: number, event: Event): void {
     event.stopPropagation();
     this.serviceToDelete = serviceId;
@@ -278,16 +330,36 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     }
   }
 
-  handleTabChange() {
-    setTimeout(() => {
-      this.calendarComponent.getApi().updateSize();
-    }, 0);
+  getTypeCreneauFromElement(element: HTMLElement): string {
+    const title = element.getAttribute('title');
+    const type = this.typesCreneaux.find(type => type === title);
+    return type ? type : 'recurrent';
   }
 
   handleDrop(info: DropArg) {
     const checkbox = document.getElementById('drop-remove') as HTMLInputElement;
     if (checkbox?.checked) {
       info.draggedEl.parentNode?.removeChild(info.draggedEl);
+    }
+    if (this.userId) {
+      const typeCreneau = this.getTypeCreneauFromElement(info.draggedEl);
+      const createCreneauDto = {
+        user_id: this.userId,
+        activite_id: this.activite.id,
+        type_creneau: typeCreneau,
+        date_debut: info.dateStr,
+        date_fin: info.dateStr
+      };
+
+      this.creneauAdminService.create(createCreneauDto).subscribe({
+        next: (res) => {
+          console.log('Créneau créé avec succès:', res);
+          this.loadCreneaux(this.activite.id);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la création du créneau:', err);
+        }
+      });
     }
   }
 
@@ -303,6 +375,17 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       event.remove();
       if (this.activePopover) {
         this.activePopover.hide();
+      }
+      if (this.userId) {
+        this.creneauAdminService.remove(parseInt(event.id)).subscribe({
+          next: () => {
+            console.log('Créneau supprimé avec succès');
+            this.loadCreneaux(this.activite.id);
+          },
+          error: (err) => {
+            console.error('Erreur lors de la suppression du créneau:', err);
+          }
+        });
       }
     });
 
@@ -337,27 +420,27 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     const eventEl = info.el;
     const event: EventApi = info.event;
 
-    if (eventEl && event.start && event.end) {
-      const eventStart = event.start.toLocaleString();
-      const eventEnd = event.end.toLocaleString();
-      const popover = bootstrap.Popover.getInstance(eventEl) as bootstrap.Popover;
-      if (popover) {
-        const popoverContent = document.createElement('div');
-        const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
-        popoverContent.innerHTML = eventTime;
-        const deleteButton = document.createElement('button');
-        deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
-        deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn');
-        deleteButton.addEventListener('click', (e: Event) => {
-          e.stopPropagation();
-          event.remove();
-          if (this.activePopover) {
-            this.activePopover.hide();
-          }
-        });
-        popoverContent.appendChild(deleteButton);
-        popover.setContent({ '.popover-body': popoverContent });
-      }
+    if (eventEl && event.start && event.end && this.userId) {
+      const eventStart = event.start.toISOString();
+      const eventEnd = event.end.toISOString();
+      const typeCreneau = this.getTypeCreneauFromElement(eventEl);
+      const updateCreneauDto = {
+        user_id: this.userId,
+        activite_id: this.activite.id,
+        type_creneau: typeCreneau,
+        date_debut: eventStart,
+        date_fin: eventEnd
+      };
+
+      this.creneauAdminService.update(parseInt(event.id), updateCreneauDto).subscribe({
+        next: (res) => {
+          console.log('Créneau mis à jour avec succès:', res);
+          this.loadCreneaux(this.activite.id);
+        },
+        error: (err) => {
+          console.error('Erreur lors de la mise à jour du créneau:', err);
+        }
+      });
     }
   }
 
@@ -463,5 +546,11 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
   removeTag(index: number) {
     this.newService.tags.splice(index, 1);
+  }
+
+  handleTabChange() {
+    setTimeout(() => {
+      this.calendarComponent.getApi().updateSize();
+    }, 0);
   }
 }

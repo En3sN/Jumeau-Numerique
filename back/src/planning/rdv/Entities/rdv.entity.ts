@@ -17,10 +17,10 @@ export class Rdv {
   @Column({ type: 'timestamp' })
   date_rdv: Date;
 
-  @Column({ type: 'enum', enum: ['rdv_simple', 'rdv_complexe'], default: 'rdv_simple' })
+  @Column({ type: 'enum', enum: ['rdv_initial', 'rdv_simple'], default: 'rdv_initial' })
   type_rdv: string;
 
-  @Column({ type: 'enum', enum: ['Demande', 'Confirmé', 'Annulé'], default: 'Demande' })
+  @Column({ type: 'enum', enum: ['Demande', 'Accepte', 'Refuse'], default: 'Demande' })
   status: string;
 
   @ManyToOne(() => Utilisateur)

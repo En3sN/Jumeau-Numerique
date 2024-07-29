@@ -17,7 +17,7 @@ export class Reservation {
   @Column({ type: 'timestamp' })
   date_resa: Date;
 
-  @Column({ type: 'enum', enum: ['Demande', 'Confirmé', 'Annulé'], default: 'Demande' })
+  @Column({ type: 'enum', enum: ['Demande', 'Accepte', 'Refuse'], default: 'Demande' })
   status: string;
 
   @ManyToOne(() => Utilisateur)

@@ -12,22 +12,26 @@ export class CreneauAdminService {
   constructor(private http: HttpClient) {}
 
   create(createCreneauAdminDto: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}`, createCreneauAdminDto, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/creneau-admin`, createCreneauAdminDto, { withCredentials: true });
+  }
+
+  getRdvCreneaux(activiteId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/creneau-admin/all-creneaux?activiteId=${activiteId}`, { withCredentials: true });
   }
 
   findAll(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}`, { withCredentials: true });
+    return this.http.get<any[]>(`${this.apiUrl}/creneau-admin`, { withCredentials: true });
   }
 
   findOne(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`, { withCredentials: true });
+    return this.http.get<any>(`${this.apiUrl}/creneau-admin/${id}`, { withCredentials: true });
   }
 
   update(id: number, updateCreneauAdminDto: any): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}`, updateCreneauAdminDto, { withCredentials: true });
+    return this.http.patch(`${this.apiUrl}/creneau-admin/${id}`, updateCreneauAdminDto, { withCredentials: true });
   }
 
   remove(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`, { withCredentials: true });
+    return this.http.delete<void>(`${this.apiUrl}/creneau-admin/${id}`, { withCredentials: true });
   }
 }

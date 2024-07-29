@@ -3,6 +3,7 @@ import { CreneauAdminService } from './creneau-admin.service';
 import { CreateCreneauAdminDto } from './dto/create-creneau-admin.dto';
 import { UpdateCreneauAdminDto } from './dto/update-creneau-admin.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
+import { error } from 'console';
 
 @Controller('creneau-admin')
 export class CreneauAdminController {
@@ -13,8 +14,19 @@ export class CreneauAdminController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createCreneauAdminDto: CreateCreneauAdminDto, @Request() req) {
-    const sessionCode = req.user.sessionCode;
-    return this.creneauAdminService.create(createCreneauAdminDto, sessionCode);
+    const userId = req.user.id;  
+    return this.creneauAdminService.create(createCreneauAdminDto, userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('all-creneaux')
+  async getCreneauxAdmin(@Query('activiteId') activiteId: string, @Request() req) {
+    const userId = req.user.id; // ID de l'utilisateur connecté
+    const parsedActiviteId = parseInt(activiteId, 10);
+    if (isNaN(parsedActiviteId)) {
+      throw new BadRequestException('Paramètre activiteId invalide');
+    }
+    return this.creneauAdminService.getCreneauxAdmin(parsedActiviteId, userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -41,8 +53,8 @@ export class CreneauAdminController {
     if (isNaN(parsedId)) {
       throw new BadRequestException('Paramètre id invalide');
     }
-    const sessionCode = req.user.sessionCode;
-    return this.creneauAdminService.update(parsedId, updateCreneauAdminDto, sessionCode);
+    const userId = req.user.id;  
+    return this.creneauAdminService.update(parsedId, updateCreneauAdminDto, userId);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -53,7 +65,7 @@ export class CreneauAdminController {
     if (isNaN(parsedId)) {
       throw new BadRequestException('Paramètre id invalide');
     }
-    const sessionCode = req.user.sessionCode;
-    return this.creneauAdminService.remove(parsedId, sessionCode);
+    const userId = req.user.id; 
+    return this.creneauAdminService.remove(parsedId, userId);
   }
 }

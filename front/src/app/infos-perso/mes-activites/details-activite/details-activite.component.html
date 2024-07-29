@@ -129,27 +129,27 @@
                         </div>
                         <div class="tab-pane fade mt-2" id="RendezVous" role="tabpanel">
                           <div class="mb-4 mt-2">
-                              <h4>Informations rendez-vous</h4>
-                              <p>La durée d'un rendez-vous est définie dans l'activité à
-                                  <strong>{{ activite?.rdv_duree }}</strong> minutes. Les plages de rendez-vous seront
-                                  divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas
-                                  utilisés.</p>
+                            <h4>Informations rendez-vous</h4>
+                            <p>La durée d'un rendez-vous est définie dans l'activité à
+                              <strong>{{ activite?.rdv_duree }}</strong> minutes. Les plages de rendez-vous seront
+                              divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas
+                              utilisés.</p>
                           </div>
                           <div class="row">
-                              <div class="col-md-2 d-flex align-items-center">
-                                  <div id="external-events" class="bg-light p-2">
-                                      <h4>Événements glissables</h4>
-                                      <div id="external-events-list">
-                                          <div class="fc-event" title="Ponctuelle">Ponctuelle</div>
-                                          <div class="fc-event" title="Récurrente">Récurrente</div>
-                                          <div class="fc-event" title="Impossibilité">Impossibilité</div>
-                                      </div>
+                            <div class="col-md-2 d-flex align-items-center">
+                              <div id="external-events" class="bg-light p-2">
+                                <h4>Événements glissables</h4>
+                                <div id="external-events-list">
+                                  <div class="fc-event" *ngFor="let type of typesCreneaux" [attr.title]="type">
+                                    {{ type }}
                                   </div>
+                                </div>
                               </div>
-                              <div class="col-md-9">
-                                  <h3 class="mlh_verdana text-center mb-2"><u>Rendez-Vous</u></h3>
-                                  <full-calendar #calendar [options]="calendarOptions"></full-calendar>
-                              </div>
+                            </div>
+                            <div class="col-md-9">
+                              <h3 class="mlh_verdana text-center mb-2"><u>Rendez-Vous</u></h3>
+                              <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+                            </div>
                             </div>
                         </div>
                     </div>

@@ -17,6 +17,9 @@ import { CreneauAdminModule } from './planning/creneau-admin/creneau-admin.modul
 import { CreneauServiceModule } from './planning/creneau-service/creneau-service.module';
 import { RdvModule } from './planning/rdv/rdv.module';
 import { ReservationModule } from './planning/reservation/reservation.module';
+import { TypesController } from './planning/types/types.controller';
+import { TypesService } from './planning/types/types.service';
+import { TypesModule } from './planning/types/types.module';
 
 @Module({
   imports: [
@@ -46,8 +49,9 @@ import { ReservationModule } from './planning/reservation/reservation.module';
     CreneauServiceModule,
     RdvModule,
     ReservationModule,
+    TypesModule,
   ],
-  controllers: [AppController, CsrfController],
-  providers: [AppService],
+  controllers: [AppController, CsrfController, TypesController],
+  providers: [AppService, TypesService],
 })
 export class AppModule {}
