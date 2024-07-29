@@ -43,6 +43,6 @@ export class ReservationService {
     if (duree) {
       params = params.append('duree', duree.toString());
     }
-    return this.http.get<any>(`${this.apiUrl}/reservation/all-creneaux`, { params, withCredentials: true });
+    return this.http.get<any>(`${this.apiUrl}/reservation/all`, { params, withCredentials: true });
   }
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServicesService } from 'src/app/Services/Services.service';
-import { FilesService } from 'src/app/Services/files.service';
+import { FilesService } from 'src/app/Services/Files.service';
 
 @Component({
   selector: 'app-details-service',

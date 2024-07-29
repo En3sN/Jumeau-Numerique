@@ -57,13 +57,12 @@ export class RdvService {
     }, sessionCode);
   }
 
-  async getRdvCreneauxByActivite(activiteId: number, sessionCode: string): Promise<any> {
+  async getRdvCreneaux(activiteId: number, semaine: number | undefined, year: number | undefined, duree: number | undefined, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       try {
-
         const result = await manager.query(
-          'SELECT * FROM planning.rdv WHERE activite_id = $1',
-          [activiteId]
+          'SELECT * FROM planning.get_json_rdv_creneaux($1, $2, $3, $4)',
+          [activiteId, semaine, year, duree]
         );
         return result;
       } catch (error) {

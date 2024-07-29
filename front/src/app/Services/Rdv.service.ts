@@ -43,6 +43,6 @@ export class RdvService {
     if (duree) {
       params = params.append('duree', duree.toString());
     }
-    return this.http.get<any>(`${this.apiUrl}/rdv/all-creneaux`, { params, withCredentials: true });
+    return this.http.get<any>(`${this.apiUrl}/rdv/all`, { params, withCredentials: true });
   }
 }

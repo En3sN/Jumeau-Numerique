@@ -3,6 +3,8 @@ import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/create-reservation.dto';
 import { UpdateReservationDto } from './dto/update-reservation.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
+import { GetServiceCreneauxDto } from './dto/get-service-creneaux.dto';
+import { ValidationPipe } from '@nestjs/common';
 
 @Controller('reservation')
 export class ReservationController {
@@ -24,25 +26,15 @@ export class ReservationController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('all-creneaux')
+  @Get('all')
   async getServiceCreneaux(
-    @Query('serviceId') serviceId: string,
-    @Query('semaine') semaine: string,
-    @Query('year') year: string,
-    @Query('duree') duree: string,
+    @Query(new ValidationPipe({ transform: true })) query: GetServiceCreneauxDto,
     @Request() req
   ) {
     const sessionCode = req.user.sessionCode;
-    const parsedServiceId = parseInt(serviceId, 10);
-    const parsedSemaine = semaine ? parseInt(semaine, 10) : undefined;
-    const parsedYear = year ? parseInt(year, 10) : undefined;
-    const parsedDuree = duree ? parseInt(duree, 10) : undefined;
+    const { serviceId, semaine, year, duree } = query;
 
-    if (isNaN(parsedServiceId) || (semaine && isNaN(parsedSemaine)) || (year && isNaN(parsedYear)) || (duree && isNaN(parsedDuree))) {
-      throw new BadRequestException('Invalid parameters');
-    }
-
-    return this.reservationService.getServiceCreneaux(parsedServiceId, parsedSemaine, parsedYear, parsedDuree, sessionCode);
+    return this.reservationService.getServiceCreneaux(serviceId, semaine, year, duree, sessionCode);
   }
 
   @UseGuards(JwtAuthGuard)

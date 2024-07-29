@@ -4,7 +4,7 @@ import * as bootstrap from 'bootstrap';
 import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
 import { ActiviteService } from 'src/app/Services/Activite.service';
 import { ToastService } from 'src/app/Shared/Service/toast.service';
-import { FilesService } from 'src/app/Services/files.service';
+import { FilesService } from 'src/app/Services/Files.service';
 
 @Component({
   selector: 'app-mes-activites',

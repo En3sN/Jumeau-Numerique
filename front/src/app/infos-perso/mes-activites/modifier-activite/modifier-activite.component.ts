@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActiviteService } from 'src/app/Services/Activite.service';
 import { ToastService } from 'src/app/Shared/Service/toast.service';
-import { FilesService } from 'src/app/Services/files.service';
+import { FilesService } from 'src/app/Services/Files.service';
 import * as bootstrap from 'bootstrap';
 
 @Component({

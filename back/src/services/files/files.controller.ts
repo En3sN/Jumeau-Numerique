@@ -27,7 +27,6 @@ export class FilesController {
   }
 
   @Get('document/:id')
-  @UseGuards(JwtAuthGuard)
   async downloadFile(@Param('id') id: number, @Res() res: Response) {
     const { document, decryptedData } = await this.filesService.downloadFile(id);
 
@@ -39,7 +38,6 @@ export class FilesController {
   }
 
   @Get('documents/:activiteId')
-  @UseGuards(JwtAuthGuard)
   async getDocumentsByActiviteId(@Param('activiteId') activiteId: number) {
     return this.filesService.getDocumentsByActiviteId(activiteId);
   }
@@ -51,7 +49,6 @@ export class FilesController {
   }
 
   @Get('allDownload/:activiteId')
-  @UseGuards(JwtAuthGuard)
   async downloadFilesByActiviteId(@Param('activiteId') activiteId: number, @Res() res: Response) {
     return this.filesService.downloadFilesByActiviteId(activiteId, res);
   }

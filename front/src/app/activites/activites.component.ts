@@ -3,10 +3,10 @@ import { UtilisateurService } from '../Services/Utilisateur.service';
 import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { ActiviteService } from '../Services/Activite.service';
-import { FilesService } from '../Services/files.service';
 import { FormControl } from '@angular/forms';
 import { Observable, combineLatest } from 'rxjs';
 import { debounceTime, startWith, switchMap, map } from 'rxjs/operators';
+import { FilesService } from '../Services/Files.service';
 
 @Component({
   selector: 'app-activites',
@@ -159,5 +159,41 @@ export class ActivitesComponent implements OnInit {
     }
     this.updateAppliedFilters();
     this.loadPublicActivities();
+  }
+
+  downloadDocument(documentId: number, filename: string) {
+    this.filesService.downloadDocument(documentId).subscribe(
+      (response: Blob) => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      (error) => {
+        console.error('Erreur lors du téléchargement du document :', error);
+      }
+    );
+  }
+
+  downloadAllDocuments(activityId: number) {
+    this.filesService.downloadAllDocuments(activityId).subscribe(
+      (response: Blob) => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'all_documents.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      },
+      (error: any) => {
+        console.error('Erreur lors du téléchargement de tous les documents :', error);
+      }
+    );
   }
 }

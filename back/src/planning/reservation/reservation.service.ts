@@ -57,12 +57,12 @@ export class ReservationService {
     }, sessionCode);
   }
 
-  async getServiceCreneaux(serviceId: number, semaine?: number, year?: number, duree?: number, sessionCode?: string): Promise<any> {
+  async getServiceCreneaux(serviceId: number, semaine: number | undefined, year: number | undefined, duree: number | undefined, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       try {
         const result = await manager.query(
           'SELECT * FROM planning.get_json_service_creneaux($1, $2, $3, $4)',
-          [serviceId, semaine || null, year || null, duree || null]
+          [serviceId, semaine, year, duree]
         );
         return result;
       } catch (error) {

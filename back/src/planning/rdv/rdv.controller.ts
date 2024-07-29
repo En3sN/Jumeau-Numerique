@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpCode, HttpStatus, BadRequestException, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpCode, HttpStatus, BadRequestException, Logger, Query, ValidationPipe } from '@nestjs/common';
 import { RdvService } from './rdv.service';
 import { CreateRdvDto } from './dto/create-rdv.dto';
 import { UpdateRdvDto } from './dto/update-rdv.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
+import { GetRdvCreneauxDto } from './dto/get-rdv-creneaux.dto';
 
 @Controller('rdv')
 export class RdvController {
@@ -25,15 +26,15 @@ export class RdvController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('all-creneaux')
-  async getRdvCreneaux(@Query('activiteId') activiteId: string, @Request() req) {
+  @Get('all')
+  async getRdvCreneaux(
+    @Query(new ValidationPipe({ transform: true })) query: GetRdvCreneauxDto,
+    @Request() req
+  ) {
     const sessionCode = req.user.sessionCode;
-    const parsedActiviteId = parseInt(activiteId, 10);
+    const { activiteId, semaine, year, duree } = query;
 
-    if (isNaN(parsedActiviteId)) {
-      throw new BadRequestException('Paramètre activiteId invalide');
-    }
-    return this.rdvService.getRdvCreneauxByActivite(parsedActiviteId, sessionCode);
+    return this.rdvService.getRdvCreneaux(activiteId, semaine, year, duree, sessionCode);
   }
 
   @UseGuards(JwtAuthGuard)
