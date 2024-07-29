@@ -9,7 +9,7 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import * as bootstrap from 'bootstrap';
 import { ServicesService } from 'src/app/Services/Services.service';
-import { FilesService } from 'src/app/Services/files.service';
+import { FilesService } from 'src/app/Services/Files.service';
 
 @Component({
   selector: 'app-details-activite',
