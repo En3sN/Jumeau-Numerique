@@ -1,76 +1,112 @@
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="d-flex align-items-center mt-4">
-                <img class="img-thumbnail me-3" [src]="logoUrl" alt="logo" style="width: 150px; height: auto;">
-                <div>
-                    <h2 class="mlh_verdanamb-0">{{ service?.nom }}</h2>
-                    <p class="mt-2">{{ service?.description }}</p>
-                </div>
-            </div>
-            <div class="row mt-4">
-                <div class="col-12 mlh_block_data border-bottom">
-                    <ul class="nav nav-tabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link active" data-bs-toggle="tab" href="#Generalite" aria-selected="true" role="tab">Généralités</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" href="#Medias" aria-selected="false" role="tab">Médias</a>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <a class="nav-link" data-bs-toggle="tab" href="#Tags" aria-selected="false" role="tab">Tags</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content p-3 border border-top-0">
-                        <div class="tab-pane fade show active mb-3" id="Generalite" role="tabpanel">
-                            <label class="col-form-label">Type : </label>
-                            <strong> {{ service?.type }}</strong> <br>
-                            <label class="col-form-label">Référence : </label>
-                            <strong> {{ service?.reference }}</strong> <br>
-                        </div>
-                        <div class="tab-pane fade" id="Medias" role="tabpanel">
-                            <label class="col-form-label">Média : </label>
-                            <div class="accordion mt-1" id="documentsAccordion">
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingDocuments">
-                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments">
-                                            Voir les documents
-                                        </button>
-                                    </h2>
-                                    <div id="collapseDocuments" class="accordion-collapse collapse show" aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
-                                        <div class="accordion-body">
-                                            <ul class="list-group" *ngIf="documents.length > 0; else noDocuments">
-                                                <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let doc of documents">
-                                                    {{ doc.titre }}
-                                                    <button class="btn btn-primary btn-sm ms-2" (click)="downloadDocument(doc.id, doc.titre)">
-                                                        <i class="fa fa-download"></i>
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                            <ng-template #noDocuments>
-                                                <p class="text-center">Aucun document</p>
-                                            </ng-template>
-                                            <button class="btn btn-secondary btn-sm mt-3" (click)="downloadAllDocuments()" [disabled]="documents.length === 0">Télécharger tout</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="Tags" role="tabpanel">
-                            <label class="col-form-label">Tags : </label>
-                            <div>
-                                <span *ngFor="let tag of service?.tags" class="badge bg-info me-1">{{ tag }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row border-bottom mlh_block_data">
-                <div class="d-flex mb-1 mt-1 justify-content-end">
-                    <button type="button" class="btn btn-primary me-2" (click)="modifyService()">Modifier le service</button>
-                    <button type="button" class="btn btn-secondary" (click)="back()">Retour</button>
-                </div>
-            </div>
+      <div class="col-md-10">
+        <div class="d-flex align-items-center mt-4">
+          <img class="img-thumbnail me-3" [src]="logoUrl" alt="logo" style="width: 150px; height: auto;">
+          <div>
+            <h2 class="mlh_verdanamb-0">{{ service?.nom }}</h2>
+            <p class="mt-2">{{ service?.description }}</p>
+          </div>
         </div>
+        <div class="row mt-4">
+          <div class="col-12 mlh_block_data border-bottom">
+            <ul class="nav nav-tabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <a class="nav-link active" data-bs-toggle="tab" href="#Generalite" aria-selected="true" role="tab">Généralités</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#Medias" aria-selected="false" role="tab">Médias</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#Tags" aria-selected="false" role="tab">Tags</a>
+              </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#RendezVous" aria-selected="false" role="tab" (shown.bs.tab)="refreshCalendar()">Rendez-Vous</a>
+            </li>
+              <li class="nav-item" role="presentation">
+                <a class="nav-link" data-bs-toggle="tab" href="#Creneaux" aria-selected="false" role="tab">Créneaux</a>
+              </li>
+            </ul>
+            <div class="tab-content p-3 border border-top-0">
+              <div class="tab-pane fade show active mb-3" id="Generalite" role="tabpanel">
+                <label class="col-form-label">Type : </label>
+                <strong> {{ service?.type }}</strong> <br>
+                <label class="col-form-label">Référence : </label>
+                <strong> {{ service?.reference }}</strong> <br>
+              </div>
+              <div class="tab-pane fade" id="Medias" role="tabpanel">
+                <label class="col-form-label">Média : </label>
+                <div class="accordion mt-1" id="documentsAccordion">
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingDocuments">
+                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments">
+                        Voir les documents
+                      </button>
+                    </h2>
+                    <div id="collapseDocuments" class="accordion-collapse collapse show" aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
+                      <div class="accordion-body">
+                        <ul class="list-group" *ngIf="documents.length > 0; else noDocuments">
+                          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let doc of documents">
+                            {{ doc.titre }}
+                            <button class="btn btn-primary btn-sm ms-2" (click)="downloadDocument(doc.id, doc.titre)">
+                              <i class="fa fa-download"></i>
+                            </button>
+                          </li>
+                        </ul>
+                        <ng-template #noDocuments>
+                          <p class="text-center">Aucun document</p>
+                        </ng-template>
+                        <button class="btn btn-secondary btn-sm mt-3" (click)="downloadAllDocuments()" [disabled]="documents.length === 0">Télécharger tout</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane fade" id="Tags" role="tabpanel">
+                <label class="col-form-label">Tags : </label>
+                <div>
+                  <span *ngFor="let tag of service?.tags" class="badge bg-info me-1">{{ tag }}</span>
+                </div>
+              </div>
+              <div class="tab-pane fade mt-2" id="RendezVous" role="tabpanel">
+                <div class="mb-4 mt-2">
+                  <h4>Informations rendez-vous</h4>
+                  <p>La durée d'un rendez-vous est définie dans l'activité à
+                    <strong>{{ service?.rdv_duree }}</strong> minutes. Les plages de rendez-vous seront
+                    divisées automatiquement en fonction de cette durée. Les reliquats ne seront pas
+                    utilisés.</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 d-flex align-items-center">
+                      <div id="external-events" class="bg-light p-2">
+                        <h4>Événements glissables</h4>
+                        <div id="external-events-list">
+                            <div class="fc-event" *ngFor="let type of typesCreneaux" [attr.title]="type" [attr.data-type-creneau]="type">
+                                {{ type }}
+                              </div>                              
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-9">
+                      <h3 class="mlh_verdana text-center mb-2"><u>Rendez-Vous</u></h3>
+                      <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+                    </div>
+                  </div>
+                  
+              </div>
+              <div class="tab-pane fade mt-2" id="Creneaux" role="tabpanel">
+               
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row border-bottom mlh_block_data">
+          <div class="d-flex mb-1 mt-1 justify-content-end">
+            <button type="button" class="btn btn-primary me-2" (click)="modifyService()">Modifier le service</button>
+            <button type="button" class="btn btn-secondary" (click)="back()">Retour</button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+  

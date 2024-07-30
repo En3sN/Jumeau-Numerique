@@ -24,10 +24,6 @@ export class CreneauServiceService {
     }, sessionCode);
   }
 
-  async findAll(): Promise<CreneauService[]> {
-    return await this.creneauServiceRepository.find();
-  }
-
   async findOne(id: number): Promise<CreneauService> {
     const creneauService = await this.creneauServiceRepository.findOne({ where: { id } });
     if (!creneauService) {
@@ -45,6 +41,14 @@ export class CreneauServiceService {
       }
       return updatedCreneauService;
     }, sessionCode);
+  }
+
+  async getCreneauxService(serviceId: number): Promise<any> {
+    const result = await this.entityManager.query(
+      'SELECT * FROM planning.creneau_service WHERE service_id = $1',
+      [serviceId]
+    );
+    return result;
   }
 
   async remove(id: number, sessionCode: string): Promise<void> {

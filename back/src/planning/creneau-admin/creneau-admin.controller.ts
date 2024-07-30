@@ -21,7 +21,7 @@ export class CreneauAdminController {
   @UseGuards(JwtAuthGuard)
   @Get('all-creneaux')
   async getCreneauxAdmin(@Query('activiteId') activiteId: string, @Request() req) {
-    const userId = req.user.id; // ID de l'utilisateur connecté
+    const userId = req.user.id; 
     const parsedActiviteId = parseInt(activiteId, 10);
     if (isNaN(parsedActiviteId)) {
       throw new BadRequestException('Paramètre activiteId invalide');

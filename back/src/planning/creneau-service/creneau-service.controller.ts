@@ -17,12 +17,14 @@ export class CreneauServiceController {
     return await this.creneauServiceService.create(createCreneauServiceDto, sessionCode);
   }
 
-
-
   @UseGuards(JwtAuthGuard)
-  @Get()
-  async findAll() {
-    return await this.creneauServiceService.findAll();
+  @Get('all-creneaux')
+  async getCreneauxService(@Query('serviceId') serviceId: string) {
+    const parsedServiceId = parseInt(serviceId, 10);
+    if (isNaN(parsedServiceId)) {
+      throw new BadRequestException('Paramètre serviceId invalide');
+    }
+    return await this.creneauServiceService.getCreneauxService(parsedServiceId);
   }
 
   @UseGuards(JwtAuthGuard)
