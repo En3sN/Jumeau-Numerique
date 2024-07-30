@@ -1,10 +1,36 @@
 .card {
     transition: transform 0.2s;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 95%;
 }
 
-.card:hover {
-    transform: scale(1.01);
+.card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-img-top {
+    width: 100%;
+    height: auto;
+    max-width: 350px; /* Définir une largeur maximale */
+    max-height: 280px; /* Définir une hauteur maximale */
+    min-width: 350px; /* Définir une largeur minimale */
+    min-height: 280px; /* Définir une hauteur minimale */
+    object-fit: cover;
+}
+
+.card-title, .card-text {
+    margin-bottom: 10px;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
 }
 
 .mlh_top_container {
