@@ -256,7 +256,10 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
           id: creneau.id,
           title: creneau.type_creneau,
           start: creneau.date_debut,
-          end: creneau.date_fin
+          end: creneau.date_fin,
+          extendedProps: {
+            type_creneau: creneau.type_creneau
+          }
         }));
         this.calendarOptions.events = this.creneaux;
         this.calendarComponent.getApi().refetchEvents();
@@ -316,7 +319,10 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         itemSelector: '.fc-event',
         eventData: function (eventEl: any) {
           return {
-            title: eventEl.innerText
+            title: eventEl.innerText,
+            extendedProps: {
+              type_creneau: eventEl.getAttribute('data-type-creneau')
+            }
           };
         }
       });
@@ -330,10 +336,10 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     }
   }
 
-  getTypeCreneauFromElement(element: HTMLElement): string {
+  getTypeCreneauFromElement(element: HTMLElement, defaultType: string = 'recurrent'): string {
     const title = element.getAttribute('title');
     const type = this.typesCreneaux.find(type => type === title);
-    return type ? type : 'recurrent';
+    return type ? type : defaultType;
   }
 
   handleDrop(info: DropArg) {
@@ -342,7 +348,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       info.draggedEl.parentNode?.removeChild(info.draggedEl);
     }
     if (this.userId) {
-      const typeCreneau = this.getTypeCreneauFromElement(info.draggedEl);
+      const typeCreneau = this.getTypeCreneauFromElement(info.draggedEl, info.draggedEl.getAttribute('data-type-creneau') || undefined);
       const createCreneauDto = {
         user_id: this.userId,
         activite_id: this.activite.id,
@@ -353,7 +359,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
       this.creneauAdminService.create(createCreneauDto).subscribe({
         next: (res) => {
-          console.log('Créneau créé avec succès:', res);
+          console.log('Créneau créé avec succès:');
           this.loadCreneaux(this.activite.id);
         },
         error: (err) => {
@@ -423,7 +429,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     if (eventEl && event.start && event.end && this.userId) {
       const eventStart = event.start.toISOString();
       const eventEnd = event.end.toISOString();
-      const typeCreneau = this.getTypeCreneauFromElement(eventEl);
+      const typeCreneau = event.extendedProps['type_creneau'] || this.getTypeCreneauFromElement(eventEl);
       const updateCreneauDto = {
         user_id: this.userId,
         activite_id: this.activite.id,
@@ -434,7 +440,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
       this.creneauAdminService.update(parseInt(event.id), updateCreneauDto).subscribe({
         next: (res) => {
-          console.log('Créneau mis à jour avec succès:', res);
+          console.log('Créneau mis à jour avec succès:');
           this.loadCreneaux(this.activite.id);
         },
         error: (err) => {
