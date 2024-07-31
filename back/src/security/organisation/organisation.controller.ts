@@ -33,6 +33,12 @@ export class OrganisationController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.organisationService.findOneById(+id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
   @UseInterceptors(FileInterceptor('logo'))
   async update(

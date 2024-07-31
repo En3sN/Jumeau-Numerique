@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { Organisation } from './Entities/organisation.entity';
@@ -43,6 +43,17 @@ export class OrganisationService {
     const organisation = await this.organisationRepository.findOne({ where: { id: organisationId } });
     if (!organisation) {
       return null;
+    }
+    return organisation;
+  }
+
+  async findOneById(id: number): Promise<Organisation | null> {
+    if (isNaN(id)) {
+      throw new BadRequestException('Invalid organisation ID');
+    }
+    const organisation = await this.organisationRepository.findOne({ where: { id } });
+    if (!organisation) {
+      throw new NotFoundException('Organisation not found');
     }
     return organisation;
   }

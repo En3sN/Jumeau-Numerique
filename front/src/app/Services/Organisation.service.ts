@@ -7,13 +7,16 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class OrganisationService {
-    private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-
   getOrganisation(): Observable<any> {
     return this.http.get(`${this.apiUrl}/organisation/myOrganisation`, { withCredentials: true });
+  }
+
+  getOrganisationById(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/organisation/${id}`, { withCredentials: true });
   }
 
   createOrganisation(data: any): Observable<any> {

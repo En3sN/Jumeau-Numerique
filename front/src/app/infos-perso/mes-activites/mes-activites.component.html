@@ -225,7 +225,12 @@
           <div class="flex-grow-1">
             <h4 class="card-title">{{ activity.nom }}</h4>
             <p class="card-text">{{ activity.description }}</p>
-            <p class="card-text">organisme : <a href="#">{{ activity.organisation_nom }}</a></p>
+            <p class="card-text">
+              Organisme : 
+              <a href="#" (click)="openOrganisationInfo(activity.organisation_id, $event)">
+                {{ activity.organisation_nom }}
+              </a>
+            </p>
             <p>
               <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag }}</span>
             </p>
@@ -316,5 +321,75 @@
       <button type="button" class="btn-close" aria-label="Close" (click)="closeConfirmationToast()"></button>
     </div>
     <div class="toast-body">Un mail de confirmation vous a été envoyé.</div>
+  </div>
+</div>
+
+
+<!-- Offcanvas pour les informations de l'organisation -->
+<div class="offcanvas offcanvas-start custom-offcanvas-width" tabindex="-1" id="offcanvasOrganisation" aria-labelledby="offcanvasOrganisationLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasOrganisationLabel">Informations de l'Organisation</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div *ngIf="organisation">
+      <div class="col-12">
+        <div class="d-flex justify-content-start mb-3">
+          <img [src]="organisation.logoUrl" class="mlh_org_logo" alt="logo">
+        </div>
+        <div class="row border-bottom mlh_block_data mb-3">
+          <div class="col-6">
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Nom : {{ organisation.nom }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Activité : {{ organisation.activite }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Email : {{ organisation.email }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Site WEB : {{ organisation.web }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Siret : {{ organisation.siret }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Descriptif : {{ organisation.descriptif }}</label>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Adresse : {{ organisation.adresse }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Code postal : {{ organisation.cp }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Téléphone : {{ organisation.tel }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Commune : {{ organisation.commune }}</label>
+            </div>
+
+            <div class="border rounded mb-2">
+              <label class="col-form-label uniform-text">Commentaire : {{ organisation.commentaire }}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!organisation">
+      <p>Chargement des informations...</p>
+    </div>
   </div>
 </div>

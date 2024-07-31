@@ -16,3 +16,21 @@
     padding: 10px;
   }
   
+  .custom-offcanvas-width {
+    width: 60%; 
+    max-width: none; 
+  }
+  
+.uniform-text {
+  font-size: 0.9rem; 
+  padding: 10px; 
+}
+
+.mlh_block_data .border {
+  padding: 10px; 
+}
+
+.mlh_org_logo {
+  max-width: 130px; 
+  height: auto;
+}

@@ -103,16 +103,18 @@ export class ActiviteService {
   async findUserActivities(sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const query = `
-        SELECT a.*, o.nom as organisation_nom
+        SELECT a.*, o.id as organisation_id, o.nom as organisation_nom
         FROM services.activite a
         JOIN security.organisation o ON a.organisation = o.id
         JOIN security.users_table u ON a.organisation = u.organisation
         WHERE u.id = (SELECT security.get_user_from_code($1));
       `;
       const result = await manager.query(query, [sessionCode]);
+      console.log('Activities from DB:', result);  // Ajoutez ce log pour vérifier les données
       return result;
     }, sessionCode);
   }
+  
 
   async findOne(id: number, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {

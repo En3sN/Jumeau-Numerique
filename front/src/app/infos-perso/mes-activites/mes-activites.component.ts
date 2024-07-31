@@ -5,6 +5,7 @@ import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
 import { ActiviteService } from 'src/app/Services/Activite.service';
 import { ToastService } from 'src/app/Shared/Service/toast.service';
 import { FilesService } from 'src/app/Services/Files.service';
+import { OrganisationService } from 'src/app/Services/Organisation.service';
 
 @Component({
   selector: 'app-mes-activites',
@@ -22,6 +23,9 @@ export class MesActivitesComponent implements OnInit {
   activityToDelete: number | null = null;
   documents: File[] = [];
   documentToDelete: number | null = null;
+  organisation: any;
+  selectedOrganisationId: number | null = null;
+
   activiteData: any = {
     nom: '',
     description: '',
@@ -49,6 +53,7 @@ export class MesActivitesComponent implements OnInit {
   constructor(
     private utilisateurService: UtilisateurService,
     private activiteService: ActiviteService,
+    private organisationService: OrganisationService,
     private router: Router,
     private toastService: ToastService,
     private filesService: FilesService
@@ -101,7 +106,7 @@ export class MesActivitesComponent implements OnInit {
   }
 
   createActivity(): void {
-    const { logoUrl, ...createActiviteDto } = this.activiteData; 
+    const { logoUrl, ...createActiviteDto } = this.activiteData;
     this.activiteService.createActivite(createActiviteDto).subscribe({
       next: (res: any) => {
         const activiteId = res.id;
@@ -349,11 +354,55 @@ export class MesActivitesComponent implements OnInit {
     this.router.navigate(['/details-activite', id]);
   }
 
-  openConfirmationModal(documentId: number, event: MouseEvent) {
+  openOrganisationInfo(organisationId: number, event: MouseEvent): void {
+    event.preventDefault(); 
     event.stopPropagation();
-    this.documentToDelete = documentId;
-    const modalElement = document.getElementById('confirmationModal') as HTMLElement;
-    const modalInstance = new bootstrap.Modal(modalElement);
-    modalInstance.show();
+
+
+    if (!organisationId) {
+      console.error('Invalid organisation ID:', organisationId);
+      return;
+    }
+
+    this.selectedOrganisationId = organisationId;
+    this.loadOrganisationInfo();
+  }
+
+  loadOrganisationInfo(): void {
+    if (this.selectedOrganisationId) {
+      this.organisationService.getOrganisationById(this.selectedOrganisationId).subscribe({
+        next: (organisation) => {
+          this.organisation = organisation;
+          if (organisation.logo && organisation.logo.type === 'Buffer') {
+            this.loadOrganisationLogo(organisation.logo);
+          } else {
+            console.error('Le logo de l\'organisation n\'est pas un Blob valide:', organisation.logo);
+          }
+          this.showOrganisationOffcanvas();
+        },
+        error: (err) => {
+          console.error('Erreur lors du chargement des informations de l\'organisation:', err);
+        }
+      });
+    }
+  }
+
+  loadOrganisationLogo(logoBuffer: any): void {
+    if (logoBuffer && logoBuffer.type === 'Buffer' && Array.isArray(logoBuffer.data)) {
+      const blob = new Blob([new Uint8Array(logoBuffer.data)], { type: 'image/png' });
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.organisation.logoUrl = e.target.result;
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      console.error('Le logo fourni n\'est pas un Buffer valide:', logoBuffer);
+    }
+  }
+
+  showOrganisationOffcanvas(): void {
+    const offcanvasElement = document.getElementById('offcanvasOrganisation') as HTMLElement;
+    const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvasInstance.show();
   }
 }
