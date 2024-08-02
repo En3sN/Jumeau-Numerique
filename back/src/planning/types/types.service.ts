@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { TypeCreneau } from './entities/type-creneau.entity';
+import { TypeCreneau } from './Entities/type-creneau.entity';
 
 @Injectable()
 export class TypesService {
