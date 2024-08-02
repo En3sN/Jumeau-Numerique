@@ -51,11 +51,11 @@ export class ModifierServiceComponent implements OnInit {
 
   loadDocuments(): void {
     this.filesService.getDocumentsByServiceId(this.serviceId).subscribe({
-      next: (docs) => {
+      next: (docs: any[]) => {
         this.documents = docs;
         this.mergeDocuments();
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error fetching documents:', err);
       }
     });
@@ -204,7 +204,7 @@ export class ModifierServiceComponent implements OnInit {
         this.loadDocuments();
         this.toastService.showToast('Succès', 'Document supprimé avec succès', 'toast', 'bg-info text-white');
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error deleting document:', err);
         this.toastService.showToast('Erreur', 'Erreur lors de la suppression du document', 'toast', 'bg-danger text-white');
       }
@@ -214,7 +214,7 @@ export class ModifierServiceComponent implements OnInit {
   downloadDocument(documentId: number | string, filename: string) {
     if (typeof documentId === 'number') {
       this.filesService.downloadDocument(documentId).subscribe({
-        next: (blob) => {
+        next: (blob: Blob) => {
           const a = document.createElement('a');
           const objectUrl = URL.createObjectURL(blob);
           a.href = objectUrl;
@@ -222,12 +222,11 @@ export class ModifierServiceComponent implements OnInit {
           a.click();
           URL.revokeObjectURL(objectUrl);
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Error downloading document:', err);
         }
       });
     } else {
-      // Handle local files
       const file = this.documentFiles.find(f => f.name === documentId);
       if (file) {
         const a = document.createElement('a');
@@ -242,7 +241,7 @@ export class ModifierServiceComponent implements OnInit {
 
   downloadAllDocuments() {
     this.filesService.downloadAllDocumentsForService(this.serviceId).subscribe({
-      next: (blob) => {
+      next: (blob: Blob) => {
         const a = document.createElement('a');
         const objectUrl = URL.createObjectURL(blob);
         a.href = objectUrl;
@@ -250,7 +249,7 @@ export class ModifierServiceComponent implements OnInit {
         a.click();
         URL.revokeObjectURL(objectUrl);
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error downloading all documents:', err);
       }
     });
