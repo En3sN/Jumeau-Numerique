@@ -2,9 +2,9 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { InjectRepository, InjectEntityManager } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
-import { CreateReservationDto } from './dto/create-reservation.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
-import { Reservation } from './entities/reservation.entity';
+import { CreateReservationDto } from './DTO/create-reservation.dto';
+import { UpdateReservationDto } from './DTO/update-reservation.dto';
+import { Reservation } from './Entities/reservation.entity';
 
 @Injectable()
 export class ReservationService {

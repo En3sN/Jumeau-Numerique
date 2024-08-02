@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpCode, HttpStatus, BadRequestException, Logger, Query, ValidationPipe } from '@nestjs/common';
 import { RdvService } from './rdv.service';
-import { CreateRdvDto } from './dto/create-rdv.dto';
-import { UpdateRdvDto } from './dto/update-rdv.dto';
+import { CreateRdvDto } from './DTO/create-rdv.dto';
+import { UpdateRdvDto } from './DTO/update-rdv.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
-import { GetRdvCreneauxDto } from './dto/get-rdv-creneaux.dto';
+import { GetRdvCreneauxDto } from './DTO/get-rdv-creneaux.dto';
 
 @Controller('rdv')
 export class RdvController {

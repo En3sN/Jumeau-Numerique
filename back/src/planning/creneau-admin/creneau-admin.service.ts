@@ -2,9 +2,9 @@ import { Injectable, Logger, NotFoundException, BadRequestException } from '@nes
 import { InjectRepository, InjectEntityManager } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
-import { CreateCreneauAdminDto } from './dto/create-creneau-admin.dto';
-import { UpdateCreneauAdminDto } from './dto/update-creneau-admin.dto';
-import { CreneauAdmin } from './entities/creneau-admin.entity';
+import { CreateCreneauAdminDto } from './DTO/create-creneau-admin.dto';
+import { UpdateCreneauAdminDto } from './DTO/update-creneau-admin.dto';
+import { CreneauAdmin } from './Entities/creneau-admin.entity';
 
 @Injectable()
 export class CreneauAdminService {

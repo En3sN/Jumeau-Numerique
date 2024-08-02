@@ -2,9 +2,9 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { InjectRepository, InjectEntityManager } from '@nestjs/typeorm';
 import { Repository, EntityManager } from 'typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
-import { CreateRdvDto } from './dto/create-rdv.dto';
-import { UpdateRdvDto } from './dto/update-rdv.dto';
-import { Rdv } from './entities/rdv.entity';
+import { CreateRdvDto } from './DTO/create-rdv.dto';
+import { UpdateRdvDto } from './DTO/update-rdv.dto';
+import { Rdv } from './Entities/rdv.entity';
 
 @Injectable()
 export class RdvService {

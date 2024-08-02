@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Request, HttpCode, HttpStatus, BadRequestException, Logger } from '@nestjs/common';
 import { CreneauServiceService } from './creneau-service.service';
-import { CreateCreneauServiceDto } from './dto/create-creneau-service.dto';
-import { UpdateCreneauServiceDto } from './dto/update-creneau-service.dto';
+import { CreateCreneauServiceDto } from './DTO/create-creneau-service.dto';
+import { UpdateCreneauServiceDto } from './DTO/update-creneau-service.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 
 @Controller('creneau-service')

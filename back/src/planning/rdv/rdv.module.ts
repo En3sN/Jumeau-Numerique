@@ -3,7 +3,7 @@ import { RdvService } from './rdv.service';
 import { RdvController } from './rdv.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TransactionManager } from 'src/Shared/TransactionManager/TransactionManager';
-import { Rdv } from './entities/rdv.entity';
+import { Rdv } from './Entities/rdv.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Rdv])],

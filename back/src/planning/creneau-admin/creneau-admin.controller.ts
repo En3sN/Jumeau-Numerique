@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpCode, HttpStatus, BadRequestException, Logger, Query } from '@nestjs/common';
 import { CreneauAdminService } from './creneau-admin.service';
-import { CreateCreneauAdminDto } from './dto/create-creneau-admin.dto';
-import { UpdateCreneauAdminDto } from './dto/update-creneau-admin.dto';
+import { CreateCreneauAdminDto } from './DTO/create-creneau-admin.dto';
+import { UpdateCreneauAdminDto } from './DTO/update-creneau-admin.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 import { error } from 'console';
 

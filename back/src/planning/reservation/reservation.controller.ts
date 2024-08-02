@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpCode, HttpStatus, BadRequestException, Logger, Query } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
-import { CreateReservationDto } from './dto/create-reservation.dto';
-import { UpdateReservationDto } from './dto/update-reservation.dto';
+import { CreateReservationDto } from './DTO/create-reservation.dto';
+import { UpdateReservationDto } from './DTO/update-reservation.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
-import { GetServiceCreneauxDto } from './dto/get-service-creneaux.dto';
+import { GetServiceCreneauxDto } from './DTO/get-service-creneaux.dto';
 import { ValidationPipe } from '@nestjs/common';
 
 @Controller('reservation')
