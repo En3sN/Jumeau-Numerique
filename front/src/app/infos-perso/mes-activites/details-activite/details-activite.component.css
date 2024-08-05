@@ -21,10 +21,27 @@
   cursor: pointer;
   margin: 5px 0;
   padding: 5px;
-  background-color: #3a87ad;
   color: white;
   border-radius: 3px;
   font-size: 14px;
+}
+
+.fc-event-exception {
+  opacity: 0.8;
+  background-color: rgb(234, 57, 57) !important;
+  border-color: red !important;
+}
+
+.fc-event-ponctuel {
+  opacity: 0.8;
+  background-color: blue !important;
+  border-color: rgb(51, 51, 212) !important;
+}
+
+.fc-event-recurrent {
+  opacity: 0.8;
+  background-color: rgb(58, 177, 58) !important;
+  border-color: green !important;
 }
 
 .delete-event-btn {
@@ -37,7 +54,6 @@
 .card {
   transition: transform 0.2s;
   cursor: pointer;
-
 }
 
 .card:hover {

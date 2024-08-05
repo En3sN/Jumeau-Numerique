@@ -172,7 +172,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     eventDidMount: this.handleEventRender.bind(this),
     eventDrop: this.handleEventChange.bind(this),
     eventResize: this.handleEventChange.bind(this),
-    drop: this.handleDrop.bind(this)
+    drop: this.handleDrop.bind(this),
   };
 
   loadDocuments(activiteId: number): void {
@@ -252,15 +252,21 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   loadCreneaux(activiteId: number): void {
     this.creneauAdminService.getRdvCreneaux(activiteId).subscribe({
       next: (creneaux: any[]) => {
-        this.creneaux = creneaux.map(creneau => ({
-          id: creneau.id,
-          title: creneau.type_creneau,
-          start: creneau.date_debut,
-          end: creneau.date_fin,
-          extendedProps: {
-            type_creneau: creneau.type_creneau
-          }
-        }));
+        this.creneaux = creneaux.map(creneau => {
+          const color = this.getColorForTypeCreneau(creneau.type_creneau);
+          return {
+            id: creneau.id,
+            title: creneau.type_creneau,
+            start: creneau.date_debut,
+            end: creneau.date_fin,
+            backgroundColor: color,
+            borderColor: color,
+            textColor: 'white',
+            extendedProps: {
+              type_creneau: creneau.type_creneau
+            }
+          };
+        });
         this.calendarOptions.events = this.creneaux;
         this.calendarComponent.getApi().refetchEvents();
       },
@@ -349,6 +355,8 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     }
     if (this.userId) {
       const typeCreneau = this.getTypeCreneauFromElement(info.draggedEl, info.draggedEl.getAttribute('data-type-creneau') || undefined);
+      const color = this.getColorForTypeCreneau(typeCreneau);
+  
       const createCreneauDto = {
         user_id: this.userId,
         activite_id: this.activite.id,
@@ -356,16 +364,29 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         date_debut: info.dateStr,
         date_fin: info.dateStr
       };
-
+  
       this.creneauAdminService.create(createCreneauDto).subscribe({
         next: (res) => {
-          console.log('Créneau créé avec succès:');
-          this.loadCreneaux(this.activite.id);
+          console.log('Créneau créé avec succès');
         },
         error: (err) => {
-          console.error('Erreur lors de la création du créneau:', err);
+          console.error('Erreur lors de la création du créneau');
         }
       });
+    }
+  }
+  
+
+  getColorForTypeCreneau(typeCreneau: string): string {
+    switch (typeCreneau) {
+      case 'exception':
+        return 'red';
+      case 'ponctuel':
+        return 'blue';
+      case 'recurrent':
+        return 'green';
+      default:
+        return 'gray';
     }
   }
 
@@ -418,6 +439,11 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       popover.toggle();
       this.activePopover = popover;
     });
+
+    const typeCreneau = event.extendedProps['type_creneau'];
+    const color = this.getColorForTypeCreneau(typeCreneau);
+    eventEl.style.backgroundColor = color;
+    eventEl.style.borderColor = color;
 
     eventEl.setAttribute('title', 'Details');
   }
