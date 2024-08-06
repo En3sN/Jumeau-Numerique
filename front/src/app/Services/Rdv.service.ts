@@ -30,7 +30,7 @@ export class RdvService {
     return this.http.patch<any>(`${this.apiUrl}/rdv/${id}`, rdvData, { withCredentials: true });
   }
 
-  deleteRdv(id: number): Observable<any> {
+  deleteRendezvous(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/rdv/${id}`, { withCredentials: true });
   }
 

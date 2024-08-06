@@ -15,7 +15,6 @@ import { FilesService } from 'src/app/Services/Files.service';
 import { TypesService } from 'src/app/Services/Types.service';
 import { RdvService } from 'src/app/Services/Rdv.service';
 
-
 @Component({
   selector: 'app-details-activite',
   templateUrl: './details-activite.component.html',
@@ -38,7 +37,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   typesCreneaux: string[] = [];
   rendezvous: any[] = [];
 
-
   newService: any = {
     nom: '',
     description: '',
@@ -51,7 +49,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     is_pack: false
   };
 
-
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -63,7 +60,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     private creneauAdminService: CreneauAdminService,
     private typesService: TypesService,
     private rdvService: RdvService
-
   ) { }
 
   ngOnInit(): void {
@@ -125,7 +121,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       });
     });
   }
-  
 
   loadTypesCreneaux(): void {
     this.typesService.getAllTypes().subscribe({
@@ -283,9 +278,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       }
     });
   }
-  
 
-  
   loadCreneaux(activiteId: number): void {
     this.creneauAdminService.getRdvCreneaux(activiteId).subscribe({
       next: (creneaux: any[]) => {
@@ -355,6 +348,17 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     document.removeEventListener('click', this.closePopoverOnClickOutside.bind(this));
   }
 
+  handleEventDelete(eventId: number): void {
+    this.rdvService.deleteRendezvous(eventId).subscribe({
+      next: () => {
+        this.loadRendezvous(this.activite.id);
+      },
+      error: (err: any) => {
+        console.error('Error deleting event:', err);
+      }
+    });
+  }
+
   initExternalEvents() {
     const containerEl = document.getElementById('external-events');
     if (containerEl) {
@@ -393,7 +397,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     if (this.userId) {
       const typeCreneau = this.getTypeCreneauFromElement(info.draggedEl, info.draggedEl.getAttribute('data-type-creneau') || undefined);
       const color = this.getColorForTypeCreneau(typeCreneau);
-  
+
       const createCreneauDto = {
         user_id: this.userId,
         activite_id: this.activite.id,
@@ -401,7 +405,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         date_debut: info.dateStr,
         date_fin: info.dateStr
       };
-  
+
       this.creneauAdminService.create(createCreneauDto).subscribe({
         next: (res) => {
           console.log('Créneau créé avec succès');
@@ -412,7 +416,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       });
     }
   }
-  
 
   getColorForTypeCreneau(typeCreneau: string): string {
     switch (typeCreneau) {
@@ -426,7 +429,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         return 'gray';
     }
   }
-  
 
   handleEventRender(info: any) {
     const eventEl = info.el;
@@ -456,7 +458,14 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
     const popoverContent = document.createElement('div');
     const eventStart = event.start ? event.start.toLocaleString() : 'N/A';
-    const eventEnd = event.end ? event.end.toLocaleString() : 'N/A';
+    let eventEnd: string | null = event.end ? event.end.toLocaleString() : null;
+
+    if (!eventEnd && event.start instanceof Date) {
+      const start = new Date(event.start);
+      const end = new Date(start.getTime() + 60 * 60 * 1000); // Ajouter une heure à la date de début
+      eventEnd = end.toLocaleString();
+    }
+
     const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
     popoverContent.innerHTML = eventTime;
     popoverContent.appendChild(deleteButton);
@@ -489,7 +498,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   handleEventChange(info: any) {
     const eventEl = info.el;
     const event: EventApi = info.event;
-
+  
     if (eventEl && event.start && event.end && this.userId) {
       const eventStart = event.start.toISOString();
       const eventEnd = event.end.toISOString();
@@ -501,11 +510,32 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         date_debut: eventStart,
         date_fin: eventEnd
       };
-
+  
       this.creneauAdminService.update(parseInt(event.id), updateCreneauDto).subscribe({
         next: (res) => {
           console.log('Créneau mis à jour avec succès:');
           this.loadCreneaux(this.activite.id);
+          if (this.activePopover) {
+            const eventStart = event.start ? event.start.toLocaleString() : 'N/A';
+            let eventEnd = event.end ? event.end.toLocaleString() : 'N/A';
+  
+            if (!event.end && event.start instanceof Date) {
+              const start = new Date(event.start);
+              const end = new Date(start.getTime() + 60 * 60 * 1000); 
+              eventEnd = end.toLocaleString();
+            }
+  
+            const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
+            const popoverElement = document.querySelector('.popover.show'); 
+            const popoverContent = popoverElement?.querySelector('.popover-body');
+            if (popoverContent) {
+              popoverContent.innerHTML = eventTime;
+              const deleteButton = eventEl.querySelector('.delete-event-btn');
+              if (deleteButton) {
+                popoverContent.appendChild(deleteButton);
+              }
+            }
+          }
         },
         error: (err) => {
           console.error('Erreur lors de la mise à jour du créneau:', err);
@@ -513,7 +543,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       });
     }
   }
-
+  
   closePopoverOnClickOutside(event: Event) {
     const target = event.target as HTMLElement;
     if (this.activePopover && target && !target.closest('.popover') && !target.closest('.fc-event')) {

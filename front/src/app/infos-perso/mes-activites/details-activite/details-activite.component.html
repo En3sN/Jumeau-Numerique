@@ -178,8 +178,8 @@
             </div>
             <div class="tab-pane fade mt-2" id="Rendez-vous" role="tabpanel">
               <h3 class="mlh_verdana text-center mb-2"><u>Rendez-vous</u></h3>
-              <app-rendezvous-calendar [events]="rendezvous"></app-rendezvous-calendar>            
-          </div>
+              <app-rendezvous-calendar [events]="rendezvous" (eventDelete)="handleEventDelete($event)"></app-rendezvous-calendar>
+            </div>            
         </div>
       </div>
       <div class="row border-bottom mlh_block_data">
