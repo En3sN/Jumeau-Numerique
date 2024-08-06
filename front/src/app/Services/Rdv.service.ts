@@ -15,6 +15,9 @@ export class RdvService {
     return this.http.post<any>(`${this.apiUrl}/rdv`, rdvData, { withCredentials: true });
   }
 
+  findAllRdvByActivite(id: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/rdv/activite/${id}`, { withCredentials: true });
+  }
   getAllRdv(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/rdv`, { withCredentials: true });
   }

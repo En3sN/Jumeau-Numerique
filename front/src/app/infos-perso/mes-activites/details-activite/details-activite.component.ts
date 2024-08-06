@@ -13,6 +13,8 @@ import { AuthService } from 'src/app/Services/Auth.service';
 import { CreneauAdminService } from 'src/app/Services/Creneau-admin.service';
 import { FilesService } from 'src/app/Services/Files.service';
 import { TypesService } from 'src/app/Services/Types.service';
+import { RdvService } from 'src/app/Services/Rdv.service';
+
 
 @Component({
   selector: 'app-details-activite',
@@ -31,8 +33,11 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   documentFiles: File[] = [];
   newTag: string = '';
   userId: number | null = null;
+  serviceToDelete: number | null = null;
   creneaux: any[] = [];
   typesCreneaux: string[] = [];
+  rendezvous: any[] = [];
+
 
   newService: any = {
     nom: '',
@@ -46,7 +51,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     is_pack: false
   };
 
-  serviceToDelete: number | null = null;
 
   constructor(
     private router: Router,
@@ -57,7 +61,9 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     private filesService: FilesService,
     private authService: AuthService,
     private creneauAdminService: CreneauAdminService,
-    private typesService: TypesService
+    private typesService: TypesService,
+    private rdvService: RdvService
+
   ) { }
 
   ngOnInit(): void {
@@ -78,6 +84,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
           this.loadServices(+id);
           this.loadCreneaux(+id);
           this.loadTypesCreneaux();
+          this.loadRendezvous(+id); 
           this.route.queryParams.subscribe(params => {
             const tab = params['tab'];
             if (tab) {
@@ -95,7 +102,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         }
       });
     }
-
+  
     this.authService.checkLoginStatus().subscribe({
       next: (response) => {
         if (response.loggedIn) {
@@ -107,6 +114,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       }
     });
   }
+  
 
   loadTypesCreneaux(): void {
     this.typesService.getAllTypes().subscribe({
@@ -249,6 +257,24 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     });
   }
 
+  loadRendezvous(activiteId: number): void {
+    this.rdvService.findAllRdvByActivite(activiteId).subscribe({
+      next: (data) => {
+        this.rendezvous = data.map(rv => ({
+          id: rv.id,
+          title: rv.type_rdv,
+          start: rv.date_rdv,
+        }));
+        console.log('Rendezvous loaded:', this.rendezvous);  
+      },
+      error: (err) => {
+        console.error('Error fetching rendezvous:', err);
+      }
+    });
+  }
+  
+
+  
   loadCreneaux(activiteId: number): void {
     this.creneauAdminService.getRdvCreneaux(activiteId).subscribe({
       next: (creneaux: any[]) => {
@@ -380,15 +406,16 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   getColorForTypeCreneau(typeCreneau: string): string {
     switch (typeCreneau) {
       case 'exception':
-        return 'red';
+        return 'rgb(234, 57, 57)';
       case 'ponctuel':
-        return 'blue';
+        return 'rgb(51, 51, 212)'; 
       case 'recurrent':
-        return 'green';
+        return 'rgb(58, 177, 58)'; 
       default:
         return 'gray';
     }
   }
+  
 
   handleEventRender(info: any) {
     const eventEl = info.el;

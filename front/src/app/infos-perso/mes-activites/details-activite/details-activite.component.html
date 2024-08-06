@@ -2,19 +2,12 @@
   <div class="row justify-content-center">
     <div class="col-md-10">
       <div class="d-flex justify-content-between align-items-center mt-4">
-        <img
-          class="img-thumbnail"
-          [src]="logoUrl"
-          alt="logo"
-          style="width: 150px; height: auto"
-        />
+        <img class="img-thumbnail" [src]="logoUrl" alt="logo" style="width: 150px; height: auto" />
         <h2 class="mlh_verdana m-3">
           {{ activite?.nom }} : <br />
           {{ activite?.description }}
         </h2>
-        <a [href]="activite?.url" class="btn btn-outline-info" target="_blank"
-          >Site Web</a
-        >
+        <a [href]="activite?.url" class="btn btn-outline-info" target="_blank">Site Web</a>
       </div>
       <div class="row mt-4">
         <div class="col-12 mlh_block_data">
@@ -25,64 +18,28 @@
         <div class="col-12 mlh_block_data border-bottom">
           <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item" role="presentation">
-              <a
-                class="nav-link active"
-                data-bs-toggle="tab"
-                href="#Generalite"
-                aria-selected="true"
-                role="tab"
-                >Généralités</a
-              >
+              <a class="nav-link active" data-bs-toggle="tab" href="#Generalite" aria-selected="true"
+                role="tab">Généralités</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a
-                class="nav-link"
-                data-bs-toggle="tab"
-                href="#InfoGen"
-                aria-selected="false"
-                role="tab"
-                >Informations requises</a
-              >
+              <a class="nav-link" data-bs-toggle="tab" href="#InfoGen" aria-selected="false" role="tab">Informations
+                requises</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a
-                class="nav-link"
-                data-bs-toggle="tab"
-                href="#services"
-                aria-selected="false"
-                role="tab"
-                >Services associés</a
-              >
+              <a class="nav-link" data-bs-toggle="tab" href="#services" aria-selected="false" role="tab">Services
+                associés</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a
-                class="nav-link"
-                data-bs-toggle="tab"
-                href="#Disponibilités"
-                aria-selected="false"
-                role="tab"
-                (click)="handleTabChange()"
-                >Disponibilités</a
-              >
+              <a class="nav-link" data-bs-toggle="tab" href="#Disponibilités" aria-selected="false" role="tab"
+                (click)="handleTabChange()">Disponibilités</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a
-                class="nav-link"
-                data-bs-toggle="tab"
-                href="#Rendez-vous"
-                aria-selected="false"
-                role="tab"
-                (click)="handleTabChange()"
-                >Rendez-vous</a
-              >
+              <a class="nav-link" data-bs-toggle="tab" href="#Rendez-vous" aria-selected="false" role="tab"
+                (click)="handleTabChange()">Rendez-vous</a>
             </li>
           </ul>
           <div class="tab-content p-3 border border-top-0">
-            <div
-              class="tab-pane fade show active mb-3"
-              id="Generalite"
-              role="tabpanel"
-            >
+            <div class="tab-pane fade show active mb-3" id="Generalite" role="tabpanel">
               <p class="card-text">
                 Organisme : <a href="#"> {{ activite?.organisation_nom }} </a>
               </p>
@@ -92,37 +49,19 @@
               <div class="accordion" id="documentsAccordion">
                 <div class="accordion-item">
                   <h2 class="accordion-header" id="headingDocuments">
-                    <button
-                      class="accordion-button"
-                      type="button"
-                      data-bs-toggle="collapse"
-                      data-bs-target="#collapseDocuments"
-                      aria-expanded="true"
-                      aria-controls="collapseDocuments"
-                    >
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments">
                       Voir les documents
                     </button>
                   </h2>
-                  <div
-                    id="collapseDocuments"
-                    class="accordion-collapse collapse show"
-                    aria-labelledby="headingDocuments"
-                    data-bs-parent="#documentsAccordion"
-                  >
+                  <div id="collapseDocuments" class="accordion-collapse collapse show"
+                    aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
                     <div class="accordion-body">
-                      <ul
-                        class="list-group"
-                        *ngIf="documents.length > 0; else noDocuments"
-                      >
-                        <li
-                          class="list-group-item d-flex justify-content-between align-items-center"
-                          *ngFor="let doc of documents"
-                        >
+                      <ul class="list-group" *ngIf="documents.length > 0; else noDocuments">
+                        <li class="list-group-item d-flex justify-content-between align-items-center"
+                          *ngFor="let doc of documents">
                           {{ doc.titre }}
-                          <button
-                            class="btn btn-primary btn-sm ms-2"
-                            (click)="downloadDocument(doc.id, doc.titre)"
-                          >
+                          <button class="btn btn-primary btn-sm ms-2" (click)="downloadDocument(doc.id, doc.titre)">
                             <i class="fa fa-download"></i>
                           </button>
                         </li>
@@ -130,11 +69,8 @@
                       <ng-template #noDocuments>
                         <p class="text-center">Aucun document</p>
                       </ng-template>
-                      <button
-                        *ngIf="documents.length > 0"
-                        class="btn btn-secondary btn-sm mt-2"
-                        (click)="downloadAllDocuments()"
-                      >
+                      <button *ngIf="documents.length > 0" class="btn btn-secondary btn-sm mt-2"
+                        (click)="downloadAllDocuments()">
                         Télécharger tout
                       </button>
                     </div>
@@ -142,19 +78,16 @@
                 </div>
               </div>
               <label class="col-form-label mt-2">Adresse :</label>
-              <strong
-                >{{ activite?.adresse }}, {{ activite?.cp }}
-                {{ activite?.commune }}</strong
-              >
+              <strong>{{ activite?.adresse }}, {{ activite?.cp }}
+                {{ activite?.commune }}</strong>
             </div>
             <div class="tab-pane fade mt-3" id="InfoGen" role="tabpanel">
               <p>
                 Cette activité nécessitera un rendez-vous initial pour pouvoir
                 accéder aux différents services proposés.
               </p>
-              <label class="col-form-label"
-                >Informations complémentaires demandées :</label
-              >
+              <label class="col-form-label">Informations complémentaires
+                demandées :</label>
               <select multiple class="form-select" id="inputActInfo">
                 <option *ngFor="let info of activite?.user_infos | keyvalue">
                   {{ info.key }}: {{ info.value }}
@@ -162,41 +95,27 @@
               </select>
               <label class="col-form-label mt-2">Éléments à fournir :</label>
               <select multiple class="form-select" id="inputActItem">
-                <option
-                  *ngFor="let prerequis of activite?.prerequis | keyvalue"
-                >
+                <option *ngFor="let prerequis of activite?.prerequis | keyvalue">
                   {{ prerequis.key }}: {{ prerequis.value }}
                 </option>
               </select>
             </div>
             <div class="tab-pane fade" id="services" role="tabpanel">
               <div class="row mb-3">
-                <div
-                  class="col-12 d-flex justify-content-between align-items-center"
-                >
+                <div class="col-12 d-flex justify-content-between align-items-center">
                   <h4 class="mlh_verdana mb-0">Services associés</h4>
-                  <button
-                    class="btn btn-primary"
-                    (click)="openCreateServiceModal()"
-                  >
+                  <button class="btn btn-primary" (click)="openCreateServiceModal()">
                     Ajouter un service
                   </button>
                 </div>
               </div>
               <div class="row">
                 <div class="col-12">
-                  <div
-                    class="card mb-3"
-                    *ngFor="let service of services"
-                    (click)="viewServiceDetails(service.id)"
-                  >
+                  <div class="card mb-3" *ngFor="let service of services" (click)="viewServiceDetails(service.id)">
                     <div class="card-body d-flex">
                       <div *ngIf="service.logoUrl" class="me-3">
-                        <img
-                          [src]="service.logoUrl"
-                          alt="Logo du service"
-                          style="width: 130px; height: 130px; object-fit: cover"
-                        />
+                        <img [src]="service.logoUrl" alt="Logo du service"
+                          style="width: 130px; height: 130px; object-fit: cover" />
                       </div>
                       <div *ngIf="!service.logoUrl" class="me-3">
                         <p>Aucun logo disponible.</p>
@@ -205,25 +124,17 @@
                         <h4 class="card-title">{{ service.nom }}</h4>
                         <p class="card-text">{{ service.description }}</p>
                         <p>
-                          <span
-                            *ngFor="let tag of service.tags"
-                            class="badge bg-info me-1"
-                            >{{ tag }}</span
-                          >
+                          <span *ngFor="let tag of service.tags" class="badge bg-info me-1">{{ tag }}</span>
                         </p>
                       </div>
                       <div>
-                        <div
-                          class="d-flex justify-content-start align-items-center mb-2 btn btn-sm btn-outline-dark"
-                          (click)="editService(service.id, $event)"
-                        >
+                        <div class="d-flex justify-content-start align-items-center mb-2 btn btn-sm btn-outline-dark"
+                          (click)="editService(service.id, $event)">
                           <i class="fa fa-pen me-2"></i>
                           <strong>modifier</strong>
                         </div>
-                        <div
-                          class="d-flex justify-content-start align-items-center btn btn-sm btn-outline-dark"
-                          (click)="showDeleteConfirmation(service.id, $event)"
-                        >
+                        <div class="d-flex justify-content-start align-items-center btn btn-sm btn-outline-dark"
+                          (click)="showDeleteConfirmation(service.id, $event)">
                           <i class="fa fa-trash me-2"></i>
                           <strong>supprimer</strong>
                         </div>
@@ -248,17 +159,13 @@
                   <div id="external-events" class="bg-light p-2">
                     <h4>Événements glissables</h4>
                     <div id="external-events-list">
-                      <div *ngFor="let type of typesCreneaux" 
-                                       [ngClass]="{
+                      <div *ngFor="let type of typesCreneaux" [ngClass]="{
                                          'fc-event-exception': type === 'exception',
                                          'fc-event-ponctuel': type === 'ponctuel',
                                          'fc-event-recurrent': type === 'recurrent'
-                                       }"
-                                       class="fc-event"
-                                       [attr.data-type-creneau]="type"
-                                       [attr.title]="type">
-                                    {{ type }}
-                                  </div>
+                                       }" class="fc-event" [attr.data-type-creneau]="type" [attr.title]="type">
+                        {{ type }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -266,32 +173,23 @@
                   <h3 class="mlh_verdana text-center mb-2">
                     <u>Disponibilités</u>
                   </h3>
-                  <full-calendar
-                    #calendar
-                    [options]="calendarOptions"
-                  ></full-calendar>
+                  <full-calendar #calendar [options]="calendarOptions"></full-calendar>
                 </div>
               </div>
             </div>
+            <div class="tab-pane fade mt-2" id="Rendez-vous" role="tabpanel">
+              <h3 class="mlh_verdana text-center mb-2"><u>Rendez-vous</u></h3>
+              <app-rendezvous-calendar [events]="rendezvous"></app-rendezvous-calendar>
+            </div>            
           </div>
         </div>
       </div>
       <div class="row border-bottom mlh_block_data">
         <div class="d-flex mb-1 justify-content-end">
-          <button
-            type="button"
-            class="btn btn-secondary me-2"
-            id="btActModif"
-            (click)="editActivite()"
-          >
+          <button type="button" class="btn btn-secondary me-2" id="btActModif" (click)="editActivite()">
             Modifier l'activité
           </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            id="btActBack"
-            (click)="back()"
-          >
+          <button type="button" class="btn btn-primary" id="btActBack" (click)="back()">
             Retour
           </button>
         </div>
@@ -301,124 +199,63 @@
 </div>
 
 <!-- Modal pour ajouter un service -->
-<div
-  class="modal fade"
-  id="createServiceModal"
-  tabindex="-1"
-  aria-labelledby="createServiceModalLabel"
-  aria-hidden="true"
->
+<div class="modal fade" id="createServiceModal" tabindex="-1" aria-labelledby="createServiceModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="createServiceModalLabel">
           Ajouter un service
         </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form (ngSubmit)="createService()">
           <div *ngIf="logoPreviewUrl" class="mb-2 mt-2">
             <div class="d-flex align-items-center">
-              <img
-                [src]="logoPreviewUrl"
-                alt="Aperçu du logo"
-                id="logoPreview"
-                class="img-thumbnail"
-                style="width: 180px; height: auto"
-              />
-              <button
-                type="button"
-                class="btn btn-primary btn-sm ms-2"
-                (click)="removeLogo()"
-              >
+              <img [src]="logoPreviewUrl" alt="Aperçu du logo" id="logoPreview" class="img-thumbnail"
+                style="width: 180px; height: auto" />
+              <button type="button" class="btn btn-primary btn-sm ms-2" (click)="removeLogo()">
                 <i class="fa fa-trash"></i>
               </button>
             </div>
           </div>
           <div class="mb-3">
             <label for="serviceLogo" class="form-label">Logo</label>
-            <input
-              type="file"
-              class="form-control"
-              id="serviceLogo"
-              (change)="onFileSelected($event)"
-            />
+            <input type="file" class="form-control" id="serviceLogo" (change)="onFileSelected($event)" />
           </div>
           <div class="mb-3">
             <label for="serviceName" class="form-label">Nom du service</label>
-            <input
-              type="text"
-              class="form-control"
-              id="serviceName"
-              [(ngModel)]="newService.nom"
-              name="nom"
-              required
-            />
+            <input type="text" class="form-control" id="serviceName" [(ngModel)]="newService.nom" name="nom" required />
           </div>
           <div class="mb-3">
-            <label for="serviceDescription" class="form-label"
-              >Description</label
-            >
-            <textarea
-              class="form-control"
-              id="serviceDescription"
-              [(ngModel)]="newService.description"
-              name="description"
-              required
-            ></textarea>
+            <label for="serviceDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="serviceDescription" [(ngModel)]="newService.description"
+              name="description" required></textarea>
           </div>
           <div class="mb-3">
             <label for="serviceReference" class="form-label">Référence</label>
-            <input
-              type="text"
-              class="form-control"
-              id="serviceReference"
-              [(ngModel)]="newService.reference"
-              name="reference"
-              required
-            />
+            <input type="text" class="form-control" id="serviceReference" [(ngModel)]="newService.reference"
+              name="reference" required />
           </div>
           <div class="mb-3">
             <label for="serviceType" class="form-label">Type</label>
-            <input
-              type="text"
-              class="form-control"
-              id="serviceType"
-              [(ngModel)]="newService.type"
-              name="type"
-              required
-            />
+            <input type="text" class="form-control" id="serviceType" [(ngModel)]="newService.type" name="type"
+              required />
           </div>
           <div class="mb-3">
             <label for="serviceTags" class="form-label">Tags</label>
             <div class="d-flex">
-              <input
-                type="text"
-                [(ngModel)]="newTag"
-                class="form-control me-1"
-                placeholder="Ajouter un tag"
-                name="newTag"
-              />
+              <input type="text" [(ngModel)]="newTag" class="form-control me-1" placeholder="Ajouter un tag"
+                name="newTag" />
               <button type="button" class="btn btn-info" (click)="addTag()">
                 Ajouter
               </button>
             </div>
             <div class="mt-3">
-              <span
-                class="badge bg-info me-2"
-                *ngFor="let tag of newService.tags; let i = index"
-              >
+              <span class="badge bg-info me-2" *ngFor="let tag of newService.tags; let i = index">
                 {{ tag }}
-                <div
-                  class="btn btn-sm btn-outline-light ms-2"
-                  (click)="removeTag(i)"
-                >
+                <div class="btn btn-sm btn-outline-light ms-2" (click)="removeTag(i)">
                   <i class="fa fa-trash"></i>
                 </div>
               </span>
@@ -429,37 +266,19 @@
           <div class="accordion mt-1" id="documentsAccordion">
             <div class="accordion-item">
               <h2 class="accordion-header" id="headingDocuments">
-                <button
-                  class="accordion-button"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#collapseDocuments"
-                  aria-expanded="true"
-                  aria-controls="collapseDocuments"
-                >
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseDocuments" aria-expanded="true" aria-controls="collapseDocuments">
                   Voir les documents
                 </button>
               </h2>
-              <div
-                id="collapseDocuments"
-                class="accordion-collapse collapse show"
-                aria-labelledby="headingDocuments"
-                data-bs-parent="#documentsAccordion"
-              >
+              <div id="collapseDocuments" class="accordion-collapse collapse show" aria-labelledby="headingDocuments"
+                data-bs-parent="#documentsAccordion">
                 <div class="accordion-body">
-                  <ul
-                    class="list-group"
-                    *ngIf="documentFiles.length > 0; else noDocuments"
-                  >
-                    <li
-                      class="list-group-item d-flex justify-content-between align-items-center"
-                      *ngFor="let doc of documentFiles"
-                    >
+                  <ul class="list-group" *ngIf="documentFiles.length > 0; else noDocuments">
+                    <li class="list-group-item d-flex justify-content-between align-items-center"
+                      *ngFor="let doc of documentFiles">
                       {{ doc.name }}
-                      <button
-                        class="btn btn-danger btn-sm ms-2"
-                        (click)="removeDocument(doc)"
-                      >
+                      <button class="btn btn-danger btn-sm ms-2" (click)="removeDocument(doc)">
                         <i class="fa fa-trash"></i>
                       </button>
                     </li>
@@ -467,36 +286,22 @@
                   <ng-template #noDocuments>
                     <p class="text-center">Aucun document</p>
                   </ng-template>
-                  <input
-                    type="file"
-                    (change)="onDocumentsSelected($event)"
-                    multiple
-                    class="form-control mt-4"
-                    #fileInput
-                  />
+                  <input type="file" (change)="onDocumentsSelected($event)" multiple class="form-control mt-4"
+                    #fileInput />
                 </div>
               </div>
             </div>
           </div>
 
           <div class="form-check mt-2 mb-3">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              [(ngModel)]="newService.is_pack"
-              name="is_pack"
-              id="is_pack"
-            />
+            <input class="form-check-input" type="checkbox" [(ngModel)]="newService.is_pack" name="is_pack"
+              id="is_pack" />
             <label class="form-check-label" for="flexCheckDefault">
               Est un pack
             </label>
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
               Annuler
             </button>
             <button type="submit" class="btn btn-primary">Créer</button>
@@ -507,26 +312,15 @@
   </div>
 </div>
 
-<div
-  class="modal fade"
-  id="confirmationModal"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="confirmationModalLabel"
-  aria-hidden="true"
->
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="confirmationModalLabel">
           Confirmation de suppression
         </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         Êtes-vous sûr de vouloir supprimer cette activité ?

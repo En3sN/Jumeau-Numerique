@@ -26,15 +26,26 @@ export class RdvController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('activite/:activiteId')
+  async findAllRdvByActivite(@Param('activiteId') activiteId: string) {
+    const parsedActiviteId = parseInt(activiteId, 10);
+    if (isNaN(parsedActiviteId)) {
+      this.logger.error(`Invalid activiteId: ${activiteId}`);
+      throw new BadRequestException('Paramètre activiteId invalide');
+    }
+    return await this.rdvService.findAllRdvByActivite(parsedActiviteId);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('all')
-  async getRdvCreneaux(
+  async getJsonRdvCreneaux(
     @Query(new ValidationPipe({ transform: true })) query: GetRdvCreneauxDto,
     @Request() req
   ) {
     const sessionCode = req.user.sessionCode;
     const { activiteId, semaine, year, duree } = query;
 
-    return this.rdvService.getRdvCreneaux(activiteId, semaine, year, duree, sessionCode);
+    return this.rdvService.getJsonRdvCreneaux(activiteId, semaine, year, duree, sessionCode);
   }
 
   @UseGuards(JwtAuthGuard)

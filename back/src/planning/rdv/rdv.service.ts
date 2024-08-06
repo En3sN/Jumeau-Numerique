@@ -36,6 +36,16 @@ export class RdvService {
     return rdv;
   }
 
+  async findAllRdvByActivite(activiteId: number): Promise<Rdv[]> {
+    const query = `
+      SELECT * FROM planning.rdv
+      WHERE activite_id = $1
+    `;
+    const rdvs = await this.rdvRepository.query(query, [activiteId]);
+    console.log('Rendezvous retrieved from DB:', rdvs);  // Ajouté
+    return rdvs;
+  }
+
   async update(id: number, updateRdvDto: UpdateRdvDto, sessionCode: string): Promise<Rdv> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       await manager.update(Rdv, { id }, updateRdvDto);
@@ -57,7 +67,7 @@ export class RdvService {
     }, sessionCode);
   }
 
-  async getRdvCreneaux(activiteId: number, semaine: number | undefined, year: number | undefined, duree: number | undefined, sessionCode: string): Promise<any> {
+  async getJsonRdvCreneaux(activiteId: number, semaine: number | undefined, year: number | undefined, duree: number | undefined, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       try {
         const result = await manager.query(
