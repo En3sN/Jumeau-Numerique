@@ -102,7 +102,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         }
       });
     }
-  
+
     this.authService.checkLoginStatus().subscribe({
       next: (response) => {
         if (response.loggedIn) {
@@ -112,6 +112,17 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       error: (error) => {
         console.error('Error fetching user details:', error);
       }
+    });
+
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+      tab.addEventListener('shown.bs.tab', (event) => {
+        const target = (event.target as HTMLElement).getAttribute('href');
+        if (target === '#Disponibilités' || target === '#Rendez-vous') {
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, 100);
+        }
+      });
     });
   }
   
@@ -607,9 +618,11 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     this.newService.tags.splice(index, 1);
   }
 
-  handleTabChange() {
+  handleTabChange(): void {
     setTimeout(() => {
-      this.calendarComponent.getApi().updateSize();
+      if (this.calendarComponent) {
+        this.calendarComponent.getApi().updateSize();
+      }
     }, 0);
   }
 }

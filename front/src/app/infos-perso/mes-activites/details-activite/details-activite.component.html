@@ -34,8 +34,7 @@
                 (click)="handleTabChange()">Disponibilités</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a class="nav-link" data-bs-toggle="tab" href="#Rendez-vous" aria-selected="false" role="tab"
-                (click)="handleTabChange()">Rendez-vous</a>
+              <a class="nav-link" data-bs-toggle="tab" href="#Rendez-vous" aria-selected="false" role="tab" (click)="handleTabChange()">Rendez-vous</a>
             </li>
           </ul>
           <div class="tab-content p-3 border border-top-0">
@@ -179,8 +178,7 @@
             </div>
             <div class="tab-pane fade mt-2" id="Rendez-vous" role="tabpanel">
               <h3 class="mlh_verdana text-center mb-2"><u>Rendez-vous</u></h3>
-              <app-rendezvous-calendar [events]="rendezvous"></app-rendezvous-calendar>
-            </div>            
+              <app-rendezvous-calendar [events]="rendezvous"></app-rendezvous-calendar>            
           </div>
         </div>
       </div>
