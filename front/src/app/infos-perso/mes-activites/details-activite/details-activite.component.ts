@@ -270,6 +270,11 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
           id: rv.id,
           title: rv.type_rdv,
           start: rv.date_rdv,
+          extendedProps: {
+            nom: rv.nom,
+            email: rv.email,
+            telephone: rv.telephone
+          }
         }));
         console.log('Rendezvous loaded:', this.rendezvous);  
       },
@@ -278,6 +283,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       }
     });
   }
+  
 
   loadCreneaux(activiteId: number): void {
     this.creneauAdminService.getRdvCreneaux(activiteId).subscribe({
@@ -436,7 +442,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
     const deleteButton = document.createElement('button');
     deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
-    deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn');
+    deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn', 'd-block', 'mx-auto', 'mt-1');
     deleteButton.addEventListener('click', (e: Event) => {
       e.stopPropagation();
       event.remove();

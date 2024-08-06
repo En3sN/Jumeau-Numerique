@@ -5,6 +5,7 @@ import { TransactionManager } from 'src/Shared/TransactionManager/TransactionMan
 import { CreateRdvDto } from './DTO/create-rdv.dto';
 import { UpdateRdvDto } from './DTO/update-rdv.dto';
 import { Rdv } from './Entities/rdv.entity';
+import { Utilisateur } from 'src/security/utilisateur/Entities/utilisateur.entity';
 
 @Injectable()
 export class RdvService {
@@ -36,14 +37,25 @@ export class RdvService {
     return rdv;
   }
 
-  async findAllRdvByActivite(activiteId: number): Promise<Rdv[]> {
+  async findAllRdvByActivite(activiteId: number): Promise<any[]> {
     const query = `
-      SELECT * FROM planning.rdv
-      WHERE activite_id = $1
+      SELECT rdv.*, users_table.nom, users_table.email, users_table.tel AS telephone
+      FROM planning.rdv AS rdv
+      JOIN security.users_table AS users_table ON rdv.user_id = users_table.id
+      WHERE rdv.activite_id = $1
     `;
     const rdvs = await this.rdvRepository.query(query, [activiteId]);
-    console.log('Rendezvous retrieved from DB:', rdvs);  // Ajouté
+    console.log('Rendezvous with user info retrieved from DB:', rdvs); 
     return rdvs;
+  }
+  
+  
+  async findUtilisateurByRendezvousId(rendezvousId: number): Promise<Utilisateur> {
+    const rendezvous = await this.rdvRepository.findOne({ where: { id: rendezvousId }, relations: ['user'] });
+    if (!rendezvous) {
+      throw new NotFoundException(`Rdv with ID ${rendezvousId} not found`);
+    }
+    return rendezvous.user;
   }
 
   async update(id: number, updateRdvDto: UpdateRdvDto, sessionCode: string): Promise<Rdv> {

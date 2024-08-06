@@ -24,7 +24,6 @@ export class RdvController {
   async findAll() {
     return await this.rdvService.findAll();
   }
-
   @UseGuards(JwtAuthGuard)
   @Get('activite/:activiteId')
   async findAllRdvByActivite(@Param('activiteId') activiteId: string) {
@@ -34,6 +33,17 @@ export class RdvController {
       throw new BadRequestException('Paramètre activiteId invalide');
     }
     return await this.rdvService.findAllRdvByActivite(parsedActiviteId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/details')
+  async getRendezvousDetails(@Param('id') id: string) {
+    const rendezvous = await this.rdvService.findOne(parseInt(id, 10));
+    const utilisateur = await this.rdvService.findUtilisateurByRendezvousId(rendezvous.id);
+    return {
+      rendezvous,
+      utilisateur
+    };
   }
 
   @UseGuards(JwtAuthGuard)

@@ -26,6 +26,8 @@ export class RendezvousCalendarComponent implements OnInit, OnChanges, AfterView
       right: 'timeGridWeek,timeGridDay'
     },
     locale: frLocale,
+    slotMinTime: '07:00:00',
+    slotMaxTime: '20:00:00',
     height: 'auto',
     events: this.events,
     eventClick: this.handleEventClick.bind(this),
@@ -118,10 +120,10 @@ export class RendezvousCalendarComponent implements OnInit, OnChanges, AfterView
   handleEventRender(info: any) {
     const eventEl = info.el;
     const event: EventApi = info.event;
-
+  
     const deleteButton = document.createElement('button');
     deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
-    deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn');
+    deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn', 'd-block', 'mx-auto', 'mt-1');
     deleteButton.addEventListener('click', (e: Event) => {
       e.stopPropagation();
       event.remove();
@@ -130,21 +132,24 @@ export class RendezvousCalendarComponent implements OnInit, OnChanges, AfterView
       }
       this.eventDelete.emit(parseInt(event.id));
     });
-
+  
     const popoverContent = document.createElement('div');
     const eventStart = event.start ? event.start.toLocaleString() : 'N/A';
     let eventEnd: string | null = event.end ? event.end.toLocaleString() : null;
-
+  
     if (!eventEnd && event.start instanceof Date) {
       const start = new Date(event.start);
-      const end = new Date(start.getTime() + 60 * 60 * 1000); 
+      const end = new Date(start.getTime() + 60 * 60 * 1000);
       eventEnd = end.toLocaleString();
     }
-
-    const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
-    popoverContent.innerHTML = eventTime;
+  
+    const eventTime = `<div class="popover-field mb-1">Date: ${eventStart} - ${eventEnd}</div>`;
+    const userInfo = `<div class="popover-field mb-1">Nom: ${event.extendedProps['nom']}</div>
+                      <div class="popover-field mb-1">Email: ${event.extendedProps['email']}</div>
+                      <div class="popover-field mb-2">Téléphone: ${event.extendedProps['telephone']}</div>`;
+    popoverContent.innerHTML = eventTime + userInfo;
     popoverContent.appendChild(deleteButton);
-
+  
     const popover = new bootstrap.Popover(eventEl, {
       content: popoverContent,
       html: true,
@@ -152,7 +157,7 @@ export class RendezvousCalendarComponent implements OnInit, OnChanges, AfterView
       title: event.title,
       trigger: 'focus'
     });
-
+  
     eventEl.addEventListener('click', (e: Event) => {
       e.stopPropagation();
       if (this.activePopover && this.activePopover !== popover) {
@@ -161,9 +166,11 @@ export class RendezvousCalendarComponent implements OnInit, OnChanges, AfterView
       popover.toggle();
       this.activePopover = popover;
     });
-
+  
     eventEl.setAttribute('title', 'Details');
   }
+  
+  
 
   handleDocumentClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
