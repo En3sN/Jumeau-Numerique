@@ -11,7 +11,7 @@ export class CreneauServiceService {
 
   constructor(private http: HttpClient) {}
 
-  getAllCreneaux(serviceId: number): Observable<any[]> {
+  getAllRendezVous(serviceId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/creneau-service/all-creneaux?serviceId=${serviceId}`, { withCredentials: true });
   }
 
