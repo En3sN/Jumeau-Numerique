@@ -468,7 +468,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
 
     if (!eventEnd && event.start instanceof Date) {
       const start = new Date(event.start);
-      const end = new Date(start.getTime() + 60 * 60 * 1000); // Ajouter une heure à la date de début
+      const end = new Date(start.getTime() + 60 * 60 * 1000); 
       eventEnd = end.toLocaleString();
     }
 

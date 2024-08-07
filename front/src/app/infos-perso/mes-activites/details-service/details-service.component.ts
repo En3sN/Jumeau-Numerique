@@ -11,6 +11,7 @@ import { FullCalendarComponent } from '@fullcalendar/angular';
 import * as bootstrap from 'bootstrap';
 import { CreneauServiceService } from 'src/app/Services/Creneau-service.service';
 import { TypesService } from 'src/app/Services/Types.service';
+import { ReservationService } from 'src/app/Services/Reservation.service';
 
 @Component({
   selector: 'app-details-service',
@@ -26,7 +27,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
   documents: any[] = [];
   typesCreneaux: string[] = [];
   creneaux: any[] = [];
-  
+  reservations: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -35,6 +36,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     private filesService: FilesService,
     private creneauServiceService: CreneauServiceService,
     private typesService: TypesService,
+    private reservationService: ReservationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -45,6 +47,18 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       this.loadDocuments();
       this.loadRendezVous();
       this.loadTypesCreneaux();
+      this.loadReservations();
+    });
+
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+      tab.addEventListener('shown.bs.tab', (event) => {
+        const target = (event.target as HTMLElement).getAttribute('href');
+        if (target === '#Disponibilités' || target === '#RendezVous') {
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, 100);
+        }
+      });
     });
   }
 
@@ -121,15 +135,21 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
   loadRendezVous(): void {
     this.creneauServiceService.getAllRendezVous(this.serviceId).subscribe({
       next: (creneaux: any[]) => {
-        this.creneaux = creneaux.map(creneau => ({
-          id: creneau.id,
-          title: creneau.type_creneau,
-          start: creneau.date_debut,
-          end: creneau.date_fin,
-          extendedProps: {
-            type_creneau: creneau.type_creneau
-          }
-        }));
+        this.creneaux = creneaux.map(creneau => {
+          const color = this.getColorForTypeCreneau(creneau.type_creneau);
+          return {
+            id: creneau.id,
+            title: creneau.type_creneau,
+            start: creneau.date_debut,
+            end: creneau.date_fin,
+            backgroundColor: color,
+            borderColor: color,
+            textColor: 'white',
+            extendedProps: {
+              type_creneau: creneau.type_creneau
+            }
+          };
+        });
         this.calendarOptions.events = this.creneaux;
         this.calendarComponent.getApi().refetchEvents();
       },
@@ -146,6 +166,27 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       },
       error: (err) => {
         console.error('Error fetching types:', err);
+      }
+    });
+  }
+
+  loadReservations(): void {
+    this.reservationService.getReservationsByService(this.serviceId).subscribe({
+      next: (data) => {
+        this.reservations = data.map(reservation => ({
+          id: reservation.id,
+          title: reservation.status,
+          start: reservation.date_resa,
+          extendedProps: {
+            nom: reservation.nom,
+            email: reservation.email,
+            telephone: reservation.telephone
+          }
+        }));
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error fetching reservations:', err);
       }
     });
   }
@@ -187,7 +228,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       date_debut: info.dateStr,
       date_fin: info.dateStr
     };
-  
+
     this.creneauServiceService.create(createCreneauDto).subscribe({
       next: (res) => {
         this.loadRendezVous();
@@ -201,13 +242,21 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       }
     });
   }
-  
+
   refreshCalendar() {
     if (this.calendarComponent) {
       setTimeout(() => {
         this.calendarComponent.getApi().render();
-      }, 100); 
+      }, 100);
     }
+  }
+
+  handleTabChange(): void {
+    setTimeout(() => {
+      if (this.calendarComponent) {
+        this.calendarComponent.getApi().updateSize();
+      }
+    }, 0);
   }
 
   handleEventRender(info: any) {
@@ -216,7 +265,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
 
     const deleteButton = document.createElement('button');
     deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
-    deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn');
+    deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn', 'd-block', 'mx-auto', 'mt-1');
     deleteButton.addEventListener('click', (e: Event) => {
       e.stopPropagation();
       event.remove();
@@ -236,7 +285,14 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
 
     const popoverContent = document.createElement('div');
     const eventStart = event.start ? event.start.toLocaleString() : 'N/A';
-    const eventEnd = event.end ? event.end.toLocaleString() : 'N/A';
+    let eventEnd: string | null = event.end ? event.end.toLocaleString() : null;
+
+    if (!eventEnd && event.start instanceof Date) {
+      const start = new Date(event.start);
+      const end = new Date(start.getTime() + 60 * 60 * 1000); // Ajouter une heure à la date de début
+      eventEnd = end.toLocaleString();
+    }
+
     const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
     popoverContent.innerHTML = eventTime;
     popoverContent.appendChild(deleteButton);
@@ -258,13 +314,33 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       this.activePopover = popover;
     });
 
+    const typeCreneau = event.extendedProps['type_creneau'];
+    const color = this.getColorForTypeCreneau(typeCreneau);
+    eventEl.style.backgroundColor = color;
+    eventEl.style.borderColor = color;
+
     eventEl.setAttribute('title', 'Details');
   }
 
+  getColorForTypeCreneau(typeCreneau: string): string {
+    switch (typeCreneau) {
+      case 'exception':
+        return 'rgb(234, 57, 57)';
+      case 'ponctuel':
+        return 'rgb(51, 51, 212)'; 
+      case 'recurrent':
+        return 'rgb(58, 177, 58)'; 
+      default:
+        return 'gray';
+    }
+  }
+
+
   handleEventChange(info: any) {
+    const eventEl = info.el;
     const event: EventApi = info.event;
 
-    if (event.start && event.end) {
+    if (eventEl && event.start && event.end) {
       const eventStart = event.start.toISOString();
       const eventEnd = event.end.toISOString();
       const typeCreneau = event.extendedProps['type_creneau'];
@@ -277,8 +353,28 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
 
       this.creneauServiceService.update(parseInt(event.id), updateCreneauDto).subscribe({
         next: (res) => {
-          //console.log('Créneau mis à jour avec succès:', res);
           this.loadRendezVous();
+          if (this.activePopover) {
+            const eventStart = event.start ? event.start.toLocaleString() : 'N/A';
+            let eventEnd = event.end ? event.end.toLocaleString() : 'N/A';
+
+            if (!event.end && event.start instanceof Date) {
+              const start = new Date(event.start);
+              const end = new Date(start.getTime() + 60 * 60 * 1000); // Ajouter une heure à la date de début
+              eventEnd = end.toLocaleString();
+            }
+
+            const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
+            const popoverElement = document.querySelector('.popover.show'); // Sélectionner l'élément popover affiché
+            const popoverContent = popoverElement?.querySelector('.popover-body');
+            if (popoverContent) {
+              popoverContent.innerHTML = eventTime;
+              const deleteButton = eventEl.querySelector('.delete-event-btn');
+              if (deleteButton) {
+                popoverContent.appendChild(deleteButton);
+              }
+            }
+          }
         },
         error: (err) => {
           console.error('Erreur lors de la mise à jour du créneau:', err);

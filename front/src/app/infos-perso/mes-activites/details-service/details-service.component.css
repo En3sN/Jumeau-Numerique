@@ -1,46 +1,61 @@
 #external-events {
-    padding: 10px;
-    border: 1px solid #ccc;
-    background: #f4f4f4;
-    width: auto;
-    height: auto;
-    max-height: 500px;
-    overflow-y: auto;
-  }
-  
-  #external-events .fc-event {
-    margin: 10px 0;
-    cursor: pointer;
-  }
-  
-  #calendar {
-    margin-top: 20px;
-  }
-  
-  .fc-event {
-    cursor: pointer;
-    margin: 5px 0;
-    padding: 5px;
-    background-color: #3a87ad;
-    color: white;
-    border-radius: 3px;
-    font-size: 14px;
-  }
-  
-  .delete-event-btn {
-    margin-top: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .card {
-    transition: transform 0.2s;
-    cursor: pointer;
-  
-  }
-  
-  .card:hover {
-    transform: scale(1.01);
-  }
-  
+  padding: 10px;
+  border: 1px solid #ccc;
+  background: #f4f4f4;
+  width: auto;
+  height: auto;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+#external-events .fc-event {
+  margin: 10px 0;
+  cursor: pointer;
+}
+
+#calendar {
+  margin-top: 20px;
+}
+
+.fc-event {
+  cursor: pointer;
+  margin: 5px 0;
+  padding: 5px;
+  color: white;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.fc-event-exception {
+  opacity: 0.8;
+  background-color: rgb(234, 57, 57) !important;
+  border-color: red !important;
+}
+
+.fc-event-ponctuel {
+  opacity: 0.8;
+  background-color: rgb(51, 51, 212) !important;
+  border-color: rgb(51, 51, 212) !important;
+}
+
+.fc-event-recurrent {
+  opacity: 0.8;
+  background-color: rgb(58, 177, 58) !important;
+  border-color: green !important;
+}
+
+.delete-event-btn {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: scale(1.01);
+}
