@@ -9,7 +9,7 @@ import { GetRdvCreneauxDto } from './DTO/get-rdv-creneaux.dto';
 export class RdvController {
   private readonly logger = new Logger(RdvController.name);
 
-  constructor(private readonly rdvService: RdvService) {}
+  constructor(private readonly rdvService: RdvService) { }
 
   @UseGuards(JwtAuthGuard)
   @Post()

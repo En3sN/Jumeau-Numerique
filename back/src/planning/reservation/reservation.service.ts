@@ -28,6 +28,17 @@ export class ReservationService {
     return await this.reservationRepository.find();
   }
 
+  async findAllReservationsByService(serviceId: number): Promise<any[]> {
+    const query = `
+      SELECT reservation.*, users_table.nom, users_table.email, users_table.tel AS telephone
+      FROM planning.reservation AS reservation
+      JOIN security.users_table AS users_table ON reservation.user_id = users_table.id
+      WHERE reservation.service_id = $1
+    `;
+    const reservations = await this.reservationRepository.query(query, [serviceId]);
+    return reservations;
+  }
+
   async findOne(id: number): Promise<Reservation> {
     const reservation = await this.reservationRepository.findOne({ where: { id } });
     if (!reservation) {

@@ -8,6 +8,7 @@ import { ValidationPipe } from '@nestjs/common';
 
 @Controller('reservation')
 export class ReservationController {
+  private readonly logger = new Logger(ReservationController.name);
 
   constructor(private readonly reservationService: ReservationService) {}
 
@@ -23,6 +24,17 @@ export class ReservationController {
   @Get()
   async findAll() {
     return await this.reservationService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('service/:serviceId')
+  async findAllReservationsByService(@Param('serviceId') serviceId: string) {
+    const parsedServiceId = parseInt(serviceId, 10);
+    if (isNaN(parsedServiceId)) {
+      this.logger.error(`Invalid serviceId: ${serviceId}`);
+      throw new BadRequestException('Paramètre serviceId invalide');
+    }
+    return await this.reservationService.findAllReservationsByService(parsedServiceId);
   }
 
   @UseGuards(JwtAuthGuard)
