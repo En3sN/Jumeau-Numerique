@@ -15,8 +15,8 @@ export class ReservationService {
     return this.http.post<any>(`${this.apiUrl}/reservation`, reservationData, { withCredentials: true });
   }
 
-  getAllReservations(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/reservation`, { withCredentials: true });
+  getReservationsByService(serviceId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/reservation/service/${serviceId}`, { withCredentials: true });
   }
 
   getReservationById(id: number): Observable<any> {
