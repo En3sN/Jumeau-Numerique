@@ -26,6 +26,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
   documents: any[] = [];
   typesCreneaux: string[] = [];
   creneaux: any[] = [];
+  
 
   constructor(
     private route: ActivatedRoute,
@@ -42,7 +43,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       this.serviceId = +params.get('id')!;
       this.loadService();
       this.loadDocuments();
-      this.loadCreneaux();
+      this.loadRendezVous();
       this.loadTypesCreneaux();
     });
   }
@@ -117,8 +118,8 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     });
   }
 
-  loadCreneaux(): void {
-    this.creneauServiceService.getAllCreneaux(this.serviceId).subscribe({
+  loadRendezVous(): void {
+    this.creneauServiceService.getAllRendezVous(this.serviceId).subscribe({
       next: (creneaux: any[]) => {
         this.creneaux = creneaux.map(creneau => ({
           id: creneau.id,
@@ -189,7 +190,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
   
     this.creneauServiceService.create(createCreneauDto).subscribe({
       next: (res) => {
-        this.loadCreneaux();
+        this.loadRendezVous();
       },
       error: (err) => {
         if (err.error && err.error.message) {
@@ -200,7 +201,6 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       }
     });
   }
-  
   
   refreshCalendar() {
     if (this.calendarComponent) {
@@ -226,7 +226,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       this.creneauServiceService.remove(parseInt(event.id)).subscribe({
         next: () => {
           console.log('Créneau supprimé avec succès');
-          this.loadCreneaux();
+          this.loadRendezVous();
         },
         error: (err) => {
           console.error('Erreur lors de la suppression du créneau:', err);
@@ -278,7 +278,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       this.creneauServiceService.update(parseInt(event.id), updateCreneauDto).subscribe({
         next: (res) => {
           //console.log('Créneau mis à jour avec succès:', res);
-          this.loadCreneaux();
+          this.loadRendezVous();
         },
         error: (err) => {
           console.error('Erreur lors de la mise à jour du créneau:', err);
