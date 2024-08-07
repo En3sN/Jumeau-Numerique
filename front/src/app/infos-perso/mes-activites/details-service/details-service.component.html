@@ -15,16 +15,16 @@
                 <a class="nav-link active" data-bs-toggle="tab" href="#Generalite" aria-selected="true" role="tab">Généralités</a>
               </li>
               <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#Medias" aria-selected="false" role="tab">Médias</a>
+                <a class="nav-link" data-bs-toggle="tab" href="#Documents" aria-selected="false" role="tab">Documents</a>
               </li>
               <li class="nav-item" role="presentation">
                 <a class="nav-link" data-bs-toggle="tab" href="#Tags" aria-selected="false" role="tab">Tags</a>
               </li>
               <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#RendezVous" aria-selected="false" role="tab" (shown.bs.tab)="refreshCalendar()">Rendez-Vous</a>
+                <a class="nav-link" data-bs-toggle="tab" href="#Disponibilités" aria-selected="false" role="tab" (shown.bs.tab)="refreshCalendar()">Disponibilités</a>
             </li>
               <li class="nav-item" role="presentation">
-                <a class="nav-link" data-bs-toggle="tab" href="#Creneaux" aria-selected="false" role="tab">Créneaux</a>
+                <a class="nav-link" data-bs-toggle="tab" href="#RendezVous" aria-selected="false" role="tab">Rendez-Vous</a>
               </li>
             </ul>
             <div class="tab-content p-3 border border-top-0">
@@ -34,7 +34,7 @@
                 <label class="col-form-label">Référence : </label>
                 <strong> {{ service?.reference }}</strong> <br>
               </div>
-              <div class="tab-pane fade" id="Medias" role="tabpanel">
+              <div class="tab-pane fade" id="Documents" role="tabpanel">
                 <label class="col-form-label">Média : </label>
                 <div class="accordion mt-1" id="documentsAccordion">
                   <div class="accordion-item">
@@ -68,7 +68,7 @@
                   <span *ngFor="let tag of service?.tags" class="badge bg-info me-1">{{ tag }}</span>
                 </div>
               </div>
-              <div class="tab-pane fade mt-2" id="RendezVous" role="tabpanel">
+              <div class="tab-pane fade mt-2" id="Disponibilités" role="tabpanel">
                 <div class="mb-4 mt-2">
                   <h4>Informations rendez-vous</h4>
                   <p>La durée d'un rendez-vous est définie dans l'activité à
@@ -94,7 +94,7 @@
                   </div>
                   
               </div>
-              <div class="tab-pane fade mt-2" id="Creneaux" role="tabpanel">
+              <div class="tab-pane fade mt-2" id="RendezVous" role="tabpanel">
                
               </div>
             </div>
