@@ -11,9 +11,20 @@ export class CreneauServiceService {
 
   constructor(private http: HttpClient) {}
 
-  getAllRendezVous(serviceId: number): Observable<any[]> {
+  getAllCreneaux(serviceId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/creneau-service/all-creneaux?serviceId=${serviceId}`, { withCredentials: true });
   }
+
+  getRecurrentCreneaux(serviceId: number, semaine: number, year: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/creneau-service/recurrent`, {
+        params: {
+            serviceId: serviceId.toString(),
+            semaine: semaine.toString(),
+            year: year.toString()
+        },
+        withCredentials: true
+    });
+}
 
   create(createCreneauServiceDto: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/creneau-service`, createCreneauServiceDto, { withCredentials: true });

@@ -28,6 +28,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
   typesCreneaux: string[] = [];
   creneaux: any[] = [];
   reservations: any[] = [];
+  loadedRecurrentCreneaux: Set<string> = new Set(); // To track loaded recurrent creneaux
 
   constructor(
     private route: ActivatedRoute,
@@ -42,25 +43,40 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.serviceId = +params.get('id')!;
-      this.loadService();
-      this.loadDocuments();
-      this.loadRendezVous();
-      this.loadTypesCreneaux();
-      this.loadReservations();
+        this.serviceId = +params.get('id')!;
+        this.loadService();
+        this.loadDocuments();
+        this.loadTypesCreneaux();
+        this.loadRendezVous();
+        this.loadCreneaux(this.serviceId); // Charger les créneaux normaux
+        const currentView = this.calendarComponent.getApi().view;
+        const start = currentView.activeStart;
+        const weekNumber = this.getWeekNumber(start);
+        const year = start.getFullYear();
+        this.loadRecurrentCreneaux(this.serviceId, weekNumber, year); // Charger les créneaux récurrents
     });
 
     document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
-      tab.addEventListener('shown.bs.tab', (event) => {
-        const target = (event.target as HTMLElement).getAttribute('href');
-        if (target === '#Disponibilités' || target === '#RendezVous') {
-          setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-          }, 100);
-        }
-      });
+        tab.addEventListener('shown.bs.tab', (event) => {
+            const target = (event.target as HTMLElement).getAttribute('href');
+            if (target === '#Disponibilités' || target === '#RendezVous') {
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('resize'));
+                }, 100);
+            }
+        });
     });
-  }
+}
+removeRecurrentCreneaux(): void {
+  const calendarApi = this.calendarComponent.getApi();
+  const events = calendarApi.getEvents();
+  events.forEach(event => {
+      if (event.id.startsWith('recurrent-')) {
+          event.remove();
+      }
+  });
+}
+
 
   loadService(): void {
     this.servicesService.findOne(this.serviceId).subscribe({
@@ -132,10 +148,10 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     });
   }
 
-  loadRendezVous(): void {
-    this.creneauServiceService.getAllRendezVous(this.serviceId).subscribe({
+  loadCreneaux(serviceId: number): void {
+    this.creneauServiceService.getAllCreneaux(serviceId).subscribe({
       next: (creneaux: any[]) => {
-        this.creneaux = creneaux.map(creneau => {
+        this.creneaux = creneaux.filter(creneau => creneau.type_creneau !== 'recurrent').map(creneau => {
           const color = this.getColorForTypeCreneau(creneau.type_creneau);
           return {
             id: creneau.id,
@@ -151,13 +167,56 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
           };
         });
         this.calendarOptions.events = this.creneaux;
-        this.calendarComponent.getApi().refetchEvents();
+        this.calendarComponent.getApi().removeAllEvents();
+        this.calendarComponent.getApi().addEventSource(this.creneaux);
+        console.log('Creneaux loaded:', this.creneaux);
       },
       error: (err: any) => {
         console.error('Error fetching creneaux:', err);
       }
     });
   }
+
+  loadRecurrentCreneaux(serviceId: number, semaine: number, year: number): void {
+    this.creneauServiceService.getRecurrentCreneaux(serviceId, semaine, year).subscribe({
+        next: (recurrentCreneaux: any[]) => {
+            console.log('Recurrent Creneaux loaded:', recurrentCreneaux);
+            
+            // Supprimez d'abord les événements récurrents existants
+            this.removeRecurrentCreneaux();
+            
+            // Ajoutez les nouveaux événements récurrents
+            recurrentCreneaux.forEach(creneau => {
+                const color = this.getColorForTypeCreneau('recurrent');
+                const event = {
+                    id: `recurrent-${creneau.creneau_id}`,
+                    title: 'Recurrent',
+                    start: creneau.date_debut,
+                    end: creneau.date_fin,
+                    backgroundColor: color,
+                    borderColor: color,
+                    textColor: 'white',
+                    extendedProps: {
+                        service_id: creneau.service_id,
+                        user_id: creneau.user_id,
+                        type_creneau: 'recurrent',
+                        date_debut: creneau.date_debut,
+                        date_fin: creneau.date_fin
+                    }
+                };
+                console.log('Adding event to calendar:', event);
+                this.calendarComponent.getApi().addEvent(event);
+            });
+
+            // Recharge les événements pour afficher les modifications
+            this.calendarComponent.getApi().refetchEvents();
+        },
+        error: (err) => {
+            console.error('Error fetching recurrent creneaux:', err);
+        }
+    });
+}
+
 
   loadTypesCreneaux(): void {
     this.typesService.getAllTypes().subscribe({
@@ -170,8 +229,8 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     });
   }
 
-  loadReservations(): void {
-    this.reservationService.getReservationsByService(this.serviceId).subscribe({
+  loadRendezVous(): void {
+    this.reservationService.getRendezVousByService(this.serviceId).subscribe({
       next: (data) => {
         this.reservations = data.map(reservation => ({
           id: reservation.id,
@@ -209,8 +268,18 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     eventDidMount: this.handleEventRender.bind(this),
     eventDrop: this.handleEventChange.bind(this),
     eventResize: this.handleEventChange.bind(this),
-    drop: this.handleDrop.bind(this)
+    drop: this.handleDrop.bind(this),
+    datesSet: this.handleDatesSet.bind(this)
   };
+
+  handleDatesSet(arg: any) {
+    if (this.serviceId) {
+      const start = arg.start;
+      const weekNumber = this.getWeekNumber(start);
+      const year = start.getFullYear();
+      this.loadRecurrentCreneaux(this.serviceId, weekNumber, year);
+    }
+  }
 
   handleDrop(info: DropArg) {
     const checkbox = document.getElementById('drop-remove') as HTMLInputElement;
@@ -231,7 +300,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
 
     this.creneauServiceService.create(createCreneauDto).subscribe({
       next: (res) => {
-        this.loadRendezVous();
+        this.loadCreneaux(this.serviceId);
       },
       error: (err) => {
         if (err.error && err.error.message) {
@@ -267,20 +336,39 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
     deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn', 'd-block', 'mx-auto', 'mt-1');
     deleteButton.addEventListener('click', (e: Event) => {
-      e.stopPropagation();
-      event.remove();
-      if (this.activePopover) {
-        this.activePopover.hide();
-      }
-      this.creneauServiceService.remove(parseInt(event.id)).subscribe({
-        next: () => {
-          console.log('Créneau supprimé avec succès');
-          this.loadRendezVous();
-        },
-        error: (err) => {
-          console.error('Erreur lors de la suppression du créneau:', err);
+        e.stopPropagation();
+        event.remove();
+        if (this.activePopover) {
+            this.activePopover.hide();
         }
-      });
+        const id = event.id.startsWith('recurrent-') ? event.id.split('-')[1] : event.id;
+        if (event.id.startsWith('recurrent-')) {
+            const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
+            this.creneauServiceService.remove(recurrentId).subscribe({
+                next: () => {
+                    console.log('Créneau récurrent supprimé avec succès');
+                    this.loadCreneaux(this.service.id); // Recharger les créneaux normaux
+                    const currentView = this.calendarComponent.getApi().view;
+                    const start = currentView.activeStart;
+                    const weekNumber = this.getWeekNumber(start);
+                    const year = start.getFullYear();
+                    this.loadRecurrentCreneaux(this.service.id, weekNumber, year);
+                },
+                error: (err) => {
+                    console.error('Erreur lors de la suppression du créneau récurrent:', err);
+                }
+            });
+        } else {
+            this.creneauServiceService.remove(parseInt(id)).subscribe({
+                next: () => {
+                    console.log('Créneau supprimé avec succès');
+                    this.loadCreneaux(this.service.id);
+                },
+                error: (err) => {
+                    console.error('Erreur lors de la suppression du créneau:', err);
+                }
+            });
+        }
     });
 
     const popoverContent = document.createElement('div');
@@ -288,9 +376,9 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     let eventEnd: string | null = event.end ? event.end.toLocaleString() : null;
 
     if (!eventEnd && event.start instanceof Date) {
-      const start = new Date(event.start);
-      const end = new Date(start.getTime() + 60 * 60 * 1000); // Ajouter une heure à la date de début
-      eventEnd = end.toLocaleString();
+        const start = new Date(event.start);
+        const end = new Date(start.getTime() + 60 * 60 * 1000); // Ajouter une heure à la date de début
+        eventEnd = end.toLocaleString();
     }
 
     const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
@@ -298,20 +386,20 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     popoverContent.appendChild(deleteButton);
 
     const popover = new bootstrap.Popover(eventEl, {
-      content: popoverContent,
-      html: true,
-      placement: 'top',
-      title: event.title,
-      trigger: 'focus'
+        content: popoverContent,
+        html: true,
+        placement: 'top',
+        title: event.title,
+        trigger: 'focus'
     });
 
     eventEl.addEventListener('click', (e: Event) => {
-      e.stopPropagation();
-      if (this.activePopover && this.activePopover !== popover) {
-        this.activePopover.hide();
-      }
-      popover.toggle();
-      this.activePopover = popover;
+        e.stopPropagation();
+        if (this.activePopover && this.activePopover !== popover) {
+            this.activePopover.hide();
+        }
+        popover.toggle();
+        this.activePopover = popover;
     });
 
     const typeCreneau = event.extendedProps['type_creneau'];
@@ -320,7 +408,9 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     eventEl.style.borderColor = color;
 
     eventEl.setAttribute('title', 'Details');
-  }
+}
+
+
 
   getColorForTypeCreneau(typeCreneau: string): string {
     switch (typeCreneau) {
@@ -335,53 +425,53 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
     }
   }
 
-
   handleEventChange(info: any) {
     const eventEl = info.el;
     const event: EventApi = info.event;
 
     if (eventEl && event.start && event.end) {
-      const eventStart = event.start.toISOString();
-      const eventEnd = event.end.toISOString();
-      const typeCreneau = event.extendedProps['type_creneau'];
-      const updateCreneauDto = {
-        service_id: this.serviceId,
-        type_creneau: typeCreneau,
-        date_debut: eventStart,
-        date_fin: eventEnd
-      };
+        const eventStart = event.start.toISOString();
+        const eventEnd = event.end.toISOString();
+        const typeCreneau = event.extendedProps['type_creneau'];
+        const updateCreneauDto = {
+            service_id: this.serviceId,
+            type_creneau: typeCreneau,
+            date_debut: eventStart,
+            date_fin: eventEnd
+        };
+        const id = event.id.startsWith('recurrent-') ? event.id.split('-')[1] : event.id;
 
-      this.creneauServiceService.update(parseInt(event.id), updateCreneauDto).subscribe({
-        next: (res) => {
-          this.loadRendezVous();
-          if (this.activePopover) {
-            const eventStart = event.start ? event.start.toLocaleString() : 'N/A';
-            let eventEnd = event.end ? event.end.toLocaleString() : 'N/A';
-
-            if (!event.end && event.start instanceof Date) {
-              const start = new Date(event.start);
-              const end = new Date(start.getTime() + 60 * 60 * 1000); // Ajouter une heure à la date de début
-              eventEnd = end.toLocaleString();
-            }
-
-            const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
-            const popoverElement = document.querySelector('.popover.show'); // Sélectionner l'élément popover affiché
-            const popoverContent = popoverElement?.querySelector('.popover-body');
-            if (popoverContent) {
-              popoverContent.innerHTML = eventTime;
-              const deleteButton = eventEl.querySelector('.delete-event-btn');
-              if (deleteButton) {
-                popoverContent.appendChild(deleteButton);
-              }
-            }
-          }
-        },
-        error: (err) => {
-          console.error('Erreur lors de la mise à jour du créneau:', err);
+        if (event.id.startsWith('recurrent-')) {
+            const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
+            this.creneauServiceService.update(recurrentId, updateCreneauDto).subscribe({
+                next: (res) => {
+                    console.log('Créneau récurrent mis à jour avec succès');
+                    this.loadCreneaux(this.service.id);
+                    const currentView = this.calendarComponent.getApi().view;
+                    const start = currentView.activeStart;
+                    const weekNumber = this.getWeekNumber(start);
+                    const year = start.getFullYear();
+                    this.loadRecurrentCreneaux(this.service.id, weekNumber, year);
+                },
+                error: (err) => {
+                    console.error('Erreur lors de la mise à jour du créneau récurrent:', err);
+                }
+            });
+        } else {
+            this.creneauServiceService.update(parseInt(id), updateCreneauDto).subscribe({
+                next: (res) => {
+                    console.log('Créneau mis à jour avec succès');
+                    this.loadCreneaux(this.service.id);
+                },
+                error: (err) => {
+                    console.error('Erreur lors de la mise à jour du créneau:', err);
+                }
+            });
         }
-      });
     }
-  }
+}
+
+
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['service'] && this.service) {
@@ -391,10 +481,35 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.initExternalEvents();
-      document.addEventListener('click', this.closePopoverOnClickOutside.bind(this));
+        this.initExternalEvents();
+        document.addEventListener('click', this.closePopoverOnClickOutside.bind(this));
+
+        const checkServiceLoaded = () => {
+            if (this.service && this.service.id) {
+                const calendarApi = this.calendarComponent.getApi();
+                calendarApi.on('datesSet', () => {
+                    const currentView = calendarApi.view;
+                    const start = currentView.activeStart;
+                    const weekNumber = this.getWeekNumber(start);
+                    const year = start.getFullYear();
+                    this.loadRecurrentCreneaux(this.service.id, weekNumber, year);
+                });
+
+                const currentView = this.calendarComponent.getApi().view;
+                const start = currentView.activeStart;
+                const weekNumber = this.getWeekNumber(start);
+                const year = start.getFullYear();
+                this.loadRecurrentCreneaux(this.service.id, weekNumber, year); // Charger les créneaux récurrents dès le début
+                this.loadCreneaux(this.service.id);
+            } else {
+                setTimeout(checkServiceLoaded, 50);
+            }
+        };
+
+        checkServiceLoaded();
     }, 0);
-  }
+}
+
 
   ngOnDestroy() {
     document.removeEventListener('click', this.closePopoverOnClickOutside.bind(this));
@@ -430,6 +545,12 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       this.activePopover.hide();
       this.activePopover = null;
     }
+  }
+
+  getWeekNumber(date: Date): number {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   }
 
   back() {

@@ -45,11 +45,19 @@ export class CreneauServiceService {
 
   async getCreneauxService(serviceId: number): Promise<any> {
     const result = await this.entityManager.query(
-      'SELECT * FROM planning.creneau_service WHERE service_id = $1',
-      [serviceId]
+      'SELECT * FROM planning.creneau_service WHERE service_id = $1 AND type_creneau != $2',
+      [serviceId, 'recurrent']
     );
     return result;
   }
+  
+  async getServiceRecurrentCreneaux(serviceId: number, semaine: number, year: number): Promise<any[]> {
+    return await this.entityManager.query(
+      'SELECT * FROM planning.get_service_recurent($1, $2, $3)',
+      [serviceId, semaine, year]
+    );
+  }
+  
 
   async remove(id: number, sessionCode: string): Promise<void> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
