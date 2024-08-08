@@ -7,6 +7,7 @@ import { error } from 'console';
 
 @Controller('creneau-admin')
 export class CreneauAdminController {
+  private readonly logger = new Logger(CreneauAdminService.name);
 
   constructor(private readonly creneauAdminService: CreneauAdminService) {}
 
@@ -28,6 +29,26 @@ export class CreneauAdminController {
     }
     return this.creneauAdminService.getCreneauxAdmin(parsedActiviteId, userId);
   }
+
+  @UseGuards(JwtAuthGuard)
+@Get('recurrent')
+async getRdvRecurent(
+  @Query('activiteId') activiteId: string,
+  @Query('semaine') semaine: string,
+  @Query('year') year: string
+) {
+  const parsedActiviteId = parseInt(activiteId, 10);
+  const parsedSemaine = parseInt(semaine, 10);
+  const parsedYear = parseInt(year, 10);
+
+  if (isNaN(parsedActiviteId) || isNaN(parsedSemaine) || isNaN(parsedYear)) {
+    this.logger.error(`Invalid parameters: activiteId=${activiteId}, semaine=${semaine}, year=${year}`);
+    throw new BadRequestException('Paramètres invalides');
+  }
+
+  return await this.creneauAdminService.getRdvRecurent(parsedActiviteId, parsedSemaine, parsedYear);
+}
+
 
   @UseGuards(JwtAuthGuard)
   @Get()

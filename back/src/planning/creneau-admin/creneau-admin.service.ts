@@ -8,6 +8,7 @@ import { CreneauAdmin } from './Entities/creneau-admin.entity';
 
 @Injectable()
 export class CreneauAdminService {
+  private readonly logger = new Logger(CreneauAdminService.name);
 
   constructor(
     private transactionManager: TransactionManager,
@@ -60,13 +61,31 @@ export class CreneauAdminService {
     return creneauAdmin;
   }
 
+  async getRdvRecurent(activiteId: number, semaine: number, year: number): Promise<any[]> {
+    this.logger.log(`Fetching recurrent RDVs for activiteId=${activiteId}, semaine=${semaine}, year=${year}`);
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      try {
+        const result = await manager.query(
+          'SELECT * FROM planning.get_rdv_recurent($1, $2, $3)',
+          [activiteId, semaine, year]
+        );
+        this.logger.log(`Recurrent RDVs fetched successfully: ${JSON.stringify(result)}`);
+        return result;
+      } catch (error) {
+        this.logger.error('Error fetching recurrent RDVs:', error);
+        throw new BadRequestException('Impossible de récupérer les RDV récurrents pour l\'activité spécifiée');
+      }
+    });
+  }
+  
+
   async getCreneauxAdmin(activiteId: number, userId: number): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const result = await manager.query(
-        'SELECT * FROM planning.creneau_admin WHERE activite_id = $1 AND user_id = $2',
+        'SELECT * FROM planning.creneau_admin WHERE activite_id = $1 AND user_id = $2 AND type_creneau != \'recurrent\'',
         [activiteId, userId]
       );
       return result;
     }, userId.toString());
-  }
+  }  
 }

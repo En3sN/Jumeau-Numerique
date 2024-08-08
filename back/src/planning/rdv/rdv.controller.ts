@@ -24,6 +24,7 @@ export class RdvController {
   async findAll() {
     return await this.rdvService.findAll();
   }
+  
   @UseGuards(JwtAuthGuard)
   @Get('activite/:activiteId')
   async findAllRdvByActivite(@Param('activiteId') activiteId: string) {

@@ -49,7 +49,6 @@ export class RdvService {
     return rdvs;
   }
   
-  
   async findUtilisateurByRendezvousId(rendezvousId: number): Promise<Utilisateur> {
     const rendezvous = await this.rdvRepository.findOne({ where: { id: rendezvousId }, relations: ['user'] });
     if (!rendezvous) {

@@ -34,4 +34,15 @@ export class CreneauAdminService {
   remove(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/creneau-admin/${id}`, { withCredentials: true });
   }
+
+  getRecurrentRdv(activiteId: number, semaine: number, year: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/creneau-admin/recurrent`, {
+      params: {
+        activiteId: activiteId.toString(),
+        semaine: semaine.toString(),
+        year: year.toString()
+      },
+      withCredentials: true
+    });
+  }
 }

@@ -36,6 +36,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
   creneaux: any[] = [];
   typesCreneaux: string[] = [];
   rendezvous: any[] = [];
+  activityLoaded: boolean = false;
 
   newService: any = {
     nom: '',
@@ -78,9 +79,8 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
           this.cdr.detectChanges();
           this.initCalendar();
           this.loadServices(+id);
-          this.loadCreneaux(+id);
           this.loadTypesCreneaux();
-          this.loadRendezvous(+id); 
+          this.loadRendezvous(+id);
           this.route.queryParams.subscribe(params => {
             const tab = params['tab'];
             if (tab) {
@@ -92,13 +92,15 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
               }, 0);
             }
           });
+            this.activityLoaded = true;
+            this.loadCreneaux(+id);
         },
         error: (err) => {
           console.error('Error fetching activity details:', err);
         }
       });
     }
-
+  
     this.authService.checkLoginStatus().subscribe({
       next: (response) => {
         if (response.loggedIn) {
@@ -109,7 +111,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         console.error('Error fetching user details:', error);
       }
     });
-
+  
     document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
       tab.addEventListener('shown.bs.tab', (event) => {
         const target = (event.target as HTMLElement).getAttribute('href');
@@ -121,7 +123,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       });
     });
   }
-
+  
   loadTypesCreneaux(): void {
     this.typesService.getAllTypes().subscribe({
       next: (types) => {
@@ -276,7 +278,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
             telephone: rv.telephone
           }
         }));
-        console.log('Rendezvous loaded:', this.rendezvous);  
       },
       error: (err) => {
         console.error('Error fetching rendezvous:', err);
@@ -284,34 +285,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     });
   }
   
-
-  loadCreneaux(activiteId: number): void {
-    this.creneauAdminService.getRdvCreneaux(activiteId).subscribe({
-      next: (creneaux: any[]) => {
-        this.creneaux = creneaux.map(creneau => {
-          const color = this.getColorForTypeCreneau(creneau.type_creneau);
-          return {
-            id: creneau.id,
-            title: creneau.type_creneau,
-            start: creneau.date_debut,
-            end: creneau.date_fin,
-            backgroundColor: color,
-            borderColor: color,
-            textColor: 'white',
-            extendedProps: {
-              type_creneau: creneau.type_creneau
-            }
-          };
-        });
-        this.calendarOptions.events = this.creneaux;
-        this.calendarComponent.getApi().refetchEvents();
-      },
-      error: (err: any) => {
-        console.error('Error fetching creneaux:', err);
-      }
-    });
-  }
-
   showDeleteConfirmation(serviceId: number, event: Event): void {
     event.stopPropagation();
     this.serviceToDelete = serviceId;
@@ -343,11 +316,10 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     }
   }
 
-  ngAfterViewInit() {
-    setTimeout(() => {
-      this.initExternalEvents();
-      document.addEventListener('click', this.closePopoverOnClickOutside.bind(this));
-    }, 0);
+  getWeekNumber(date: Date): number {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
   }
 
   ngOnDestroy() {
@@ -364,7 +336,6 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       }
     });
   }
-
   initExternalEvents() {
     const containerEl = document.getElementById('external-events');
     if (containerEl) {
@@ -388,7 +359,97 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       this.cdr.detectChanges();
     }
   }
+  
+ngAfterViewInit() {
+  setTimeout(() => {
+    this.initExternalEvents();
+    document.addEventListener('click', this.closePopoverOnClickOutside.bind(this));
 
+    const checkActivityLoaded = () => {
+      if (this.activityLoaded && this.activite && this.activite.id) {
+        const calendarApi = this.calendarComponent.getApi();
+        calendarApi.on('datesSet', () => {
+          const currentView = calendarApi.view;
+          const start = currentView.activeStart;
+          const weekNumber = this.getWeekNumber(start);
+          const year = start.getFullYear();
+          this.loadRecurrentCreneaux(this.activite.id, weekNumber, year);
+        });
+        this.loadCreneaux(this.activite.id);
+      } else {
+        setTimeout(checkActivityLoaded, 50);
+      }
+    };
+    checkActivityLoaded();
+  }, 0);
+}
+
+loadCreneaux(activiteId: number): void {
+  this.creneauAdminService.getRdvCreneaux(activiteId).subscribe({
+    next: (creneaux: any[]) => {
+      this.creneaux = creneaux.map(creneau => {
+        const color = this.getColorForTypeCreneau(creneau.type_creneau);
+        return {
+          id: creneau.id,
+          title: creneau.type_creneau,
+          start: creneau.date_debut,
+          end: creneau.date_fin,
+          backgroundColor: color,
+          borderColor: color,
+          textColor: 'white',
+          extendedProps: {
+            type_creneau: creneau.type_creneau
+          }
+        };
+      });
+      this.calendarOptions.events = this.creneaux;
+      this.calendarComponent.getApi().refetchEvents();
+
+      const currentView = this.calendarComponent.getApi().view;
+      const start = currentView.activeStart;
+      const weekNumber = this.getWeekNumber(start);
+      const year = start.getFullYear();
+      this.loadRecurrentCreneaux(activiteId, weekNumber, year);
+    },
+    error: (err: any) => {
+      console.error('Error fetching creneaux:', err);
+    }
+  });
+}
+
+loadRecurrentCreneaux(activiteId: number, semaine: number, year: number): void {
+  this.creneauAdminService.getRecurrentRdv(activiteId, semaine, year).subscribe({
+    next: (recurrentCreneaux: any[]) => {      
+      const calendarApi = this.calendarComponent.getApi();
+      const existingRecurrentEvents = calendarApi.getEvents().filter(event => event.id.startsWith('recurrent-'));
+      existingRecurrentEvents.forEach(event => event.remove());
+      
+      const formattedCreneaux = recurrentCreneaux.map(creneau => ({
+        id: `recurrent-${creneau.creneau_id}`,
+        title: 'Recurrent',
+        start: creneau.date_debut,
+        end: creneau.date_fin,
+        backgroundColor: 'rgb(58, 177, 58)',
+        borderColor: 'rgb(58, 177, 58)',
+        textColor: 'white',
+        extendedProps: {
+          activite_id: creneau.activite_id,
+          user_id: creneau.user_id,
+          type_creneau: creneau.type_creneau,
+          date_debut: creneau.date_debut,
+          date_fin: creneau.date_fin
+        }
+      }));
+      formattedCreneaux.forEach(creneau => {
+        calendarApi.addEvent(creneau);
+      });
+    },
+    error: (err) => {
+      console.error('Error fetching recurrent creneaux:', err);
+    }
+  });
+}
+  
   getTypeCreneauFromElement(element: HTMLElement, defaultType: string = 'recurrent'): string {
     const title = element.getAttribute('title');
     const type = this.typesCreneaux.find(type => type === title);
@@ -403,7 +464,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
     if (this.userId) {
       const typeCreneau = this.getTypeCreneauFromElement(info.draggedEl, info.draggedEl.getAttribute('data-type-creneau') || undefined);
       const color = this.getColorForTypeCreneau(typeCreneau);
-
+  
       const createCreneauDto = {
         user_id: this.userId,
         activite_id: this.activite.id,
@@ -411,10 +472,16 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         date_debut: info.dateStr,
         date_fin: info.dateStr
       };
-
+  
       this.creneauAdminService.create(createCreneauDto).subscribe({
         next: (res) => {
           console.log('Créneau créé avec succès');
+          const currentView = this.calendarComponent.getApi().view;
+          const start = currentView.activeStart;
+          const weekNumber = this.getWeekNumber(start);
+          const year = start.getFullYear();
+          this.loadRecurrentCreneaux(this.activite.id, weekNumber, year);
+          this.loadCreneaux(this.activite.id); 
         },
         error: (err) => {
           console.error('Erreur lors de la création du créneau');
@@ -422,7 +489,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       });
     }
   }
-
+  
   getColorForTypeCreneau(typeCreneau: string): string {
     switch (typeCreneau) {
       case 'exception':
@@ -432,14 +499,14 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       case 'recurrent':
         return 'rgb(58, 177, 58)'; 
       default:
-        return 'gray';
+        return 'rgb(58, 177, 58)';
     }
-  }
+  }  
 
   handleEventRender(info: any) {
     const eventEl = info.el;
     const event: EventApi = info.event;
-
+  
     const deleteButton = document.createElement('button');
     deleteButton.innerHTML = '<i class="fas fa-trash-alt"></i>';
     deleteButton.classList.add('btn', 'btn-sm', 'btn-danger', 'delete-event-btn', 'd-block', 'mx-auto', 'mt-1');
@@ -450,32 +517,49 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         this.activePopover.hide();
       }
       if (this.userId) {
-        this.creneauAdminService.remove(parseInt(event.id)).subscribe({
-          next: () => {
-            console.log('Créneau supprimé avec succès');
-            this.loadCreneaux(this.activite.id);
-          },
-          error: (err) => {
-            console.error('Erreur lors de la suppression du créneau:', err);
-          }
-        });
+        if (event.id.startsWith('recurrent-')) {
+          const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
+          this.creneauAdminService.remove(recurrentId).subscribe({
+            next: () => {
+              console.log('Créneau récurrent supprimé avec succès');
+              const currentView = this.calendarComponent.getApi().view;
+              const start = currentView.activeStart;
+              const weekNumber = this.getWeekNumber(start);
+              const year = start.getFullYear();
+              this.loadRecurrentCreneaux(this.activite.id, weekNumber, year);
+            },
+            error: (err) => {
+              console.error('Erreur lors de la suppression du créneau récurrent:', err);
+            }
+          });
+        } else {
+          this.creneauAdminService.remove(parseInt(event.id)).subscribe({
+            next: () => {
+              console.log('Créneau supprimé avec succès');
+              this.loadCreneaux(this.activite.id);
+            },
+            error: (err) => {
+              console.error('Erreur lors de la suppression du créneau:', err);
+            }
+          });
+        }
       }
     });
-
+  
     const popoverContent = document.createElement('div');
     const eventStart = event.start ? event.start.toLocaleString() : 'N/A';
     let eventEnd: string | null = event.end ? event.end.toLocaleString() : null;
-
+  
     if (!eventEnd && event.start instanceof Date) {
       const start = new Date(event.start);
       const end = new Date(start.getTime() + 60 * 60 * 1000); 
       eventEnd = end.toLocaleString();
     }
-
+  
     const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
     popoverContent.innerHTML = eventTime;
     popoverContent.appendChild(deleteButton);
-
+  
     const popover = new bootstrap.Popover(eventEl, {
       content: popoverContent,
       html: true,
@@ -483,7 +567,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       title: event.title,
       trigger: 'focus'
     });
-
+  
     eventEl.addEventListener('click', (e: Event) => {
       e.stopPropagation();
       if (this.activePopover && this.activePopover !== popover) {
@@ -492,15 +576,15 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       popover.toggle();
       this.activePopover = popover;
     });
-
+  
     const typeCreneau = event.extendedProps['type_creneau'];
     const color = this.getColorForTypeCreneau(typeCreneau);
     eventEl.style.backgroundColor = color;
     eventEl.style.borderColor = color;
-
+  
     eventEl.setAttribute('title', 'Details');
   }
-
+  
   handleEventChange(info: any) {
     const eventEl = info.el;
     const event: EventApi = info.event;
@@ -509,6 +593,7 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
       const eventStart = event.start.toISOString();
       const eventEnd = event.end.toISOString();
       const typeCreneau = event.extendedProps['type_creneau'] || this.getTypeCreneauFromElement(eventEl);
+  
       const updateCreneauDto = {
         user_id: this.userId,
         activite_id: this.activite.id,
@@ -517,36 +602,32 @@ export class DetailsActiviteComponent implements AfterViewInit, OnDestroy, OnIni
         date_fin: eventEnd
       };
   
-      this.creneauAdminService.update(parseInt(event.id), updateCreneauDto).subscribe({
-        next: (res) => {
-          console.log('Créneau mis à jour avec succès:');
-          this.loadCreneaux(this.activite.id);
-          if (this.activePopover) {
-            const eventStart = event.start ? event.start.toLocaleString() : 'N/A';
-            let eventEnd = event.end ? event.end.toLocaleString() : 'N/A';
-  
-            if (!event.end && event.start instanceof Date) {
-              const start = new Date(event.start);
-              const end = new Date(start.getTime() + 60 * 60 * 1000); 
-              eventEnd = end.toLocaleString();
-            }
-  
-            const eventTime = `<p>Date: ${eventStart} - ${eventEnd}</p>`;
-            const popoverElement = document.querySelector('.popover.show'); 
-            const popoverContent = popoverElement?.querySelector('.popover-body');
-            if (popoverContent) {
-              popoverContent.innerHTML = eventTime;
-              const deleteButton = eventEl.querySelector('.delete-event-btn');
-              if (deleteButton) {
-                popoverContent.appendChild(deleteButton);
-              }
-            }
+      if (event.id.startsWith('recurrent-')) {
+        const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
+        this.creneauAdminService.update(recurrentId, updateCreneauDto).subscribe({
+          next: (res) => {
+            console.log('Créneau récurrent mis à jour avec succès');
+            const currentView = this.calendarComponent.getApi().view;
+            const start = currentView.activeStart;
+            const weekNumber = this.getWeekNumber(start);
+            const year = start.getFullYear();
+            this.loadRecurrentCreneaux(this.activite.id, weekNumber, year);
+          },
+          error: (err) => {
+            console.error('Erreur lors de la mise à jour du créneau récurrent:', err);
           }
-        },
-        error: (err) => {
-          console.error('Erreur lors de la mise à jour du créneau:', err);
-        }
-      });
+        });
+      } else {
+        this.creneauAdminService.update(parseInt(event.id), updateCreneauDto).subscribe({
+          next: (res) => {
+            console.log('Créneau mis à jour avec succès');
+            this.loadCreneaux(this.activite.id);
+          },
+          error: (err) => {
+            console.error('Erreur lors de la mise à jour du créneau:', err);
+          }
+        });
+      }
     }
   }
   
