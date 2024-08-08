@@ -28,7 +28,7 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
   typesCreneaux: string[] = [];
   creneaux: any[] = [];
   reservations: any[] = [];
-  loadedRecurrentCreneaux: Set<string> = new Set(); // To track loaded recurrent creneaux
+  loadedRecurrentCreneaux: Set<string> = new Set(); 
 
   constructor(
     private route: ActivatedRoute,
@@ -48,12 +48,12 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
         this.loadDocuments();
         this.loadTypesCreneaux();
         this.loadRendezVous();
-        this.loadCreneaux(this.serviceId); // Charger les créneaux normaux
+        this.loadCreneaux(this.serviceId); 
         const currentView = this.calendarComponent.getApi().view;
         const start = currentView.activeStart;
         const weekNumber = this.getWeekNumber(start);
         const year = start.getFullYear();
-        this.loadRecurrentCreneaux(this.serviceId, weekNumber, year); // Charger les créneaux récurrents
+        this.loadRecurrentCreneaux(this.serviceId, weekNumber, year);
     });
 
     document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
@@ -67,16 +67,6 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
         });
     });
 }
-removeRecurrentCreneaux(): void {
-  const calendarApi = this.calendarComponent.getApi();
-  const events = calendarApi.getEvents();
-  events.forEach(event => {
-      if (event.id.startsWith('recurrent-')) {
-          event.remove();
-      }
-  });
-}
-
 
   loadService(): void {
     this.servicesService.findOne(this.serviceId).subscribe({
@@ -169,7 +159,6 @@ removeRecurrentCreneaux(): void {
         this.calendarOptions.events = this.creneaux;
         this.calendarComponent.getApi().removeAllEvents();
         this.calendarComponent.getApi().addEventSource(this.creneaux);
-        console.log('Creneaux loaded:', this.creneaux);
       },
       error: (err: any) => {
         console.error('Error fetching creneaux:', err);
@@ -179,13 +168,12 @@ removeRecurrentCreneaux(): void {
 
   loadRecurrentCreneaux(serviceId: number, semaine: number, year: number): void {
     this.creneauServiceService.getRecurrentCreneaux(serviceId, semaine, year).subscribe({
-        next: (recurrentCreneaux: any[]) => {
-            console.log('Recurrent Creneaux loaded:', recurrentCreneaux);
-            
-            // Supprimez d'abord les événements récurrents existants
-            this.removeRecurrentCreneaux();
-            
-            // Ajoutez les nouveaux événements récurrents
+        next: (recurrentCreneaux: any[]) => {            
+            this.calendarComponent.getApi().getEvents().forEach(event => {
+                if (event.id.startsWith('recurrent-')) {
+                    event.remove();
+                }
+            });            
             recurrentCreneaux.forEach(creneau => {
                 const color = this.getColorForTypeCreneau('recurrent');
                 const event = {
@@ -204,11 +192,8 @@ removeRecurrentCreneaux(): void {
                         date_fin: creneau.date_fin
                     }
                 };
-                console.log('Adding event to calendar:', event);
                 this.calendarComponent.getApi().addEvent(event);
             });
-
-            // Recharge les événements pour afficher les modifications
             this.calendarComponent.getApi().refetchEvents();
         },
         error: (err) => {
@@ -216,7 +201,6 @@ removeRecurrentCreneaux(): void {
         }
     });
 }
-
 
   loadTypesCreneaux(): void {
     this.typesService.getAllTypes().subscribe({
@@ -301,6 +285,11 @@ removeRecurrentCreneaux(): void {
     this.creneauServiceService.create(createCreneauDto).subscribe({
       next: (res) => {
         this.loadCreneaux(this.serviceId);
+        const currentView = this.calendarComponent.getApi().view;
+        const start = currentView.activeStart;
+        const weekNumber = this.getWeekNumber(start);
+        const year = start.getFullYear();
+        this.loadRecurrentCreneaux(this.serviceId, weekNumber, year);
       },
       error: (err) => {
         if (err.error && err.error.message) {
@@ -347,7 +336,7 @@ removeRecurrentCreneaux(): void {
             this.creneauServiceService.remove(recurrentId).subscribe({
                 next: () => {
                     console.log('Créneau récurrent supprimé avec succès');
-                    this.loadCreneaux(this.service.id); // Recharger les créneaux normaux
+                    this.loadCreneaux(this.service.id); 
                     const currentView = this.calendarComponent.getApi().view;
                     const start = currentView.activeStart;
                     const weekNumber = this.getWeekNumber(start);
@@ -377,7 +366,7 @@ removeRecurrentCreneaux(): void {
 
     if (!eventEnd && event.start instanceof Date) {
         const start = new Date(event.start);
-        const end = new Date(start.getTime() + 60 * 60 * 1000); // Ajouter une heure à la date de début
+        const end = new Date(start.getTime() + 60 * 60 * 1000);
         eventEnd = end.toLocaleString();
     }
 
@@ -409,8 +398,6 @@ removeRecurrentCreneaux(): void {
 
     eventEl.setAttribute('title', 'Details');
 }
-
-
 
   getColorForTypeCreneau(typeCreneau: string): string {
     switch (typeCreneau) {
@@ -470,9 +457,6 @@ removeRecurrentCreneaux(): void {
         }
     }
 }
-
-
-
   ngOnChanges(changes: SimpleChanges) {
     if (changes['service'] && this.service) {
       this.initCalendar();
@@ -499,17 +483,15 @@ removeRecurrentCreneaux(): void {
                 const start = currentView.activeStart;
                 const weekNumber = this.getWeekNumber(start);
                 const year = start.getFullYear();
-                this.loadRecurrentCreneaux(this.service.id, weekNumber, year); // Charger les créneaux récurrents dès le début
+                this.loadRecurrentCreneaux(this.service.id, weekNumber, year);
                 this.loadCreneaux(this.service.id);
             } else {
                 setTimeout(checkServiceLoaded, 50);
             }
         };
-
         checkServiceLoaded();
     }, 0);
 }
-
 
   ngOnDestroy() {
     document.removeEventListener('click', this.closePopoverOnClickOutside.bind(this));
