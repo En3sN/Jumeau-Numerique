@@ -53,5 +53,4 @@ export class ActiviteService {
   getLogo(id: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/activite/logo/${id}`, { responseType: 'blob', withCredentials: true });
   }
-
 }

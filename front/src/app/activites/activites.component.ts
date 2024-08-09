@@ -196,4 +196,8 @@ export class ActivitesComponent implements OnInit {
       }
     );
   }
+
+  navigateToServices(activityId: number): void {
+  this.router.navigate(['/services-associes', activityId]);
+}
 }

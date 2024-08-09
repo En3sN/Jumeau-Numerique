@@ -1,0 +1,96 @@
+<div class="container mlh_top_container">
+    <div class="d-flex  align-items-center justify-content-center">
+        <div class="col-12 activity-column">
+            <div class="row mt-2">
+                <div class="p-2">
+                    <h3 class="mlh_verdana bg-secondary rounded p-2 text-light">Services associés</h3>
+                </div>
+
+                <div class="offcanvas offcanvas-start mlh_panneau_info" tabindex="-1" id="offcanvasService"
+                    aria-labelledby="offcanvasServiceLabel">
+                    <div class="offcanvas-header">
+                        <img class="form-control" [src]="selectedService?.logoUrl" alt="logo"
+                            style="max-width: 150px; max-height: 150px;">
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <h4 class="offcanvas-title" id="offcanvasServiceLabel">{{ selectedService?.nom }}</h4>
+                        <h5 class="offcanvas-title" id="offcanvasServiceLabel"><a href="#">Ref :
+                                {{ selectedService?.reference }}</a></h5>
+                        <p>{{ selectedService?.description }}</p>
+                        <div class="mb-1"><u> Type</u>: {{ selectedService?.type }}</div>
+                        <div><u> Documents</u>:</div>
+                        <p>
+                        <div class="accordion mb-2" id="documentsAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingDocuments">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseDocuments" aria-expanded="true"
+                                        aria-controls="collapseDocuments">
+                                        Voir les documents
+                                    </button>
+                                </h2>
+                                <div id="collapseDocuments" class="accordion-collapse collapse show"
+                                    aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
+                                    <div class="accordion-body">
+                                        <ul class="list-group"
+                                            *ngIf="selectedService?.documents?.length > 0; else noDocuments">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center"
+                                                *ngFor="let doc of selectedService?.documents">
+                                                {{ doc.titre }}
+                                                <button class="btn btn-primary btn-sm"
+                                                    (click)="downloadDocument(doc.id, doc.titre)">Télécharger</button>
+                                            </li>
+                                        </ul>
+                                        <ng-template #noDocuments>
+                                            <p class="text-center">Aucun document</p>
+                                        </ng-template>
+                                        <button class="btn btn-secondary btn-sm mt-3"
+                                            (click)="downloadAllDocuments(selectedService.id)">Télécharger
+                                            tous</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p>
+                            <span *ngFor="let tag of selectedService?.tags" class="badge bg-info">{{ tag }}</span>
+                        </p>
+
+                       <!-- <button type="button" class="btn btn-primary p-2 m-1" id="btServiceModif"
+                            (click)="navigateToServices(selectedService.id)">
+                            Voir les détails du service
+                        </button> -->
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap overflow-auto mt-2">
+                    <div *ngFor="let service of publicServices$ | async" class="p-1 col-6">
+                        <div class="card border-2 border-info" type="button" (click)="selectService(service)"
+                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasService"
+                            aria-controls="offcanvasService">
+                            <div class="card-body row">
+                                <div class="col-2 mb-1">
+                                    <img class="img-thumbnail" [src]="service.logoUrl" alt="logo"
+                                        style="max-width: 80px; height: auto; object-fit: cover;">
+                                </div>
+                                <div class="col-10">
+                                    <h4 class="card-title">{{ service.nom }}</h4>
+                                    <p class="card-text">{{ service.description }}</p>
+                                    <p>
+                                        <span *ngFor="let tag of service.tags"
+                                            class="badge bg-info me-1">{{ tag }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end w-100">
+                        <button class="btn btn-secondary" (click)="goBack()">Retour</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

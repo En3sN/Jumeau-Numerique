@@ -1,215 +1,254 @@
 <div class="container mlh_top_container">
-  <div class="row">
-    <div class="col-3 mt-4 border-end filter-column">
-      <div>
-        <h4 class="mlh_verdana bg-secondary rounded p-2 text-light">Tri</h4>
-        <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
-          <input type="checkbox" class="btn-check" id="btncheck1" checked autocomplete="off">
-          <label class="btn btn-primary" for="btncheck1">Récente</label>
-          <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
-          <label class="btn btn-primary" for="btncheck2">Populaire</label>
-          <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
-          <label class="btn btn-primary" for="btncheck3">A-Z</label>
-        </div>
-      </div>
-      <div class="border-bottom mt-2">
-        <h4 class="mlh_verdana bg-secondary rounded p-2 text-light">Filtre</h4>
-        <div>
-          <h5 class="mlh_verdana">Éléments du filtre</h5>
-          <div id="filterItems">
-            <span *ngFor="let filter of appliedFilters" class="badge bg-info">
-              {{ filter.key }} : {{ filter.value }}
-              <button type="button" class="btn btn-outline-light mlh_tags" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Supprimer" (click)="removeFilter(filter.key, filter.value)">
-                <div class="mlh_bt_tag">x</div>
-              </button>
-            </span>
-          </div>
-        </div>
+    <div class="row">
+        <div class="col-3 mt-4 border-end filter-column">
+            <div>
+                <h4 class="mlh_verdana bg-secondary rounded p-2 text-light">Tri</h4>
+                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                    <input type="checkbox" class="btn-check" id="btncheck1" checked autocomplete="off">
+                    <label class="btn btn-primary" for="btncheck1">Récente</label>
+                    <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
+                    <label class="btn btn-primary" for="btncheck2">Populaire</label>
+                    <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
+                    <label class="btn btn-primary" for="btncheck3">A-Z</label>
+                </div>
+            </div>
+            <div class="border-bottom mt-2">
+                <h4 class="mlh_verdana bg-secondary rounded p-2 text-light">Filtre</h4>
+                <div>
+                    <h5 class="mlh_verdana">Éléments du filtre</h5>
+                    <div id="filterItems">
+                        <span *ngFor="let filter of appliedFilters" class="badge bg-info">
+                            {{ filter.key }} : {{ filter.value }}
+                            <button type="button" class="btn btn-outline-light mlh_tags" data-bs-toggle="tooltip"
+                                data-bs-placement="bottom" title="Supprimer"
+                                (click)="removeFilter(filter.key, filter.value)">
+                                <div class="mlh_bt_tag">x</div>
+                            </button>
+                        </span>
+                    </div>
+                </div>
 
-        <h5 class="mlh_verdana mt-4">Définition du filtre :</h5>
-        <div class="input-group mb-3">
-          <input type="text" id="inputFiltreNom" class="form-control" placeholder="texte à rechercher" aria-label="Recipient's username" aria-describedby="button-addon1" (input)="onFilterChange('nom', $event)">
-          <button class="btn btn-primary" type="button" id="button-addon1">Appliquer</button>
-        </div>
+                <h5 class="mlh_verdana mt-4">Définition du filtre :</h5>
+                <div class="input-group mb-3">
+                    <input type="text" id="inputFiltreNom" class="form-control" placeholder="texte à rechercher"
+                        aria-label="Recipient's username" aria-describedby="button-addon1"
+                        (input)="onFilterChange('nom', $event)">
+                    <button class="btn btn-primary" type="button" id="button-addon1">Appliquer</button>
+                </div>
 
-        <h6 class="mlh_verdana">Type :</h6>
-        <div class="list-group">
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Location / Réservation" id="flexCheckChecked1" (change)="onFilterChange('type', $event)">
-            <label class="form-check-label" for="flexCheckChecked1">Location / Réservation</label>
-          </div>
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Formation" id="flexCheckChecked2" (change)="onFilterChange('type', $event)">
-            <label class="form-check-label" for="flexCheckChecked2">Formation</label>
-          </div>
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Evénements" id="flexCheckChecked3" (change)="onFilterChange('type', $event)">
-            <label class="form-check-label" for="flexCheckChecked3">Evénements</label>
-          </div>
-        </div>
+                <h6 class="mlh_verdana">Type :</h6>
+                <div class="list-group">
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Location / Réservation"
+                            id="flexCheckChecked1" (change)="onFilterChange('type', $event)">
+                        <label class="form-check-label" for="flexCheckChecked1">Location / Réservation</label>
+                    </div>
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Formation" id="flexCheckChecked2"
+                            (change)="onFilterChange('type', $event)">
+                        <label class="form-check-label" for="flexCheckChecked2">Formation</label>
+                    </div>
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Evénements" id="flexCheckChecked3"
+                            (change)="onFilterChange('type', $event)">
+                        <label class="form-check-label" for="flexCheckChecked3">Evénements</label>
+                    </div>
+                </div>
 
-        <h6 class="mlh_verdana">Domaine :</h6>
-        <div class="list-group">
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Couture" id="flexCheckChecked4" (change)="onFilterChange('domaine', $event)">
-            <label class="form-check-label" for="flexCheckChecked4">Couture</label>
-          </div>
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Bricolage" id="flexCheckChecked5" (change)="onFilterChange('domaine', $event)">
-            <label class="form-check-label" for="flexCheckChecked5">Bricolage</label>
-          </div>
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Informatique" id="flexCheckChecked6" (change)="onFilterChange('domaine', $event)">
-            <label class="form-check-label" for="flexCheckChecked6">Informatique</label>
-          </div>
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Langue vivante" id="flexCheckChecked7" (change)="onFilterChange('domaine', $event)">
-            <label class="form-check-label" for="flexCheckChecked7">Langue vivante</label>
-          </div>
-        </div>
+                <h6 class="mlh_verdana">Domaine :</h6>
+                <div class="list-group">
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Couture" id="flexCheckChecked4"
+                            (change)="onFilterChange('domaine', $event)">
+                        <label class="form-check-label" for="flexCheckChecked4">Couture</label>
+                    </div>
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Bricolage" id="flexCheckChecked5"
+                            (change)="onFilterChange('domaine', $event)">
+                        <label class="form-check-label" for="flexCheckChecked5">Bricolage</label>
+                    </div>
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Informatique" id="flexCheckChecked6"
+                            (change)="onFilterChange('domaine', $event)">
+                        <label class="form-check-label" for="flexCheckChecked6">Informatique</label>
+                    </div>
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Langue vivante" id="flexCheckChecked7"
+                            (change)="onFilterChange('domaine', $event)">
+                        <label class="form-check-label" for="flexCheckChecked7">Langue vivante</label>
+                    </div>
+                </div>
 
-        <h6 class="mlh_verdana">Organisation :</h6>
-        <div class="input-group mb-3">
-          <input type="text" id="inputFiltreOrganisation" class="form-control" placeholder="Organisation à rechercher" aria-label="Recipient's username" aria-describedby="button-addon3" (input)="onFilterChange('organisation_nom', $event)">
-          <button class="btn btn-primary" type="button" id="button-addon3">Appliquer</button>
-        </div>
+                <h6 class="mlh_verdana">Organisation :</h6>
+                <div class="input-group mb-3">
+                    <input type="text" id="inputFiltreOrganisation" class="form-control"
+                        placeholder="Organisation à rechercher" aria-label="Recipient's username"
+                        aria-describedby="button-addon3" (input)="onFilterChange('organisation_nom', $event)">
+                    <button class="btn btn-primary" type="button" id="button-addon3">Appliquer</button>
+                </div>
 
-        <h6 class="mlh_verdana">Tag :</h6>
-        <div class="input-group mb-3">
-          <input type="text" id="inputFiltreTag" class="form-control" placeholder="Tag à rechercher" aria-label="Recipient's username" aria-describedby="button-addon2" (input)="onFilterChange('tag', $event)">
-          <button class="btn btn-primary" type="button" id="button-addon2">Appliquer</button>
-        </div>
+                <h6 class="mlh_verdana">Tag :</h6>
+                <div class="input-group mb-3">
+                    <input type="text" id="inputFiltreTag" class="form-control" placeholder="Tag à rechercher"
+                        aria-label="Recipient's username" aria-describedby="button-addon2"
+                        (input)="onFilterChange('tag', $event)">
+                    <button class="btn btn-primary" type="button" id="button-addon2">Appliquer</button>
+                </div>
 
-        <h6 class="mlh_verdana">Statut :</h6>
-        <div class="list-group">
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Abonné à l'activité" id="flexCheckChecked8" (change)="onFilterChange('statut', $event)">
-            <label class="form-check-label" for="flexCheckChecked8">Abonné à l'activité</label>
-          </div>
-          <div class="form-check list-group-item">
-            <input class="form-check-input" type="checkbox" value="Référent de l'activité" id="flexCheckChecked9" (change)="onFilterChange('statut', $event)">
-            <label class="form-check-label" for="flexCheckChecked9">Référent de l'activité</label>
-          </div>
+                <h6 class="mlh_verdana">Statut :</h6>
+                <div class="list-group">
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Abonné à l'activité"
+                            id="flexCheckChecked8" (change)="onFilterChange('statut', $event)">
+                        <label class="form-check-label" for="flexCheckChecked8">Abonné à l'activité</label>
+                    </div>
+                    <div class="form-check list-group-item">
+                        <input class="form-check-input" type="checkbox" value="Référent de l'activité"
+                            id="flexCheckChecked9" (change)="onFilterChange('statut', $event)">
+                        <label class="form-check-label" for="flexCheckChecked9">Référent de l'activité</label>
+                    </div>
+                </div>
+            </div>
+            <h4 class="mlh_verdana mt-4 bg-secondary rounded p-2 text-light">Légende</h4>
+            <div>
+                <div class="card border-3 border-danger mb-3 p-3">Activités avec validation du référent pour son usage
+                </div>
+                <div class="card border-3 border-success mb-3 p-3">Activités dont vous êtes abonnés</div>
+                <div class="card border-3 border-warning mb-3 p-3">Activités dont vous êtes le référent</div>
+                <div class="card border-3 border-info mb-3 p-3">Autres activités</div>
+            </div>
         </div>
-      </div>
-      <h4 class="mlh_verdana mt-4 bg-secondary rounded p-2 text-light">Légende</h4>
-      <div>
-        <div class="card border-3 border-danger mb-3 p-3">Activités avec validation du référent pour son usage</div>
-        <div class="card border-3 border-success mb-3 p-3">Activités dont vous êtes abonnés</div>
-        <div class="card border-3 border-warning mb-3 p-3">Activités dont vous êtes le référent</div>
-        <div class="card border-3 border-info mb-3 p-3">Autres activités</div>
-      </div>
+        <div class="col-9 activity-column">
+            <div class="row mt-2">
+                <div class="p-2">
+                    <h3 class="mlh_verdana bg-secondary rounded p-2 text-light">Activités disponibles</h3>
+                </div>
+
+                <div class="offcanvas offcanvas-start mlh_panneau_info" tabindex="-1" id="offcanvasActivite"
+                    aria-labelledby="offcanvasServiceLabel">
+                    <div class="offcanvas-header">
+                        <img class="form-control" [src]="selectedActivity?.logoUrl" alt="logo"
+                            style="max-width: 150px; max-height: 150px;">
+                        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <h4 class="offcanvas-title" id="offcanvasServiceLabel">{{ selectedActivity?.nom }}</h4>
+                        <h5 class="offcanvas-title" id="offcanvasServiceLabel"><a href="#">Ref :
+                                {{ selectedActivity?.reference }}</a></h5>
+                        <p>{{ selectedActivity?.description }}</p>
+                        <p>
+                        <div class="mb-1"><u> Organisation</u>: <a href="#">{{ selectedActivity?.organisation_nom }}</a>
+                        </div>
+                        <div class="mb-1"><u> Type</u>: {{ selectedActivity?.type }}</div>
+                        <div class="mb-1"><u> Domaine</u>: {{ selectedActivity?.domaine }}</div>
+                        <div class="mb-1"><u> Documents</u>:</div>
+                        <p>
+                        <div class="accordion mb-2" id="documentsAccordion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="headingDocuments">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseDocuments" aria-expanded="true"
+                                        aria-controls="collapseDocuments">
+                                        Voir les documents
+                                    </button>
+                                </h2>
+                                <div id="collapseDocuments" class="accordion-collapse collapse show"
+                                    aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
+                                    <div class="accordion-body">
+                                        <ul class="list-group"
+                                            *ngIf="selectedActivity?.documents?.length > 0; else noDocuments">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center"
+                                                *ngFor="let doc of selectedActivity?.documents">
+                                                {{ doc.titre }}
+                                                <button class="btn btn-primary btn-sm"
+                                                    (click)="downloadDocument(doc.id, doc.titre)">Télécharger</button>
+                                            </li>
+                                        </ul>
+                                        <ng-template #noDocuments>
+                                            <p class="text-center">Aucun document</p>
+                                        </ng-template>
+                                        <button class="btn btn-secondary btn-sm mt-2"
+                                            (click)="downloadAllDocuments(selectedActivity.id)">Télécharger
+                                            tous</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <u> Informations complémentaires :</u>
+                        <p>
+                        <div class="d-flex justify-content-start align-items-center">
+                            <h3>
+                                <i aria-hidden="true"
+                                    class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                            </h3>
+                            Cette activité nécessitera un rendez initial avec le référent pour bénéficier des services
+                            attenants. Le rendez-vous sera pris lors de la demande d'abonnement.
+                        </div>
+                        <p>
+                        <div class="d-flex justify-content-start align-items-center">
+                            <h3>
+                                <i aria-hidden="true"
+                                    class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                            </h3>
+                            Des informations complémentaires seront demandées lors de l'inscription :
+                        </div>
+                        <select multiple="" class="form-select" id="inputActInfo">
+                            <option *ngFor="let info of selectedActivity?.infos">{{ info }}</option>
+                        </select>
+                        <p>
+                        <div class="d-flex justify-content-start align-items-center">
+                            <h3>
+                                <i aria-hidden="true"
+                                    class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                            </h3>
+                            Des documents seront à fournir pour valider l'abonnement :
+                        </div>
+                        <select multiple="" class="form-select" id="inputActItem">
+                            <option *ngFor="let doc of selectedActivity?.prerequis">{{ doc }}</option>
+                        </select>
+                        <p>
+                            <span *ngFor="let tag of selectedActivity?.tags" class="badge bg-info">{{ tag }}</span>
+                        </p>
+
+                        <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">S'abonner</button>
+                        <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Se désabonner</button>
+                        <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Joindre des
+                            documents</button>
+                        <button type="button" class="btn btn-primary p-2 m-1" id="btActModif"
+                            (click)="navigateToServices(selectedActivity.id)">
+                            Accéder aux services proposés par l'activité
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap overflow-auto mt-2">
+                    <div *ngFor="let activity of publicActivities$ | async" class="p-1 col-6">
+                        <div class="card border-2 border-info" type="button" (click)="selectActivity(activity)"
+                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite"
+                            aria-controls="offcanvasActivite">
+                            <div class="card-body row">
+                                <div class="col-2 mb-1">
+                                    <img class="img-thumbnail" [src]="activity.logoUrl" alt="logo"
+                                        style="max-width: 80px; height: auto; object-fit: cover;">
+                                </div>
+                                <div class="col-10">
+                                    <h4 class="card-title">{{ activity.nom }}</h4>
+                                    <p class="card-text">{{ activity.description }}</p>
+                                    <p class="card-text">
+                                        organisme : <a href="#">{{ activity.organisation_nom }}</a>
+                                    </p>
+                                    <p>
+                                        <span *ngFor="let tag of activity.tags"
+                                            class="badge bg-info me-1">{{ tag }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
-    <div class="col-9 activity-column">
-      <div class="row mt-2">
-        <div class="p-2">
-          <h3 class="mlh_verdana bg-secondary rounded p-2 text-light">Activités disponibles</h3>
-        </div>
-
-        <div class="offcanvas offcanvas-start mlh_panneau_info" tabindex="-1" id="offcanvasActivite" aria-labelledby="offcanvasServiceLabel">
-          <div class="offcanvas-header">
-            <img class="form-control" [src]="selectedActivity?.logoUrl" alt="logo" style="max-width: 150px; max-height: 150px;">
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <h4 class="offcanvas-title" id="offcanvasServiceLabel">{{ selectedActivity?.nom }}</h4>
-            <h5 class="offcanvas-title" id="offcanvasServiceLabel"><a href="#">Ref : {{ selectedActivity?.reference }}</a></h5>
-            <p>{{ selectedActivity?.description }}</p>
-            <p>
-              <div class="mb-1"><u> Organisation</u>: <a href="#">{{ selectedActivity?.organisation_nom }}</a></div>
-              <div class="mb-1"><u> Type</u>: {{ selectedActivity?.type }}</div>
-              <div class="mb-1"><u> Domaine</u>: {{ selectedActivity?.domaine }}</div>
-              <div class="mb-1"><u> Documents</u>:</div>
-            <p>
-            <div class="accordion mb-2" id="documentsAccordion">
-              <div class="accordion-item">
-                <h2 class="accordion-header" id="headingDocuments">
-                  <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapseDocuments" aria-expanded="true"
-                    aria-controls="collapseDocuments">
-                    Voir les documents
-                  </button>
-                </h2>
-                <div id="collapseDocuments" class="accordion-collapse collapse show"
-                  aria-labelledby="headingDocuments" data-bs-parent="#documentsAccordion">
-                  <div class="accordion-body">
-                    <ul class="list-group" *ngIf="selectedActivity?.documents?.length > 0; else noDocuments">
-                      <li class="list-group-item d-flex justify-content-between align-items-center"
-                        *ngFor="let doc of selectedActivity?.documents">
-                        {{ doc.titre }}
-                        <button class="btn btn-primary btn-sm" (click)="downloadDocument(doc.id, doc.titre)">Télécharger</button>
-                      </li>
-                    </ul>
-                    <ng-template #noDocuments>
-                      <p class="text-center">Aucun document</p>
-                    </ng-template>
-                    <button class="btn btn-secondary btn-sm mt-2" (click)="downloadAllDocuments(selectedActivity.id)">Télécharger tous</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <u> Informations complémentaires :</u>
-            <p>
-              <div class="d-flex justify-content-start align-items-center">
-                <h3>
-                  <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
-                </h3>
-                Cette activité nécessitera un rendez initial avec le référent pour bénéficier des services attenants. Le rendez-vous sera pris lors de la demande d'abonnement.
-              </div>
-            <p>
-            <div class="d-flex justify-content-start align-items-center">
-              <h3>
-                <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
-              </h3>
-              Des informations complémentaires seront demandées lors de l'inscription :
-            </div>
-            <select multiple="" class="form-select" id="inputActInfo">
-              <option *ngFor="let info of selectedActivity?.infos">{{ info }}</option>
-            </select>
-            <p>
-            <div class="d-flex justify-content-start align-items-center">
-              <h3>
-                <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
-              </h3>
-              Des documents seront à fournir pour valider l'abonnement :
-            </div>
-            <select multiple="" class="form-select" id="inputActItem">
-              <option *ngFor="let doc of selectedActivity?.prerequis">{{ doc }}</option>
-            </select>
-            <p>
-              <span *ngFor="let tag of selectedActivity?.tags" class="badge bg-info">{{ tag }}</span>
-            </p>
-
-            <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">S'abonner</button>
-            <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Se désabonner</button>
-            <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Joindre des documents</button>
-            <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Accéder aux services proposés par l'activité</button>
-          </div>
-        </div>
-
-        <div class="d-flex flex-wrap overflow-auto mt-2">
-          <div *ngFor="let activity of publicActivities$ | async" class="p-1 col-6">
-            <div class="card border-2 border-info" type="button" (click)="selectActivity(activity)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite" aria-controls="offcanvasActivite">
-              <div class="card-body row">
-                <div class="col-2 mb-1">
-                  <img class="img-thumbnail" [src]="activity.logoUrl" alt="logo" style="max-width: 80px; height: auto; object-fit: cover;">
-                </div>
-                <div class="col-10">
-                  <h4 class="card-title">{{ activity.nom }}</h4>
-                  <p class="card-text">{{ activity.description }}</p>
-                  <p class="card-text">
-                    organisme : <a href="#">{{ activity.organisation_nom }}</a>
-                  </p>
-                  <p>
-                    <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag }}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-      </div>
-    </div>
-  </div>
 </div>

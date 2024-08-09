@@ -36,6 +36,7 @@ import { DetailsServiceComponent } from './infos-perso/mes-activites/details-ser
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModifierServiceComponent } from './infos-perso/mes-activites/modifier-service/modifier-service.component';
 import { SharedModule } from "./Shared/shared.module";
+import { ServiceAssocierComponent } from './service-associer/service-associer.component';
 
 
 
@@ -64,6 +65,7 @@ import { SharedModule } from "./Shared/shared.module";
     ToastComponent,
     DetailsServiceComponent,
     ModifierServiceComponent,
+    ServiceAssocierComponent,
   ],
   imports: [
     BrowserModule,
