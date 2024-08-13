@@ -110,7 +110,7 @@ export class ActiviteService {
         WHERE u.id = (SELECT security.get_user_from_code($1));
       `;
       const result = await manager.query(query, [sessionCode]);
-      console.log('Activities from DB:', result);  // Ajoutez ce log pour vérifier les données
+      console.log('Activities from DB:', result); 
       return result;
     }, sessionCode);
   }
