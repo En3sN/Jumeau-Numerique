@@ -78,6 +78,20 @@ export class RdvService {
     }, sessionCode);
   }
 
+  async getRdvPlages(activiteId: number, semaine: number, year: number, duree: number, sessionCode: string): Promise<any> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      try {
+        const result = await manager.query(
+          'SELECT * FROM planning.get_rdv_plages($1, $2, $3, $4)',
+          [activiteId, semaine, year, duree]
+        );
+        return result;
+      } catch (error) {
+        throw new BadRequestException('Impossible de récupérer les créneaux de RDV pour l\'activité spécifiée');
+      }
+    }, sessionCode);
+  }
+
   async getJsonRdvCreneaux(activiteId: number, semaine: number | undefined, year: number | undefined, duree: number | undefined, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       try {

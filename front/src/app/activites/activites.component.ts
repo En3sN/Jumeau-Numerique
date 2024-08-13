@@ -8,6 +8,12 @@ import { Observable, combineLatest } from 'rxjs';
 import { debounceTime, startWith, switchMap, map } from 'rxjs/operators';
 import { FilesService } from '../Services/Files.service';
 import { AuthService } from '../Services/Auth.service';
+import { RdvService } from '../Services/Rdv.service';
+import { CalendarOptions } from '@fullcalendar/core';
+import frLocale from '@fullcalendar/core/locales/fr';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 @Component({
   selector: 'app-activites',
@@ -35,19 +41,37 @@ export class ActivitesComponent implements OnInit {
     statut: []
   };
   appliedFilters: any = [];
+  calendarOptions: CalendarOptions = {
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    initialView: 'timeGridWeek',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'timeGridWeek,timeGridDay'
+    },
+    locale: frLocale,
+    slotMinTime: '07:00:00',
+    slotMaxTime: '20:00:00',
+    height: '100%',  
+    expandRows: true, 
+    contentHeight: 'auto',
+    events: []
+  };
 
   constructor(
     private utilisateurService: UtilisateurService,
     private activiteService: ActiviteService,
     private filesService: FilesService,
     private router: Router,
-    private authService: AuthService 
+    private authService: AuthService,
+    private rdvService: RdvService 
   ) {}
 
   ngOnInit(): void {
     this.authService.isLoggedIn().subscribe((isLoggedIn: boolean) => {
       this.isUserLoggedIn = isLoggedIn;
     });
+
     this.publicActivities$ = combineLatest([
       this.nomFilter.valueChanges.pipe(startWith(this.nomFilter.value)),
       this.typeFilter.valueChanges.pipe(startWith(this.typeFilter.value)),
@@ -82,6 +106,8 @@ export class ActivitesComponent implements OnInit {
         });
       })
     );
+
+    this.setupTabEventListeners(); 
   }
 
   onFilterChange(filterName: string, event: Event): void {
@@ -130,6 +156,7 @@ export class ActivitesComponent implements OnInit {
     const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
     const modalInstance = new bootstrap.Modal(modalElement);
     modalInstance.show();
+    this.resizeCalendarOnTabChange();
   }
 
   closeModal(): void {
@@ -145,6 +172,7 @@ export class ActivitesComponent implements OnInit {
   selectActivity(activity: any): void {
     this.selectedActivity = activity;
     this.loadActivityDocuments(activity.id);
+    this.setupCalendar(); 
   }
 
   loadActivityDocuments(activityId: number): void {
@@ -205,31 +233,90 @@ export class ActivitesComponent implements OnInit {
   }
 
   navigateToServices(activityId: number): void {
-  this.router.navigate(['/services-associes', activityId]);
-}
-
-handleSubscription(): void {
-  if (this.selectedActivity?.rdv) {
-    this.openSubscribeModal();
-  } else {
-    alert("Aucun rendez-vous n'est requis pour cette activité.");
+    this.router.navigate(['/services-associes', activityId]);
   }
-}
 
-openSubscribeModal(): void {
-  const hasUserInfos = this.selectedActivity?.user_infos && Object.keys(this.selectedActivity.user_infos).length > 0;
-  const hasPrerequisites = this.selectedActivity?.prerequis && Object.keys(this.selectedActivity.prerequis).length > 0;
-
-  if (hasUserInfos || hasPrerequisites) {
-    const modalElement = document.getElementById('subscribeModal');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
+  handleSubscription(): void {
+    if (this.selectedActivity?.rdv) {
+      this.openSubscribeModal();
+    } else {
+      alert("Aucun rendez-vous n'est requis pour cette activité.");
     }
-  } else {
-    alert("Aucun formulaire supplémentaire n'est nécessaire pour cette activité.");
   }
+
+  openSubscribeModal(): void {
+    const hasUserInfos = this.selectedActivity?.user_infos && Object.keys(this.selectedActivity.user_infos).length > 0;
+    const hasPrerequisites = this.selectedActivity?.prerequis && Object.keys(this.selectedActivity.prerequis).length > 0;
+
+    if (hasUserInfos || hasPrerequisites) {
+      const modalElement = document.getElementById('subscribeModal');
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        this.resizeCalendarOnTabChange();
+      }
+    } else {
+      alert("Abonnement en cours...");
+    }
+  }
+
+  setupCalendar(): void {
+    const activiteId = this.selectedActivity?.id || 1;
+    const semaine = this.getWeekNumber(new Date());
+    const year = new Date().getFullYear();
+    const duree = 60; 
+
+    console.log("Fetching RDV créneaux for:", { activiteId, semaine, year, duree });
+    
+    this.rdvService.getRdvCreneaux(activiteId, semaine, year, duree).subscribe(data => {
+        console.log("RDV créneaux data received:", data);
+
+        if (data && data.length > 0 && data[0]?.get_json_rdv_creneaux) {
+            const creneaux = data[0].get_json_rdv_creneaux;
+            this.calendarOptions = {
+                ...this.calendarOptions,
+                events: creneaux.map((creneau: any) => ({
+                    start: creneau.debut,
+                    end: creneau.fin,
+                    title: 'Disponible'
+                })),
+            };
+        } else {
+            console.log("No RDV créneaux available.");
+        }
+    }, error => {
+        console.error("Error fetching RDV créneaux:", error);
+    });
 }
 
+  handleEventClick(event: any) {
+    alert(`Vous avez sélectionné un rendez-vous de ${event.event.start} à ${event.event.end}`);
+  }
 
+  getWeekNumber(d: Date): number {
+    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil((((date as any) - (yearStart as any)) / 86400000 + 1) / 7);
+  }
+
+  setupTabEventListeners(): void {
+    document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
+      tab.addEventListener('shown.bs.tab', (event) => {
+        const target = (event.target as HTMLElement).getAttribute('href');
+        if (target === '#Disponibilités' || target === '#Rendez-vous') {
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, 100);
+        }
+      });
+    });
+  }
+
+  resizeCalendarOnTabChange(): void {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 100);
+  }
 }

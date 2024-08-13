@@ -24,6 +24,18 @@ export class RdvController {
   async findAll() {
     return await this.rdvService.findAll();
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('plages')
+  async getRdvPlages(
+    @Query('activiteId') activiteId: number,
+    @Query('semaine') semaine: number,
+    @Query('year') year: number,
+    @Query('duree') duree: number,
+    @Query('sessionCode') sessionCode: string,
+  ): Promise<any> {
+    return this.rdvService.getRdvPlages(activiteId, semaine, year, duree, sessionCode);
+  }
   
   @UseGuards(JwtAuthGuard)
   @Get('activite/:activiteId')

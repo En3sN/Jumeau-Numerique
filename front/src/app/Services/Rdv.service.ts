@@ -34,6 +34,10 @@ export class RdvService {
     return this.http.delete(`${this.apiUrl}/rdv/${id}`, { withCredentials: true });
   }
 
+  getRdvPlages(activiteId: number, semaine: number, year: number, duree: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/rdv/plages?activiteId=${activiteId}&semaine=${semaine}&year=${year}&duree=${duree}`,{ withCredentials: true });
+  }
+
   getRdvCreneaux(activiteId: number, semaine?: number, year?: number, duree?: number): Observable<any> {
     let params = new HttpParams();
     params = params.append('activiteId', activiteId.toString());

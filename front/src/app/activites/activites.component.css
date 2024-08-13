@@ -96,6 +96,11 @@ body {
     max-width: 25px; 
 }
 
+#calendar {
+    min-height: 70vh; 
+  }
+  
+
 .filter-column {
     flex: 0 0 25%; 
     max-width: 25%; 
