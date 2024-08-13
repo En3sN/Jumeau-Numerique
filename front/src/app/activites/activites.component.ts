@@ -7,6 +7,7 @@ import { FormControl } from '@angular/forms';
 import { Observable, combineLatest } from 'rxjs';
 import { debounceTime, startWith, switchMap, map } from 'rxjs/operators';
 import { FilesService } from '../Services/Files.service';
+import { AuthService } from '../Services/Auth.service';
 
 @Component({
   selector: 'app-activites',
@@ -23,6 +24,8 @@ export class ActivitesComponent implements OnInit {
   tagFilter = new FormControl('');
   statutFilter = new FormControl([]);
   selectedActivity: any = null;
+  isUserLoggedIn: boolean = false;
+
   filters: any = {
     nom: '',
     type: [],
@@ -37,10 +40,14 @@ export class ActivitesComponent implements OnInit {
     private utilisateurService: UtilisateurService,
     private activiteService: ActiviteService,
     private filesService: FilesService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService 
   ) {}
 
   ngOnInit(): void {
+    this.authService.isLoggedIn().subscribe((isLoggedIn: boolean) => {
+      this.isUserLoggedIn = isLoggedIn;
+    });
     this.publicActivities$ = combineLatest([
       this.nomFilter.valueChanges.pipe(startWith(this.nomFilter.value)),
       this.typeFilter.valueChanges.pipe(startWith(this.typeFilter.value)),
@@ -137,7 +144,7 @@ export class ActivitesComponent implements OnInit {
 
   selectActivity(activity: any): void {
     this.selectedActivity = activity;
-    this.loadActivityDocuments(activity.id); 
+    this.loadActivityDocuments(activity.id);
   }
 
   loadActivityDocuments(activityId: number): void {
@@ -200,4 +207,29 @@ export class ActivitesComponent implements OnInit {
   navigateToServices(activityId: number): void {
   this.router.navigate(['/services-associes', activityId]);
 }
+
+handleSubscription(): void {
+  if (this.selectedActivity?.rdv) {
+    this.openSubscribeModal();
+  } else {
+    alert("Aucun rendez-vous n'est requis pour cette activité.");
+  }
+}
+
+openSubscribeModal(): void {
+  const hasUserInfos = this.selectedActivity?.user_infos && Object.keys(this.selectedActivity.user_infos).length > 0;
+  const hasPrerequisites = this.selectedActivity?.prerequis && Object.keys(this.selectedActivity.prerequis).length > 0;
+
+  if (hasUserInfos || hasPrerequisites) {
+    const modalElement = document.getElementById('subscribeModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  } else {
+    alert("Aucun formulaire supplémentaire n'est nécessaire pour cette activité.");
+  }
+}
+
+
 }
