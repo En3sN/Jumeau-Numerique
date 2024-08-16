@@ -1,115 +1,28 @@
-.card {
-    transition: transform 0.2s;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 95%;
-}
-
-.card-body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.card-img-top {
-    width: 100%;
-    height: auto;
-    max-width: 350px; 
-    max-height: 280px; 
-    min-width: 350px; 
-    min-height: 280px; 
-    object-fit: cover;
-}
-
-.card-title, .card-text {
-    margin-bottom: 10px;
-}
-
-.card-footer {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.mlh_top_container {
-    margin-left: 0px;
-    margin-right: 0px;
-    max-width: 100%;
-}
-
-.mlh_verdana {
-    font-family: "Verdana";
-}
-
-.mlh_tags {
-    padding: 2px;
-    position: relative;
-    height: 12px;
-    width: 12px;
-    right: -4px;
-}
-
-.mlh_bt_tag {
-    top: -7px;
-    position: relative;
-}
-
-.mlh_panneau_info {
-    width: 40% !important; 
-}
-
-body {
-    background-color: #f5f5f5;
-}
-
-#AccueilFiltre {
-    background-color: white;
-    border-radius: 40px;
-    margin: 40px auto; 
-    box-shadow: 3px 3px 10px -3px grey;
-    overflow: hidden;
-}
-
-#AccueilFiltre input {
-    all: unset;
-    flex-grow: 1;
-    padding: 8px 16px; 
-}
-
-#AccueilFiltre button {
-    border: none;
-    margin: 4px; 
-    padding: 4px; 
-    border-radius: 30px; 
-    background-color: var(--bs-primary);
-    width: 30px; 
-    cursor: pointer;
-}
-
-#AccueilFiltre button:hover {
-    background-color: var(--bs-link-hover-color);
-}
-
-#AccueilFiltre img {
-    max-width: 25px; 
-}
-
-.filter-column {
-    flex: 0 0 25%; 
-    max-width: 25%; 
-}
-  
-.activity-column {
-    flex: 0 0 75%; 
-    max-width: 75%; 
-}
-  
-.activity-logo {
-    max-width: 350px;
-    max-height: 250px;
-    width: 100%; 
+.img-thumbnail {
+    max-width: 80px;
     height: auto;
     object-fit: cover;
-}
+  }
+  
+  .card-body {
+    display: flex;
+    align-items: center;
+  }
+  
+  .badge {
+    margin-right: 5px;
+  }
+  
+  .btn-secondary {
+    margin-top: 20px;
+  }
+  
+  .mlh_verdana {
+    font-family: Verdana, sans-serif;
+    font-size: 16px;
+  }
+  
+  .activity-column {
+    padding-left: 15px;
+    padding-right: 15px;
+  }

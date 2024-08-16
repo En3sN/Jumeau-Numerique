@@ -57,6 +57,7 @@
                         <p>
                             <span *ngFor="let tag of selectedService?.tags" class="badge bg-info">{{ tag }}</span>
                         </p>
+                        <button *ngIf="isUserLoggedIn" class="btn btn-primary" (click)="onReserveClick()">Réserver</button>
 
                        <!-- <button type="button" class="btn btn-primary p-2 m-1" id="btServiceModif"
                             (click)="navigateToServices(selectedService.id)">

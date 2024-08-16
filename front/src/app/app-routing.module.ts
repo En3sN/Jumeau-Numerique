@@ -31,8 +31,6 @@ const routes: Routes = [
   { path: 'modifier-service/:id', component: ModifierServiceComponent, canActivate: [AuthGuard], data: { animation: 'ModifierServicePage' } },
   { path: 'services-associes/:id', component: ServiceAssocierComponent, data: { animation: 'ServiceAssocier' } }
 
-
-
 ];
 
 @NgModule({

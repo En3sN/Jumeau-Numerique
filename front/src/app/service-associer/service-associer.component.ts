@@ -5,6 +5,7 @@ import { ServicesService } from '../Services/Services.service';
 import { FilesService } from '../Services/Files.service';
 import { map, Observable } from 'rxjs';
 import { Location } from '@angular/common';
+import { AuthService } from '../Services/Auth.service';
 
 @Component({
   selector: 'app-service-associer',
@@ -13,6 +14,7 @@ import { Location } from '@angular/common';
 })
 export class ServiceAssocierComponent implements OnInit {
   publicServices$: Observable<any[]> = new Observable<any[]>(); 
+  isUserLoggedIn: boolean = false;
   selectedService: any = null; 
   activiteId!: number;
 
@@ -21,13 +23,17 @@ export class ServiceAssocierComponent implements OnInit {
     private route: ActivatedRoute,
     private servicesService: ServicesService,  
     private filesService: FilesService,
-    private location: Location 
-
+    private location: Location,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.activiteId = +this.route.snapshot.paramMap.get('id')!;
-    this.loadPublicServices(); 
+    this.loadPublicServices();
+
+    this.authService.isLoggedIn().subscribe(isLoggedIn => {
+      this.isUserLoggedIn = isLoggedIn;
+    });
   }
 
   loadPublicServices(): void {
@@ -105,7 +111,14 @@ export class ServiceAssocierComponent implements OnInit {
     this.router.navigate(['/details-service', serviceId]);
   }
 
+  onReserveClick(): void {
+    alert("Réservation effectuée !");
+  }
+
   goBack(): void {
-    this.location.back();
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+  
+    this.router.navigate(['/activites']);
   }
 }
