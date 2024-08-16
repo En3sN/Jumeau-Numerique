@@ -79,4 +79,15 @@ export class AuthService {
       }
     });
   }
+
+  getUserStatus(): Observable<any> {
+    return this.http.get<{ loggedIn: boolean, user: any }>(`${this.apiUrl}/auth/status`, { withCredentials: true }).pipe(
+      map(response => response.user),
+      catchError(error => {
+        console.error('Error fetching user status:', error);
+        return throwError(error);
+      })
+    );
+  }
+  
 }

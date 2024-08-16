@@ -25,6 +25,26 @@ export class RdvService {
     }, sessionCode);
   }
 
+  async addActivitePrerequis(activiteId: number, userId: number, prerequis: any, sessionCode: string): Promise<any> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      try {
+        const result = await manager.query(
+          `INSERT INTO services.activite_prerequis (activite_id, user_id, prerequis)
+           VALUES ($1, $2, $3)
+           ON CONFLICT (activite_id, user_id) DO UPDATE 
+           SET prerequis = EXCLUDED.prerequis
+           RETURNING *;`,
+          [activiteId, userId, prerequis]
+        );
+
+        return result;
+      } catch (error) {
+        throw new BadRequestException('Unable to add or update activite prerequis');
+      }
+    }, sessionCode);
+}
+
+
   async findAll(): Promise<Rdv[]> {
     return await this.rdvRepository.find();
   }

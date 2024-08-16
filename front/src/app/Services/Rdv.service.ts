@@ -52,4 +52,9 @@ export class RdvService {
     }
     return this.http.get<any>(`${this.apiUrl}/rdv/all`, { params, withCredentials: true });
   }
+
+  addActivitePrerequis(activiteId: number, userId: number, prerequis: any): Observable<any> {
+    const body = { activite_id: activiteId, user_id: userId, prerequis };
+    return this.http.post<any>(`${this.apiUrl}/rdv/prerequis`, body, { withCredentials: true });
+  }
 }

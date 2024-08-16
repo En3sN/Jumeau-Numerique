@@ -4,6 +4,7 @@ import { CreateRdvDto } from './DTO/create-rdv.dto';
 import { UpdateRdvDto } from './DTO/update-rdv.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 import { GetRdvCreneauxDto } from './DTO/get-rdv-creneaux.dto';
+import { AddPrerequisDto } from './DTO/AddPrerequis.dto';
 
 @Controller('rdv')
 export class RdvController {
@@ -19,6 +20,20 @@ export class RdvController {
     return await this.rdvService.create(createRdvDto, sessionCode);
   }
 
+  @UseGuards(JwtAuthGuard)
+@Post('prerequis')
+@HttpCode(HttpStatus.CREATED)
+async addActivitePrerequis(@Body() addPrerequisDto: AddPrerequisDto, @Request() req) {
+    try {
+        const { activite_id, user_id, prerequis } = addPrerequisDto;
+        return await this.rdvService.addActivitePrerequis(activite_id, user_id, prerequis, req.user.sessionCode);
+    } catch (error) {
+        this.logger.error(`Error adding activite prerequis: ${error.message}`);
+        throw new BadRequestException('Unable to add activite prerequis');
+    }
+}
+
+  
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll() {

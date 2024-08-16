@@ -31,6 +31,9 @@ export class ActivitesComponent implements OnInit {
   statutFilter = new FormControl([]);
   selectedActivity: any = null;
   isUserLoggedIn: boolean = false;
+  additionalInfos: { key: string, value: string }[] = [];
+  newInfo: { key: string, value: string } = { key: '', value: '' };
+  userId: number | null = null;
 
   filters: any = {
     nom: '',
@@ -52,8 +55,8 @@ export class ActivitesComponent implements OnInit {
     locale: frLocale,
     slotMinTime: '07:00:00',
     slotMaxTime: '20:00:00',
-    height: '100%',  
-    expandRows: true, 
+    height: '100%',
+    expandRows: true,
     contentHeight: 'auto',
     events: []
   };
@@ -64,14 +67,23 @@ export class ActivitesComponent implements OnInit {
     private filesService: FilesService,
     private router: Router,
     private authService: AuthService,
-    private rdvService: RdvService 
-  ) {}
+    private rdvService: RdvService
+  ) { }
 
   ngOnInit(): void {
     this.authService.isLoggedIn().subscribe((isLoggedIn: boolean) => {
       this.isUserLoggedIn = isLoggedIn;
     });
-
+    this.authService.getUserStatus().subscribe({
+      next: (user) => {
+        if (user) {
+          this.userId = user.id;
+        }
+      },
+      error: (error: any) => {
+        console.error('Erreur lors de la récupération du statut utilisateur :', error);
+      }
+    });
     this.publicActivities$ = combineLatest([
       this.nomFilter.valueChanges.pipe(startWith(this.nomFilter.value)),
       this.typeFilter.valueChanges.pipe(startWith(this.typeFilter.value)),
@@ -106,8 +118,7 @@ export class ActivitesComponent implements OnInit {
         });
       })
     );
-
-    this.setupTabEventListeners(); 
+    this.setupTabEventListeners();
   }
 
   onFilterChange(filterName: string, event: Event): void {
@@ -172,7 +183,7 @@ export class ActivitesComponent implements OnInit {
   selectActivity(activity: any): void {
     this.selectedActivity = activity;
     this.loadActivityDocuments(activity.id);
-    this.setupCalendar(); 
+    this.setupCalendar();
   }
 
   loadActivityDocuments(activityId: number): void {
@@ -247,8 +258,9 @@ export class ActivitesComponent implements OnInit {
   openSubscribeModal(): void {
     const hasUserInfos = this.selectedActivity?.user_infos && Object.keys(this.selectedActivity.user_infos).length > 0;
     const hasPrerequisites = this.selectedActivity?.prerequis && Object.keys(this.selectedActivity.prerequis).length > 0;
+    const requiresRdv = this.selectedActivity?.rdv;
 
-    if (hasUserInfos || hasPrerequisites) {
+    if (hasUserInfos || hasPrerequisites || requiresRdv) {
       const modalElement = document.getElementById('subscribeModal');
       if (modalElement) {
         const modal = new bootstrap.Modal(modalElement);
@@ -264,31 +276,25 @@ export class ActivitesComponent implements OnInit {
     const activiteId = this.selectedActivity?.id || 1;
     const semaine = this.getWeekNumber(new Date());
     const year = new Date().getFullYear();
-    const duree = 60; 
+    const duree = 60;
 
-    console.log("Fetching RDV créneaux for:", { activiteId, semaine, year, duree });
-    
     this.rdvService.getRdvCreneaux(activiteId, semaine, year, duree).subscribe(data => {
-        console.log("RDV créneaux data received:", data);
-
-        if (data && data.length > 0 && data[0]?.get_json_rdv_creneaux) {
-            const creneaux = data[0].get_json_rdv_creneaux;
-            this.calendarOptions = {
-                ...this.calendarOptions,
-                events: creneaux.map((creneau: any) => ({
-                    start: creneau.debut,
-                    end: creneau.fin,
-                    title: 'Disponible'
-                })),
-            };
-        } else {
-            console.log("No RDV créneaux available.");
-        }
+      if (data && data.length > 0 && data[0]?.get_json_rdv_creneaux) {
+        const creneaux = data[0].get_json_rdv_creneaux;
+        this.calendarOptions = {
+          ...this.calendarOptions,
+          events: creneaux.map((creneau: any) => ({
+            start: creneau.debut,
+            end: creneau.fin,
+            title: 'Disponible'
+          })),
+        };
+      } else {
+      }
     }, error => {
-        console.error("Error fetching RDV créneaux:", error);
+      console.error("Error fetching RDV créneaux:", error);
     });
-}
-
+  }
   handleEventClick(event: any) {
     alert(`Vous avez sélectionné un rendez-vous de ${event.event.start} à ${event.event.end}`);
   }
@@ -318,5 +324,34 @@ export class ActivitesComponent implements OnInit {
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 100);
+  }
+
+  removeInfo(index: number): void {
+    this.additionalInfos.splice(index, 1);
+  }
+
+  addInfo(): void {
+    if (this.newInfo.key && this.newInfo.value) {
+      this.additionalInfos.push({ ...this.newInfo });
+      this.newInfo = { key: '', value: '' };
+    }
+  }
+
+  onSubmitInfoForm(): void {
+    if (this.selectedActivity?.id && this.userId) {
+      const additionalInfos = this.additionalInfos.reduce((acc: any, info: { key: string, value: string }) => {
+        acc[info.key] = info.value;
+        return acc;
+      }, {});
+
+      this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
+        .subscribe(response => {
+          console.log('Informations supplémentaires enregistrées avec succès');
+        }, error => {
+          console.error('Erreur lors de l\'enregistrement des informations supplémentaires:', error);
+        });
+    } else {
+      console.error('ID de l\'activité ou ID utilisateur manquant');
+    }
   }
 }
