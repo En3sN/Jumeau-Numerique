@@ -313,11 +313,11 @@
                         *ngIf="selectedActivity?.user_infos && (selectedActivity?.user_infos | keyvalue).length > 0">
                         <form (ngSubmit)="addInfo()">
                             <div class="mb-3">
-                                <label for="infoKey" class="form-label">Clé</label>
+                                <label for="infoKey" class="form-label">Connaissance</label>
                                 <input type="text" class="form-control" id="infoKey" [(ngModel)]="newInfo.key"
                                     name="newInfoKey" required>
 
-                                <label for="infoValue" class="form-label">Valeur</label>
+                                <label for="infoValue" class="form-label">Niveau</label>
                                 <input type="text" class="form-control" id="infoValue" [(ngModel)]="newInfo.value"
                                     name="newInfoValue" required>
                             </div>
