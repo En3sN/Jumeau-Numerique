@@ -332,18 +332,18 @@ export class ActivitesComponent implements OnInit {
 
   addInfo(): void {
     if (this.newInfo.key && this.newInfo.value) {
-      this.additionalInfos.push({ ...this.newInfo });
       this.newInfo = { key: '', value: '' };
     }
   }
 
   onSubmitInfoForm(): void {
     if (this.selectedActivity?.id && this.userId) {
-      const additionalInfos = this.additionalInfos.reduce((acc: any, info: { key: string, value: string }) => {
-        acc[info.key] = info.value;
-        return acc;
-      }, {});
-
+      const additionalInfos: { [key: string]: string } = {};
+  
+      for (const info of Object.keys(this.selectedActivity.user_infos)) {
+        const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
+        additionalInfos[info] = value;
+      }
       this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
         .subscribe(response => {
           console.log('Informations supplémentaires enregistrées avec succès');
@@ -353,5 +353,5 @@ export class ActivitesComponent implements OnInit {
     } else {
       console.error('ID de l\'activité ou ID utilisateur manquant');
     }
-  }
+  }  
 }
