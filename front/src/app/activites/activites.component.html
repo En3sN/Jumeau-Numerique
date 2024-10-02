@@ -310,24 +310,24 @@
                         <full-calendar #calendar [options]="calendarOptions"></full-calendar>
                     </div>
                     <div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="info-tab"
-                        *ngIf="selectedActivity?.user_infos && (selectedActivity?.user_infos | keyvalue).length > 0">
-                        <h3>
-                            <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
-                        </h3>
-                        Informations complémentaires demandées :
-                        <form class="mt-3" (ngSubmit)="addInfo()">
-                            <div class="mb-3 row" *ngFor="let info of selectedActivity?.user_infos | keyvalue">
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="info-{{ info.key }}"
-                                        value="{{ info.key }}" readonly>
-                                </div>
-                                <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="info-value-{{ info.key }}" value=""
-                                        name="info-value-{{ info.key }}" required>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                    *ngIf="selectedActivity?.user_infos && (selectedActivity?.user_infos | keyvalue).length > 0">
+                   <h3>
+                       <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                   </h3>
+                   Informations complémentaires demandées :
+                   <form class="mt-3" (ngSubmit)="addInfo()">
+                       <div class="mb-3 row" *ngFor="let info of selectedActivity?.user_infos | keyvalue">
+                           <div class="col-sm-6">
+                               <input type="text" class="form-control" id="info-{{ info.key }}"
+                                      value="{{ info.key }}" readonly disabled>
+                           </div>
+                           <div class="col-sm-6">
+                               <input type="text" class="form-control" id="info-value-{{ info.key }}" value=""
+                                      name="info-value-{{ info.key }}" required>
+                           </div>
+                       </div>
+                   </form>
+               </div>               
 
                     <div class="tab-pane fade" id="docs" role="tabpanel" aria-labelledby="docs-tab"
                         *ngIf="selectedActivity?.prerequis && (selectedActivity?.prerequis | keyvalue).length > 0">

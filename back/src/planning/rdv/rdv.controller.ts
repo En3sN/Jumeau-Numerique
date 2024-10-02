@@ -21,19 +21,18 @@ export class RdvController {
   }
 
   @UseGuards(JwtAuthGuard)
-@Post('prerequis')
-@HttpCode(HttpStatus.CREATED)
-async addActivitePrerequis(@Body() addPrerequisDto: AddPrerequisDto, @Request() req) {
+  @Post('prerequis')
+  @HttpCode(HttpStatus.CREATED)
+  async addActivitePrerequis(@Body() addPrerequisDto: AddPrerequisDto, @Request() req) {
     try {
-        const { activite_id, user_id, prerequis } = addPrerequisDto;
-        return await this.rdvService.addActivitePrerequis(activite_id, user_id, prerequis, req.user.sessionCode);
+      const { activite_id, user_id, prerequis } = addPrerequisDto;
+      return await this.rdvService.addActivitePrerequis(activite_id, user_id, prerequis, req.user.sessionCode);
     } catch (error) {
-        this.logger.error(`Error adding activite prerequis: ${error.message}`);
-        throw new BadRequestException('Unable to add activite prerequis');
+      this.logger.error(`Error adding activite prerequis: ${error.message}`);
+      throw new BadRequestException('Unable to add activite prerequis');
     }
-}
+  }
 
-  
   @UseGuards(JwtAuthGuard)
   @Get()
   async findAll() {
@@ -51,7 +50,7 @@ async addActivitePrerequis(@Body() addPrerequisDto: AddPrerequisDto, @Request() 
   ): Promise<any> {
     return this.rdvService.getRdvPlages(activiteId, semaine, year, duree, sessionCode);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Get('activite/:activiteId')
   async findAllRdvByActivite(@Param('activiteId') activiteId: string) {

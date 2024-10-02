@@ -289,12 +289,12 @@ export class ActivitesComponent implements OnInit {
             title: 'Disponible'
           })),
         };
-      } else {
       }
     }, error => {
       console.error("Error fetching RDV créneaux:", error);
     });
   }
+
   handleEventClick(event: any) {
     alert(`Vous avez sélectionné un rendez-vous de ${event.event.start} à ${event.event.end}`);
   }
@@ -332,6 +332,7 @@ export class ActivitesComponent implements OnInit {
 
   addInfo(): void {
     if (this.newInfo.key && this.newInfo.value) {
+      this.additionalInfos.push({ ...this.newInfo });
       this.newInfo = { key: '', value: '' };
     }
   }

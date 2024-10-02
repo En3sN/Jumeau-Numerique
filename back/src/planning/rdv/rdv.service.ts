@@ -16,7 +16,7 @@ export class RdvService {
     private rdvRepository: Repository<Rdv>,
     @InjectEntityManager()
     private readonly entityManager: EntityManager
-  ) {}
+  ) { }
 
   async create(createRdvDto: CreateRdvDto, sessionCode: string): Promise<Rdv> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
@@ -42,8 +42,7 @@ export class RdvService {
         throw new BadRequestException('Unable to add or update activite prerequis');
       }
     }, sessionCode);
-}
-
+  }
 
   async findAll(): Promise<Rdv[]> {
     return await this.rdvRepository.find();
@@ -65,10 +64,10 @@ export class RdvService {
       WHERE rdv.activite_id = $1
     `;
     const rdvs = await this.rdvRepository.query(query, [activiteId]);
-    console.log('Rendezvous with user info retrieved from DB:', rdvs); 
+    console.log('Rendezvous with user info retrieved from DB:', rdvs);
     return rdvs;
   }
-  
+
   async findUtilisateurByRendezvousId(rendezvousId: number): Promise<Utilisateur> {
     const rendezvous = await this.rdvRepository.findOne({ where: { id: rendezvousId }, relations: ['user'] });
     if (!rendezvous) {

@@ -8,8 +8,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
-  app.use(csurf({ cookie: true }));
-
+  app.use(csurf({
+    cookie: {
+      secure: true,
+      httpOnly: true,
+      sameSite: 'strict',
+    }
+  }));
   app.enableCors({
     origin: ['http://jn-mulhouse.fr', 'http://localhost:4201'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
