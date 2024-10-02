@@ -67,29 +67,32 @@ export class ActiviteService {
         WHERE a.public = true
       `;
 
-      const queryParamsKeys = Object.keys(queryParams);
       const filters = [];
       const values = [];
 
       if (queryParams.nom) {
-        filters.push(`a.nom ILIKE $${filters.length + 1}`);
+        filters.push(`LOWER(a.nom) ILIKE LOWER($${values.length + 1})`);
         values.push(`%${queryParams.nom}%`);
       }
       if (queryParams.type) {
-        filters.push(`a.type ILIKE $${filters.length + 1}`);
+        filters.push(`LOWER(a.type) ILIKE LOWER($${values.length + 1})`);
         values.push(`%${queryParams.type}%`);
       }
       if (queryParams.domaine) {
-        filters.push(`a.domaine ILIKE $${filters.length + 1}`);
+        filters.push(`LOWER(a.domaine) ILIKE LOWER($${values.length + 1})`);
         values.push(`%${queryParams.domaine}%`);
       }
       if (queryParams.organisation_nom) {
-        filters.push(`o.nom ILIKE $${filters.length + 1}`);
+        filters.push(`LOWER(o.nom) ILIKE LOWER($${values.length + 1})`);
         values.push(`%${queryParams.organisation_nom}%`);
       }
       if (queryParams.tag) {
-        filters.push(`$${filters.length + 1} = ANY(a.tags)`);
-        values.push(queryParams.tag);
+        filters.push(`LOWER($${values.length + 1}) = ANY(ARRAY(SELECT LOWER(unnest(a.tags))))`);
+        values.push(queryParams.tag.toLowerCase());
+      }
+      if (queryParams.statut && Array.isArray(queryParams.statut) && queryParams.statut.length > 0) {
+        filters.push(`LOWER(a.statut) IN (${queryParams.statut.map((_, index) => `LOWER($${values.length + 1 + index})`).join(', ')})`);
+        values.push(...queryParams.statut.map((statut: string) => statut.toLowerCase()));
       }
 
       if (filters.length > 0) {

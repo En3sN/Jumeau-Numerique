@@ -354,5 +354,5 @@ export class ActivitesComponent implements OnInit {
     } else {
       console.error('ID de l\'activité ou ID utilisateur manquant');
     }
-  }  
+  }
 }
