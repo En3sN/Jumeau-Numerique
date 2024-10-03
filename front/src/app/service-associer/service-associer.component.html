@@ -57,9 +57,10 @@
                         <p>
                             <span *ngFor="let tag of selectedService?.tags" class="badge bg-info">{{ tag }}</span>
                         </p>
-                        <button *ngIf="isUserLoggedIn" class="btn btn-primary" (click)="onReserveClick()">Réserver</button>
+                        <button *ngIf="isUserLoggedIn" class="btn btn-primary"
+                            (click)="onReserveClick()">Réserver</button>
 
-                       <!-- <button type="button" class="btn btn-primary p-2 m-1" id="btServiceModif"
+                        <!-- <button type="button" class="btn btn-primary p-2 m-1" id="btServiceModif"
                             (click)="navigateToServices(selectedService.id)">
                             Voir les détails du service
                         </button> -->
@@ -80,8 +81,8 @@
                                     <h4 class="card-title">{{ service.nom }}</h4>
                                     <p class="card-text">{{ service.description }}</p>
                                     <p>
-                                        <span *ngFor="let tag of service.tags"
-                                            class="badge bg-info me-1">{{ tag }}</span>
+                                        <span *ngFor="let tag of service.tags" class="badge bg-info me-1">{{ tag
+                                            }}</span>
                                     </p>
                                 </div>
                             </div>

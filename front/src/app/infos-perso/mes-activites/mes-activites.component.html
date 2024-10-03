@@ -326,69 +326,69 @@
 
 
 <!-- Offcanvas pour les informations de l'organisation -->
+<!-- Offcanvas pour les informations de l'organisation -->
 <div class="offcanvas offcanvas-start custom-offcanvas-width" tabindex="-1" id="offcanvasOrganisation" aria-labelledby="offcanvasOrganisationLabel">
-  <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="offcanvasOrganisationLabel">Informations de l'Organisation</h5>
+  <div class="offcanvas-header bg-light">
+    <h5 class="offcanvas-title text-center w-100" id="offcanvasOrganisationLabel">Informations de l'Organisation</h5>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
     <div *ngIf="organisation">
-      <div class="col-12">
-        <div class="d-flex justify-content-start mb-3">
-          <img [src]="organisation.logoUrl" class="mlh_org_logo" alt="logo">
-        </div>
-        <div class="row border-bottom mlh_block_data mb-3">
-          <div class="col-6">
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Nom : {{ organisation.nom }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Activité : {{ organisation.activite }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Email : {{ organisation.email }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Site WEB : {{ organisation.web }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Siret : {{ organisation.siret }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Descriptif : {{ organisation.descriptif }}</label>
-            </div>
+      <div class="text-center mb-4">
+        <img [src]="organisation.logoUrl" class="img-fluid rounded-circle border" alt="logo" style="max-width: 130px;">
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Nom</h6>
+            <p class="mb-0">{{ organisation.nom }}</p>
           </div>
-
-          <div class="col-6">
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Adresse : {{ organisation.adresse }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Code postal : {{ organisation.cp }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Téléphone : {{ organisation.tel }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Commune : {{ organisation.commune }}</label>
-            </div>
-
-            <div class="border rounded mb-2">
-              <label class="col-form-label uniform-text">Commentaire : {{ organisation.commentaire }}</label>
-            </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Activité</h6>
+            <p class="mb-0">{{ organisation.activite }}</p>
+          </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Email</h6>
+            <p class="mb-0">{{ organisation.email }}</p>
+          </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Site WEB</h6>
+            <p class="mb-0"><a [href]="organisation.web" target="_blank">{{ organisation.web }}</a></p>
+          </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Siret</h6>
+            <p class="mb-0">{{ organisation.siret }}</p>
+          </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Descriptif</h6>
+            <p class="mb-0">{{ organisation.descriptif }}</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Adresse</h6>
+            <p class="mb-0">{{ organisation.adresse }}</p>
+          </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Code postal</h6>
+            <p class="mb-0">{{ organisation.cp }}</p>
+          </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Téléphone</h6>
+            <p class="mb-0">{{ organisation.tel }}</p>
+          </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Commune</h6>
+            <p class="mb-0">{{ organisation.commune }}</p>
+          </div>
+          <div class="p-3 border bg-light rounded text-center">
+            <h6 class="fw-bold mb-2">Commentaire</h6>
+            <p class="mb-0">{{ organisation.commentaire }}</p>
           </div>
         </div>
       </div>
     </div>
-    <div *ngIf="!organisation">
+    <div *ngIf="!organisation" class="d-flex justify-content-center align-items-center" style="height: 100%;">
       <p>Chargement des informations...</p>
     </div>
   </div>
