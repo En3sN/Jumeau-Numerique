@@ -315,16 +315,16 @@
                         <div class="mt-3 mb-3 text-center">
                             <h1><u>Réservez un créneau de rendez-vous initial</u></h1>
                         </div>
-                        <full-calendar #calendar [options]="calendarOptions" (eventClick)="handleEventClick($event)"></full-calendar>
-                        <app-toast></app-toast>
+                        <full-calendar #calendar [options]="calendarOptions"
+                            (eventClick)="handleEventClick($event)"></full-calendar>
 
                     </div>
                     <div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="info-tab"
                         *ngIf="selectedActivity?.user_infos && (selectedActivity?.user_infos | keyvalue).length > 0">
                         <h3>
                             <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                            Informations complémentaires demandées :
                         </h3>
-                        Informations complémentaires demandées :
                         <form class="mt-3" (ngSubmit)="addInfo()">
                             <div class="mb-3 row" *ngFor="let info of selectedActivity?.user_infos | keyvalue">
                                 <div class="col-sm-6">
@@ -346,8 +346,8 @@
                                 <h3>
                                     <i aria-hidden="true"
                                         class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                                    Élément à fournir pour valider l'abonnement :
                                 </h3>
-                                Élément à fournir pour valider l'abonnement :
                             </div>
                             <select multiple class="form-select" id="inputActItem">
                                 <option *ngFor="let doc of selectedActivity?.prerequis | keyvalue">
@@ -362,25 +362,28 @@
                 <button type="button" class="btn btn-primary" (click)="onSubmitInfoForm()">S'abonner</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
+            <app-toast></app-toast>
         </div>
     </div>
 </div>
 
 <!-- Modal de confirmation -->
-<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="confirmationModalLabel">Confirmation de réservation</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Voulez-vous réserver ce créneau de {{ selectedCreneau?.heure }} à {{ selectedCreneau?.date }} ?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-primary" (click)="reserveCreneau()">Réserver</button>
-      </div>
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation de réservation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Voulez-vous réserver ce créneau de {{ selectedCreneau?.heure }} à {{ selectedCreneau?.date }} ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    (click)="cancelCreneauSelection()">Annuler</button>
+                <button type="button" class="btn btn-primary" (click)="reserveCreneau()">Réserver</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

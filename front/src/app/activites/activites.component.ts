@@ -361,6 +361,11 @@ export class ActivitesComponent implements OnInit {
     this.closeConfirmationModal();
   }
 
+  cancelCreneauSelection(): void {
+    this.selectedCreneau = null;
+    this.closeConfirmationModal();
+  }
+
   closeConfirmationModal(): void {
     const modalElement = document.getElementById('confirmationModal');
     if (modalElement) {
@@ -369,26 +374,73 @@ export class ActivitesComponent implements OnInit {
     }
   }
 
-  subscribe(): void {
-    if (this.selectedCreneau && this.userId && this.selectedActivity?.id) {
-      const createRdvDto: CreateRdvDto = {
-        user_id: this.userId,
-        activite_id: this.selectedActivity.id,
-        date_rdv: this.selectedCreneau.date,
-        type_rdv: 'rdv_simple',
-        status: 'Demande'
-      };
-      this.rdvService.createRdv(createRdvDto).subscribe(
-        (response: any) => {
-          console.log('Réservation enregistrée', response);
-        },
-        (error: any) => {
-          console.error('Erreur lors de l\'enregistrement de la réservation:', error);
-        }
-      );
-    } else {
-      console.error('Informations manquantes pour l\'enregistrement de la réservation');
+  onSubmitInfoForm(): void {
+    if (this.selectedActivity?.rdv && !this.selectedCreneau) {
+      this.toastComponent.showToast({
+        title: 'Erreur',
+        message: 'Veuillez choisir un créneau de rendez-vous avant de vous abonner.',
+        toastClass: 'bg-light',
+        headerClass: 'bg-warning',
+        duration: 5000
+      });
+      return;
     }
+    if (this.selectedActivity?.user_infos && !this.areAdditionalInfosCompleted()) {
+      this.toastComponent.showToast({
+        title: 'Erreur',
+        message: 'Veuillez compléter les informations complémentaires avant de vous abonner.',
+        toastClass: 'bg-light',
+        headerClass: 'bg-warning',
+        duration: 5000
+      });
+      return;
+    }
+    if (this.selectedActivity?.id && this.userId) {
+      const additionalInfos: { [key: string]: string } = {};
+
+      for (const info of Object.keys(this.selectedActivity.user_infos)) {
+        const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
+        additionalInfos[info] = value;
+      }
+      this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
+        .subscribe(response => {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Informations supplémentaires enregistrées avec succès.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+        }, error => {
+          console.error('Erreur lors de l\'enregistrement des informations supplémentaires:', error);
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de l\'enregistrement des informations supplémentaires.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-primary',
+            duration: 5000
+          });
+        });
+    } else {
+      console.error('ID de l\'activité ou ID utilisateur manquant');
+    }
+  }
+
+  areAdditionalInfosCompleted(): boolean {
+    if (this.selectedActivity?.user_infos) {
+      for (const info of Object.keys(this.selectedActivity.user_infos)) {
+        const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
+        if (!value) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  getActiveTab(): string {
+    const activeTab = document.querySelector('.nav-link.active');
+    return activeTab ? activeTab.getAttribute('aria-controls') || '' : '';
   }
 
   getWeekNumber(d: Date): number {
@@ -426,25 +478,6 @@ export class ActivitesComponent implements OnInit {
     if (this.newInfo.key && this.newInfo.value) {
       this.additionalInfos.push({ ...this.newInfo });
       this.newInfo = { key: '', value: '' };
-    }
-  }
-
-  onSubmitInfoForm(): void {
-    if (this.selectedActivity?.id && this.userId) {
-      const additionalInfos: { [key: string]: string } = {};
-
-      for (const info of Object.keys(this.selectedActivity.user_infos)) {
-        const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
-        additionalInfos[info] = value;
-      }
-      this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
-        .subscribe(response => {
-          console.log('Informations supplémentaires enregistrées avec succès');
-        }, error => {
-          console.error('Erreur lors de l\'enregistrement des informations supplémentaires:', error);
-        });
-    } else {
-      console.error('ID de l\'activité ou ID utilisateur manquant');
     }
   }
 }

@@ -5,6 +5,7 @@ interface Toast {
   message: string;
   toastClass: string;
   headerClass: string;
+  duration?: number;
 }
 
 @Component({
@@ -18,10 +19,11 @@ export class ToastComponent implements OnInit {
   message: string = '';
   toastClass: string = '';
   headerClass: string = '';
+  timeoutId: any;
 
-  constructor() {}
+  constructor() { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   showToast(toast: Toast): void {
     this.title = toast.title;
@@ -29,10 +31,24 @@ export class ToastComponent implements OnInit {
     this.toastClass = toast.toastClass;
     this.headerClass = toast.headerClass;
     this.show = true;
-    setTimeout(() => this.hideToast(), 4300);
+
+    if (toast.duration) {
+      this.clearTimeout();
+      this.timeoutId = setTimeout(() => {
+        this.hideToast();
+      }, toast.duration);
+    }
   }
 
   hideToast(): void {
     this.show = false;
+    this.clearTimeout();
+  }
+
+  clearTimeout(): void {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+      this.timeoutId = null;
+    }
   }
 }
