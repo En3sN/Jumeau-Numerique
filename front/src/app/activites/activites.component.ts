@@ -409,7 +409,7 @@ export class ActivitesComponent implements OnInit {
               headerClass: 'bg-success',
               duration: 5000
             });
-            this.saveRdv();
+            this.saveRdvAndCloseModal();
           }, error => {
             console.error('Erreur lors de l\'enregistrement des informations supplémentaires:', error);
             this.toastComponent.showToast({
@@ -421,14 +421,14 @@ export class ActivitesComponent implements OnInit {
             });
           });
       } else {
-        this.saveRdv();
+        this.saveRdvAndCloseModal();
       }
     } else {
       console.error('ID de l\'activité ou ID utilisateur manquant');
     }
   }
 
-  saveRdv(): void {
+  saveRdvAndCloseModal(): void {
     if (this.selectedCreneau && this.selectedActivity?.id && this.userId) {
       const rdvData = {
         user_id: this.userId,
@@ -446,6 +446,7 @@ export class ActivitesComponent implements OnInit {
           headerClass: 'bg-success',
           duration: 5000
         });
+        this.closeSubscribeModal();
       }, error => {
         console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
         this.toastComponent.showToast({
@@ -456,6 +457,14 @@ export class ActivitesComponent implements OnInit {
           duration: 5000
         });
       });
+    }
+  }
+
+  closeSubscribeModal(): void {
+    const modalElement = document.getElementById('subscribeModal');
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance?.hide();
     }
   }
 
