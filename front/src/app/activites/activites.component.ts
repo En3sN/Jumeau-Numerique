@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UtilisateurService } from '../Services/Utilisateur.service';
 import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
@@ -14,6 +14,8 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { CreateRdvDto } from './create-rdv.dto';
+import { FullCalendarComponent } from '@fullcalendar/angular';
 
 @Component({
   selector: 'app-activites',
@@ -21,6 +23,7 @@ import interactionPlugin from '@fullcalendar/interaction';
   styleUrls: ['./activites.component.css']
 })
 export class ActivitesComponent implements OnInit {
+  @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
   showConfirmationToast: boolean = false;
   publicActivities$: Observable<any[]> = new Observable<any[]>();
   nomFilter = new FormControl('');
@@ -34,6 +37,7 @@ export class ActivitesComponent implements OnInit {
   additionalInfos: { key: string, value: string }[] = [];
   newInfo: { key: string, value: string } = { key: '', value: '' };
   userId: number | null = null;
+  selectedCreneau: any;
 
   filters: any = {
     nom: '',
@@ -58,7 +62,9 @@ export class ActivitesComponent implements OnInit {
     height: '100%',
     expandRows: true,
     contentHeight: 'auto',
-    events: []
+
+    events: [],
+    eventClick: this.handleEventClick.bind(this)
   };
 
   constructor(
@@ -295,10 +301,6 @@ export class ActivitesComponent implements OnInit {
     });
   }
 
-  handleEventClick(event: any) {
-    alert(`Vous avez sélectionné un rendez-vous de ${event.event.start} à ${event.event.end}`);
-  }
-
   getWeekNumber(d: Date): number {
     const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     const dayNum = date.getUTCDay() || 7;
@@ -340,7 +342,7 @@ export class ActivitesComponent implements OnInit {
   onSubmitInfoForm(): void {
     if (this.selectedActivity?.id && this.userId) {
       const additionalInfos: { [key: string]: string } = {};
-  
+
       for (const info of Object.keys(this.selectedActivity.user_infos)) {
         const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
         additionalInfos[info] = value;
@@ -353,6 +355,74 @@ export class ActivitesComponent implements OnInit {
         });
     } else {
       console.error('ID de l\'activité ou ID utilisateur manquant');
+    }
+  }
+
+  handleEventClick(event: any) {
+    this.selectedCreneau = {
+      heure: event.event.start,
+      date: event.event.end
+    };
+  
+    const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
+  
+    const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
+    const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
+    const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
+  
+    const confirmationMessage = `Voulez-vous réserver ce créneau de ${startDate} de ${startTime} à ${endTime} ?`;
+  
+    const modalElement = document.getElementById('confirmationModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      const modalBody = modalElement.querySelector('.modal-body');
+      if (modalBody) {
+        modalBody.textContent = confirmationMessage;
+      }
+      modal.show();
+    }
+  }
+  
+  
+  reserveCreneau() {
+    const calendarApi = this.calendarComponent.getApi();
+    const events = calendarApi.getEvents();
+    const event = events.find((e: any) => e.start.getTime() === this.selectedCreneau.heure.getTime() && e.end.getTime() === this.selectedCreneau.date.getTime());
+
+    if (event) {
+      event.setProp('backgroundColor', '#28a745'); 
+      event.setProp('borderColor', '#28a745');
+      event.setProp('classNames', ['reserved']); 
+    } else {
+      console.error('Event not found'); 
+    }
+    const modalElement = document.getElementById('confirmationModal');
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance?.hide();
+    }
+  }
+
+  subscribe(): void {
+    if (this.selectedCreneau && this.userId && this.selectedActivity?.id) {
+      const createRdvDto: CreateRdvDto = {
+        user_id: this.userId,
+        activite_id: this.selectedActivity.id,
+        date_rdv: this.selectedCreneau.date,
+        type_rdv: 'rdv_simple', 
+        status: 'Demande'
+      };
+      this.rdvService.createRdv(createRdvDto).subscribe(
+        (response: any) => {
+          console.log('Réservation enregistrée', response);
+        },
+        (error: any) => {
+          console.error('Erreur lors de l\'enregistrement de la réservation:', error);
+        }
+      );
+    } else {
+      console.error('Informations manquantes pour l\'enregistrement de la réservation');
     }
   }
 }
