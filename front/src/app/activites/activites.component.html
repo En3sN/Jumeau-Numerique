@@ -258,21 +258,27 @@
                         <div class="card border-2 border-info" type="button" (click)="selectActivity(activity)"
                             data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite"
                             aria-controls="offcanvasActivite">
-                            <div class="card-body row">
-                                <div class="col-2 mb-1">
-                                    <img class="img-thumbnail" [src]="activity.logoUrl" alt="logo"
-                                        style="max-width: 80px; height: auto; object-fit: cover;">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-2">
+                                        <img class="img-thumbnail" [src]="activity.logoUrl" alt="logo"
+                                            style="max-width: 80px; height: auto; object-fit: cover;">
+                                    </div>
+                                    <div class="col-10">
+                                        <h4 class="card-title">{{ activity.nom }}</h4>
+                                        <p class="card-text">{{ activity.description }}</p>
+                                    </div>
                                 </div>
-                                <div class="col-10">
-                                    <h4 class="card-title">{{ activity.nom }}</h4>
-                                    <p class="card-text">{{ activity.description }}</p>
-                                    <p class="card-text">
-                                        organisme : <a href="#">{{ activity.organisation_nom }}</a>
-                                    </p>
-                                    <p>
-                                        <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag
-                                            }}</span>
-                                    </p>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p class="card-text">
+                                            organisme : <a href="#">{{ activity.organisation_nom }}</a>
+                                        </p>
+                                        <p>
+                                            <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag
+                                                }}</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -282,7 +288,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Modal -->
 <div class="modal fade" id="subscribeModal" tabindex="-1" role="dialog">
@@ -387,3 +392,22 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de Confirmation de Remplacement -->
+<div class="modal fade" id="replaceConfirmationModal" tabindex="-1" aria-labelledby="replaceConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="replaceConfirmationModalLabel">Confirmation de Remplacement</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Message de confirmation -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelCreneauSelection()">Annuler</button>
+          <button type="button" class="btn btn-primary" (click)="confirmReplaceCreneau()">Remplacer</button>
+        </div>
+      </div>
+    </div>
+  </div>

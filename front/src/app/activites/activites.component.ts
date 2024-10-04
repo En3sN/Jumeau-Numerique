@@ -25,7 +25,6 @@ import { ToastComponent } from '../Shared/toast/toast.component';
 export class ActivitesComponent implements OnInit {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
-
   publicActivities$: Observable<any[]> = new Observable<any[]>();
   nomFilter = new FormControl('');
   typeFilter = new FormControl([]);
@@ -39,7 +38,8 @@ export class ActivitesComponent implements OnInit {
   newInfo: { key: string, value: string } = { key: '', value: '' };
   userId: number | null = null;
   selectedCreneau: any;
-  hasReservedCreneau: boolean = false;
+  previousCreneau: any = null;
+  hasReservedCreneau: { [key: number]: boolean } = {};  
 
   filters: any = {
     nom: '',
@@ -191,6 +191,7 @@ export class ActivitesComponent implements OnInit {
     this.selectedActivity = activity;
     this.loadActivityDocuments(activity.id);
     this.setupCalendar();
+    this.hasReservedCreneau[activity.id] = false; 
   }
 
   loadActivityDocuments(activityId: number): void {
@@ -308,51 +309,60 @@ export class ActivitesComponent implements OnInit {
       date: event.event.end
     };
 
-    const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
+    if (this.hasReservedCreneau[this.selectedActivity.id]) {
+      const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
 
-    const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
-    const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
-    const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
+      const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
+      const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
+      const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
 
-    const confirmationMessage = `Voulez-vous réserver ce créneau de ${startDate} de ${startTime} à ${endTime} ?`;
+      const confirmationMessage = `Vous avez déjà sélectionné un créneau. Voulez-vous remplacer votre créneau actuel par celui-ci de ${startDate} de ${startTime} à ${endTime} ?`;
 
-    const modalElement = document.getElementById('confirmationModal');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      const modalBody = modalElement.querySelector('.modal-body');
-      if (modalBody) {
-        modalBody.textContent = confirmationMessage;
+      const modalElement = document.getElementById('replaceConfirmationModal');
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        const modalBody = modalElement.querySelector('.modal-body');
+        if (modalBody) {
+          modalBody.textContent = confirmationMessage;
+        }
+        modal.show();
       }
-      modal.show();
+    } else {
+      this.reserveCreneau();
     }
   }
 
   reserveCreneau() {
-    if (this.hasReservedCreneau) {
-      this.closeConfirmationModal();
-      this.toastComponent.showToast({
-        title: 'Erreur',
-        message: 'Vous ne pouvez pas réserver plusieurs créneaux de rendez-vous initial.',
-        toastClass: 'bg-light',
-        headerClass: 'bg-primary'
-      });
-      return;
-    }
-
     const calendarApi = this.calendarComponent.getApi();
     const events = calendarApi.getEvents();
+
+    if (this.previousCreneau) {
+      const previousEvent = events.find((e: any) => e.start.getTime() === this.previousCreneau.heure.getTime() && e.end.getTime() === this.previousCreneau.date.getTime());
+      if (previousEvent) {
+        previousEvent.setProp('backgroundColor', '');
+        previousEvent.setProp('borderColor', '');
+        previousEvent.setProp('classNames', []);
+      }
+    }
+
     const event = events.find((e: any) => e.start.getTime() === this.selectedCreneau.heure.getTime() && e.end.getTime() === this.selectedCreneau.date.getTime());
 
     if (event) {
       event.setProp('backgroundColor', '#28a745');
       event.setProp('borderColor', '#28a745');
       event.setProp('classNames', ['reserved']);
-      this.hasReservedCreneau = true;
+      this.hasReservedCreneau[this.selectedActivity.id] = true;
+      this.previousCreneau = this.selectedCreneau;
     } else {
       console.error('Event not found');
     }
     this.closeConfirmationModal();
+  }
+
+  confirmReplaceCreneau() {
+    this.reserveCreneau();
+    this.closeReplaceConfirmationModal();
   }
 
   cancelCreneauSelection(): void {
@@ -362,6 +372,14 @@ export class ActivitesComponent implements OnInit {
 
   closeConfirmationModal(): void {
     const modalElement = document.getElementById('confirmationModal');
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance?.hide();
+    }
+  }
+
+  closeReplaceConfirmationModal(): void {
+    const modalElement = document.getElementById('replaceConfirmationModal');
     if (modalElement) {
       const modalInstance = bootstrap.Modal.getInstance(modalElement);
       modalInstance?.hide();
@@ -434,8 +452,8 @@ export class ActivitesComponent implements OnInit {
         user_id: this.userId,
         activite_id: this.selectedActivity.id,
         date_rdv: this.selectedCreneau.heure.toISOString(),
-        type_rdv: 'rdv_initial', 
-        status: 'Demande' 
+        type_rdv: 'rdv_initial',
+        status: 'Demande'
       };
       this.rdvService.createRdv(rdvData).subscribe(response => {
         console.log('Rendez-vous enregistré avec succès');
@@ -446,7 +464,9 @@ export class ActivitesComponent implements OnInit {
           headerClass: 'bg-success',
           duration: 5000
         });
-        this.closeSubscribeModal();
+        setTimeout(() => {
+          this.closeSubscribeModal();
+        }, 3600);      
       }, error => {
         console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
         this.toastComponent.showToast({
@@ -474,9 +494,7 @@ export class ActivitesComponent implements OnInit {
         const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
         if (!value) {
           return false;
-        }
-      }
-    }
+        }}}
     return true;
   }
 
@@ -484,7 +502,6 @@ export class ActivitesComponent implements OnInit {
     const activeTab = document.querySelector('.nav-link.active');
     return activeTab ? activeTab.getAttribute('aria-controls') || '' : '';
   }
-
   getWeekNumber(d: Date): number {
     const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     const dayNum = date.getUTCDay() || 7;
