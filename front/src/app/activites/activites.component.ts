@@ -379,6 +379,7 @@ export class ActivitesComponent implements OnInit {
       });
       return;
     }
+
     if (this.selectedActivity?.user_infos && !this.areAdditionalInfosCompleted()) {
       this.toastComponent.showToast({
         title: 'Erreur',
@@ -389,6 +390,7 @@ export class ActivitesComponent implements OnInit {
       });
       return;
     }
+
     if (this.selectedActivity?.id && this.userId) {
       const additionalInfos: { [key: string]: string } = {};
 
@@ -396,26 +398,31 @@ export class ActivitesComponent implements OnInit {
         const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
         additionalInfos[info] = value;
       }
-      this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
-        .subscribe(response => {
-          this.toastComponent.showToast({
-            title: 'Succès',
-            message: 'Informations supplémentaires enregistrées avec succès.',
-            toastClass: 'bg-light',
-            headerClass: 'bg-success',
-            duration: 5000
+
+      if (Object.keys(additionalInfos).length > 0) {
+        this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
+          .subscribe(response => {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Informations supplémentaires enregistrées avec succès.',
+              toastClass: 'bg-light',
+              headerClass: 'bg-success',
+              duration: 5000
+            });
+            this.saveRdv();
+          }, error => {
+            console.error('Erreur lors de l\'enregistrement des informations supplémentaires:', error);
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors de l\'enregistrement des informations supplémentaires.',
+              toastClass: 'bg-light',
+              headerClass: 'bg-primary',
+              duration: 5000
+            });
           });
-          this.saveRdv();
-        }, error => {
-          console.error('Erreur lors de l\'enregistrement des informations supplémentaires:', error);
-          this.toastComponent.showToast({
-            title: 'Erreur',
-            message: 'Erreur lors de l\'enregistrement des informations supplémentaires.',
-            toastClass: 'bg-light',
-            headerClass: 'bg-primary',
-            duration: 5000
-          });
-        });
+      } else {
+        this.saveRdv();
+      }
     } else {
       console.error('ID de l\'activité ou ID utilisateur manquant');
     }
