@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { UtilisateurService } from '../Services/Utilisateur.service';
 import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
@@ -14,7 +14,6 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { CreateRdvDto } from './create-rdv.dto';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { ToastComponent } from '../Shared/toast/toast.component';
 
@@ -27,7 +26,6 @@ export class ActivitesComponent implements OnInit {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
   @ViewChild(ToastComponent) toastComponent!: ToastComponent;
 
-  showConfirmationToast: boolean = false;
   publicActivities$: Observable<any[]> = new Observable<any[]>();
   nomFilter = new FormControl('');
   typeFilter = new FormControl([]);
@@ -333,16 +331,12 @@ export class ActivitesComponent implements OnInit {
   reserveCreneau() {
     if (this.hasReservedCreneau) {
       this.closeConfirmationModal();
-      if (this.toastComponent) {
-        this.toastComponent.showToast({
-          title: 'Erreur',
-          message: 'Vous ne pouvez pas réserver plusieurs créneaux de rendez-vous initial.',
-          toastClass: 'bg-light',
-          headerClass: 'bg-primary'
-        });
-      } else {
-        console.error('ToastComponent is not initialized.');
-      }
+      this.toastComponent.showToast({
+        title: 'Erreur',
+        message: 'Vous ne pouvez pas réserver plusieurs créneaux de rendez-vous initial.',
+        toastClass: 'bg-light',
+        headerClass: 'bg-primary'
+      });
       return;
     }
 
@@ -411,6 +405,7 @@ export class ActivitesComponent implements OnInit {
             headerClass: 'bg-success',
             duration: 5000
           });
+          this.saveRdv();
         }, error => {
           console.error('Erreur lors de l\'enregistrement des informations supplémentaires:', error);
           this.toastComponent.showToast({
@@ -423,6 +418,37 @@ export class ActivitesComponent implements OnInit {
         });
     } else {
       console.error('ID de l\'activité ou ID utilisateur manquant');
+    }
+  }
+
+  saveRdv(): void {
+    if (this.selectedCreneau && this.selectedActivity?.id && this.userId) {
+      const rdvData = {
+        user_id: this.userId,
+        activite_id: this.selectedActivity.id,
+        date_rdv: this.selectedCreneau.heure.toISOString(),
+        type_rdv: 'rdv_initial', 
+        status: 'Demande' 
+      };
+      this.rdvService.createRdv(rdvData).subscribe(response => {
+        console.log('Rendez-vous enregistré avec succès');
+        this.toastComponent.showToast({
+          title: 'Succès',
+          message: 'Rendez-vous enregistré avec succès.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-success',
+          duration: 5000
+        });
+      }, error => {
+        console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Erreur lors de l\'enregistrement du rendez-vous.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-primary',
+          duration: 5000
+        });
+      });
     }
   }
 
