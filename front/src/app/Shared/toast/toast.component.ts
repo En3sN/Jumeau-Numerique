@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ToastService } from '../Service/toast.service';
+
+interface Toast {
+  title: string;
+  message: string;
+  toastClass: string;
+  headerClass: string;
+}
 
 @Component({
   selector: 'app-toast',
@@ -13,17 +19,17 @@ export class ToastComponent implements OnInit {
   toastClass: string = '';
   headerClass: string = '';
 
-  constructor(private toastService: ToastService) {}
+  constructor() {}
 
-  ngOnInit(): void {
-    this.toastService.toastState.subscribe(toast => {
-      this.title = toast.title;
-      this.message = toast.message;
-      this.toastClass = toast.toastClass;
-      this.headerClass = toast.headerClass;
-      this.show = true;
-      setTimeout(() => this.hideToast(), 3000);
-    });
+  ngOnInit(): void {}
+
+  showToast(toast: Toast): void {
+    this.title = toast.title;
+    this.message = toast.message;
+    this.toastClass = toast.toastClass;
+    this.headerClass = toast.headerClass;
+    this.show = true;
+    setTimeout(() => this.hideToast(), 4300);
   }
 
   hideToast(): void {

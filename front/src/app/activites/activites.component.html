@@ -316,6 +316,8 @@
                             <h1><u>Réservez un créneau de rendez-vous initial</u></h1>
                         </div>
                         <full-calendar #calendar [options]="calendarOptions" (eventClick)="handleEventClick($event)"></full-calendar>
+                        <app-toast></app-toast>
+
                     </div>
                     <div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="info-tab"
                         *ngIf="selectedActivity?.user_infos && (selectedActivity?.user_infos | keyvalue).length > 0">

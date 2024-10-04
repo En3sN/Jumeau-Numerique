@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { UtilisateurService } from '../Services/Utilisateur.service';
 import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
@@ -16,6 +16,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { CreateRdvDto } from './create-rdv.dto';
 import { FullCalendarComponent } from '@fullcalendar/angular';
+import { ToastComponent } from '../Shared/toast/toast.component';
 
 @Component({
   selector: 'app-activites',
@@ -24,6 +25,8 @@ import { FullCalendarComponent } from '@fullcalendar/angular';
 })
 export class ActivitesComponent implements OnInit {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
+  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+
   showConfirmationToast: boolean = false;
   publicActivities$: Observable<any[]> = new Observable<any[]>();
   nomFilter = new FormControl('');
@@ -38,6 +41,7 @@ export class ActivitesComponent implements OnInit {
   newInfo: { key: string, value: string } = { key: '', value: '' };
   userId: number | null = null;
   selectedCreneau: any;
+  hasReservedCreneau: boolean = false;
 
   filters: any = {
     nom: '',
@@ -62,7 +66,6 @@ export class ActivitesComponent implements OnInit {
     height: '100%',
     expandRows: true,
     contentHeight: 'auto',
-
     events: [],
     eventClick: this.handleEventClick.bind(this)
   };
@@ -301,6 +304,93 @@ export class ActivitesComponent implements OnInit {
     });
   }
 
+  handleEventClick(event: any) {
+    this.selectedCreneau = {
+      heure: event.event.start,
+      date: event.event.end
+    };
+
+    const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
+
+    const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
+    const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
+    const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
+
+    const confirmationMessage = `Voulez-vous réserver ce créneau de ${startDate} de ${startTime} à ${endTime} ?`;
+
+    const modalElement = document.getElementById('confirmationModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      const modalBody = modalElement.querySelector('.modal-body');
+      if (modalBody) {
+        modalBody.textContent = confirmationMessage;
+      }
+      modal.show();
+    }
+  }
+
+  reserveCreneau() {
+    if (this.hasReservedCreneau) {
+      this.closeConfirmationModal();
+      if (this.toastComponent) {
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Vous ne pouvez pas réserver plusieurs créneaux de rendez-vous initial.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-primary'
+        });
+      } else {
+        console.error('ToastComponent is not initialized.');
+      }
+      return;
+    }
+
+    const calendarApi = this.calendarComponent.getApi();
+    const events = calendarApi.getEvents();
+    const event = events.find((e: any) => e.start.getTime() === this.selectedCreneau.heure.getTime() && e.end.getTime() === this.selectedCreneau.date.getTime());
+
+    if (event) {
+      event.setProp('backgroundColor', '#28a745');
+      event.setProp('borderColor', '#28a745');
+      event.setProp('classNames', ['reserved']);
+      this.hasReservedCreneau = true;
+    } else {
+      console.error('Event not found');
+    }
+    this.closeConfirmationModal();
+  }
+
+  closeConfirmationModal(): void {
+    const modalElement = document.getElementById('confirmationModal');
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance?.hide();
+    }
+  }
+
+  subscribe(): void {
+    if (this.selectedCreneau && this.userId && this.selectedActivity?.id) {
+      const createRdvDto: CreateRdvDto = {
+        user_id: this.userId,
+        activite_id: this.selectedActivity.id,
+        date_rdv: this.selectedCreneau.date,
+        type_rdv: 'rdv_simple',
+        status: 'Demande'
+      };
+      this.rdvService.createRdv(createRdvDto).subscribe(
+        (response: any) => {
+          console.log('Réservation enregistrée', response);
+        },
+        (error: any) => {
+          console.error('Erreur lors de l\'enregistrement de la réservation:', error);
+        }
+      );
+    } else {
+      console.error('Informations manquantes pour l\'enregistrement de la réservation');
+    }
+  }
+
   getWeekNumber(d: Date): number {
     const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     const dayNum = date.getUTCDay() || 7;
@@ -355,74 +445,6 @@ export class ActivitesComponent implements OnInit {
         });
     } else {
       console.error('ID de l\'activité ou ID utilisateur manquant');
-    }
-  }
-
-  handleEventClick(event: any) {
-    this.selectedCreneau = {
-      heure: event.event.start,
-      date: event.event.end
-    };
-  
-    const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
-  
-    const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
-    const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
-    const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
-  
-    const confirmationMessage = `Voulez-vous réserver ce créneau de ${startDate} de ${startTime} à ${endTime} ?`;
-  
-    const modalElement = document.getElementById('confirmationModal');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      const modalBody = modalElement.querySelector('.modal-body');
-      if (modalBody) {
-        modalBody.textContent = confirmationMessage;
-      }
-      modal.show();
-    }
-  }
-  
-  
-  reserveCreneau() {
-    const calendarApi = this.calendarComponent.getApi();
-    const events = calendarApi.getEvents();
-    const event = events.find((e: any) => e.start.getTime() === this.selectedCreneau.heure.getTime() && e.end.getTime() === this.selectedCreneau.date.getTime());
-
-    if (event) {
-      event.setProp('backgroundColor', '#28a745'); 
-      event.setProp('borderColor', '#28a745');
-      event.setProp('classNames', ['reserved']); 
-    } else {
-      console.error('Event not found'); 
-    }
-    const modalElement = document.getElementById('confirmationModal');
-    if (modalElement) {
-      const modalInstance = bootstrap.Modal.getInstance(modalElement);
-      modalInstance?.hide();
-    }
-  }
-
-  subscribe(): void {
-    if (this.selectedCreneau && this.userId && this.selectedActivity?.id) {
-      const createRdvDto: CreateRdvDto = {
-        user_id: this.userId,
-        activite_id: this.selectedActivity.id,
-        date_rdv: this.selectedCreneau.date,
-        type_rdv: 'rdv_simple', 
-        status: 'Demande'
-      };
-      this.rdvService.createRdv(createRdvDto).subscribe(
-        (response: any) => {
-          console.log('Réservation enregistrée', response);
-        },
-        (error: any) => {
-          console.error('Erreur lors de l\'enregistrement de la réservation:', error);
-        }
-      );
-    } else {
-      console.error('Informations manquantes pour l\'enregistrement de la réservation');
     }
   }
 }
