@@ -40,6 +40,9 @@ export class ActivitesComponent implements OnInit {
   selectedCreneau: any;
   previousCreneau: any = null;
   hasReservedCreneau: { [key: number]: boolean } = {};  
+  subscriptionRequested: { [key: number]: boolean } = {};
+  currentStartDate: Date = new Date();
+  creneaux: any[] = [];
 
   filters: any = {
     nom: '',
@@ -65,7 +68,8 @@ export class ActivitesComponent implements OnInit {
     expandRows: true,
     contentHeight: 'auto',
     events: [],
-    eventClick: this.handleEventClick.bind(this)
+    eventClick: this.handleEventClick.bind(this),
+    datesSet: this.handleDatesSet.bind(this)
   };
 
   constructor(
@@ -126,6 +130,35 @@ export class ActivitesComponent implements OnInit {
       })
     );
     this.setupTabEventListeners();
+  }
+
+  handleDatesSet(arg: any): void {
+    const start = arg.start;
+    const end = arg.end;
+    const activiteId = this.selectedActivity?.id || 1;
+    const duree = 60;
+  
+    const weekNumber = this.getWeekNumber(start);
+    const year = start.getFullYear();
+  
+    this.rdvService.getRdvCreneaux(activiteId, weekNumber, year, duree).subscribe(data => {
+      if (data && data.length > 0 && data[0]?.get_json_rdv_creneaux) {
+        const creneaux = data[0].get_json_rdv_creneaux;
+        const formattedCreneaux = creneaux.map((creneau: any) => ({
+          start: creneau.debut,
+          end: creneau.fin,
+          title: 'Disponible'
+        }));
+  
+        const calendarApi = this.calendarComponent.getApi();
+        calendarApi.removeAllEvents(); 
+        formattedCreneaux.forEach((creneau: { start: string; end: string; title: string }) => {
+          calendarApi.addEvent(creneau);
+        });
+      }
+    }, error => {
+      console.error("Error fetching RDV créneaux:", error);
+    });
   }
 
   onFilterChange(filterName: string, event: Event): void {
@@ -308,7 +341,6 @@ export class ActivitesComponent implements OnInit {
       heure: event.event.start,
       date: event.event.end
     };
-
     if (this.hasReservedCreneau[this.selectedActivity.id]) {
       const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
@@ -464,9 +496,8 @@ export class ActivitesComponent implements OnInit {
           headerClass: 'bg-success',
           duration: 5000
         });
-        setTimeout(() => {
-          this.closeSubscribeModal();
-        }, 3600);      
+        this.subscriptionRequested[this.selectedActivity.id] = true; 
+        this.closeSubscribeModal();
       }, error => {
         console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
         this.toastComponent.showToast({
@@ -479,6 +510,7 @@ export class ActivitesComponent implements OnInit {
       });
     }
   }
+
 
   closeSubscribeModal(): void {
     const modalElement = document.getElementById('subscribeModal');

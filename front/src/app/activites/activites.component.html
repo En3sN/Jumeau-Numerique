@@ -238,10 +238,14 @@
                             <span *ngFor="let tag of selectedActivity?.tags" class="badge bg-info me-1">{{ tag }}</span>
                         </p>
 
-                        <button *ngIf="isUserLoggedIn" type="button" class="btn btn-primary p-2 m-1" id="btActModif"
-                            (click)="openSubscribeModal()">
+                        <button *ngIf="isUserLoggedIn && !subscriptionRequested[selectedActivity?.id]" type="button"
+                            class="btn btn-primary p-2 m-1" id="btActModif" (click)="openSubscribeModal()">
                             S'abonner
                         </button>
+
+                        <span *ngIf="subscriptionRequested[selectedActivity?.id]" class="text-success">
+                            Une demande d'abonnement a été faite pour cette activité.
+                        </span>
 
                         <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Se désabonner</button>
                         <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Joindre des
@@ -394,20 +398,22 @@
 </div>
 
 <!-- Modal de Confirmation de Remplacement -->
-<div class="modal fade" id="replaceConfirmationModal" tabindex="-1" aria-labelledby="replaceConfirmationModalLabel" aria-hidden="true">
+<div class="modal fade" id="replaceConfirmationModal" tabindex="-1" aria-labelledby="replaceConfirmationModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="replaceConfirmationModalLabel">Confirmation de Remplacement</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="replaceConfirmationModalLabel">Confirmation de Remplacement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Message de confirmation -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    (click)="cancelCreneauSelection()">Annuler</button>
+                <button type="button" class="btn btn-primary" (click)="confirmReplaceCreneau()">Remplacer</button>
+            </div>
         </div>
-        <div class="modal-body">
-          <!-- Message de confirmation -->
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelCreneauSelection()">Annuler</button>
-          <button type="button" class="btn btn-primary" (click)="confirmReplaceCreneau()">Remplacer</button>
-        </div>
-      </div>
     </div>
-  </div>
+</div>
