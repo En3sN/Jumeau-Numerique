@@ -53,4 +53,8 @@ export class ActiviteService {
   getLogo(id: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/activite/logo/${id}`, { responseType: 'blob', withCredentials: true });
   }
+
+  subscribeToActivite(subscriptionData: { userId: number, activiteId: number, mail?: string, statut: boolean }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/activite/subscribe`, subscriptionData, { withCredentials: true });
+  }
 }

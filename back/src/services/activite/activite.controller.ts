@@ -56,6 +56,20 @@ export class ActiviteController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('subscribe')
+  @HttpCode(HttpStatus.CREATED)
+  async subscribeToActivite(
+    @Body() subscriptionData: { userId: number, activiteId: number, mail?: string },
+    @Request() req
+  ): Promise<any> {
+    const sessionCode = req.user.sessionCode;
+    if (!sessionCode) {
+      throw new Error('Session code is missing from the JWT payload.');
+    }
+    return await this.activiteService.subscribeToActivite(subscriptionData, sessionCode);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async update(@Param('id') id: number, @Body() updateActiviteDto: UpdateActiviteDto, @Request() req): Promise<any> {

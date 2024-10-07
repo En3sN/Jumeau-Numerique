@@ -117,6 +117,38 @@ export class ActiviteService {
       return result;
     }, sessionCode);
   }
+
+   async subscribeToActivite(subscriptionData: { userId: number, activiteId: number, mail?: string }, sessionCode: string): Promise<any> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const { userId, activiteId, mail } = subscriptionData;
+
+      const abonnement = {
+        user_id: userId,
+        activite_id: activiteId,
+        competences_visibles: false,
+        statut: false,
+        mail: mail || null,
+      };
+
+      const query = `
+        INSERT INTO services.activite_abonnement (user_id, activite_id, competences_visibles, statut, mail)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (user_id, activite_id) DO UPDATE
+        SET statut = EXCLUDED.statut, mail = EXCLUDED.mail;
+      `;
+
+      await manager.query(query, [
+        abonnement.user_id,
+        abonnement.activite_id,
+        abonnement.competences_visibles,
+        abonnement.statut,
+        abonnement.mail,
+      ]);
+
+      return { message: 'Abonnement enregistré avec succès.' };
+    }, sessionCode);
+  }
+
   
 
   async findOne(id: number, sessionCode: string): Promise<any> {

@@ -499,6 +499,7 @@ export class ActivitesComponent implements OnInit {
         });
         this.subscriptionRequested[this.selectedActivity.id] = true; 
         this.closeSubscribeModal();
+        this.subscribeToActivity();
       }, error => {
         console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
         this.toastComponent.showToast({
@@ -512,7 +513,42 @@ export class ActivitesComponent implements OnInit {
     }
   }
 
-
+  subscribeToActivity(): void {
+    if (this.selectedActivity?.id && this.userId !== null) {
+      const subscriptionData = {
+        userId: this.userId,
+        activiteId: this.selectedActivity.id,
+       // mail: '', 
+        statut: false 
+      };
+  
+      this.activiteService.subscribeToActivite(subscriptionData).subscribe({
+        next: (response) => {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Vous vous êtes abonné avec succès à l\'activité.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+          this.subscriptionRequested[this.selectedActivity.id] = true;
+          this.closeSubscribeModal();
+        },
+        error: (error) => {
+          console.error('Erreur lors de l\'abonnement à l\'activité :', error);
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de l\'abonnement à l\'activité.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
+      });
+    } else {
+      console.error('ID de l\'activité ou ID utilisateur manquant');
+    }
+  }
   closeSubscribeModal(): void {
     const modalElement = document.getElementById('subscribeModal');
     if (modalElement) {
