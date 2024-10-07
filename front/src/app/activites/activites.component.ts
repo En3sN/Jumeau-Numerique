@@ -55,6 +55,7 @@ export class ActivitesComponent implements OnInit {
   appliedFilters: any = [];
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    initialDate: new Date(), 
     initialView: 'timeGridWeek',
     headerToolbar: {
       left: 'prev,next today',
