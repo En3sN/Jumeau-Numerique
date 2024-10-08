@@ -39,7 +39,7 @@ export class ActivitesComponent implements OnInit {
   userId: number | null = null;
   selectedCreneau: any;
   previousCreneau: any = null;
-  hasReservedCreneau: { [key: number]: boolean } = {};  
+  hasReservedCreneau: { [key: number]: boolean } = {};
   subscriptionRequested: { [key: number]: boolean } = {};
   currentStartDate: Date = new Date();
   creneaux: any[] = [];
@@ -55,7 +55,7 @@ export class ActivitesComponent implements OnInit {
   appliedFilters: any = [];
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
-    initialDate: new Date(), 
+    initialDate: new Date(),
     initialView: 'timeGridWeek',
     headerToolbar: {
       left: 'prev,next today',
@@ -138,10 +138,10 @@ export class ActivitesComponent implements OnInit {
     const end = arg.end;
     const activiteId = this.selectedActivity?.id || 1;
     const duree = 60;
-  
+
     const weekNumber = this.getWeekNumber(start);
     const year = start.getFullYear();
-  
+
     this.rdvService.getRdvCreneaux(activiteId, weekNumber, year, duree).subscribe(data => {
       if (data && data.length > 0 && data[0]?.get_json_rdv_creneaux) {
         const creneaux = data[0].get_json_rdv_creneaux;
@@ -150,9 +150,9 @@ export class ActivitesComponent implements OnInit {
           end: creneau.fin,
           title: 'Disponible'
         }));
-  
+
         const calendarApi = this.calendarComponent.getApi();
-        calendarApi.removeAllEvents(); 
+        calendarApi.removeAllEvents();
         formattedCreneaux.forEach((creneau: { start: string; end: string; title: string }) => {
           calendarApi.addEvent(creneau);
         });
@@ -225,7 +225,7 @@ export class ActivitesComponent implements OnInit {
     this.selectedActivity = activity;
     this.loadActivityDocuments(activity.id);
     this.setupCalendar();
-    this.hasReservedCreneau[activity.id] = false; 
+    this.hasReservedCreneau[activity.id] = false;
   }
 
   loadActivityDocuments(activityId: number): void {
@@ -497,7 +497,7 @@ export class ActivitesComponent implements OnInit {
           headerClass: 'bg-success',
           duration: 5000
         });
-        this.subscriptionRequested[this.selectedActivity.id] = true; 
+        this.subscriptionRequested[this.selectedActivity.id] = true;
         this.closeSubscribeModal();
         this.subscribeToActivity();
       }, error => {
@@ -518,10 +518,10 @@ export class ActivitesComponent implements OnInit {
       const subscriptionData = {
         userId: this.userId,
         activiteId: this.selectedActivity.id,
-       // mail: '', 
-        statut: false 
+        // mail: '', 
+        statut: false
       };
-  
+
       this.activiteService.subscribeToActivite(subscriptionData).subscribe({
         next: (response) => {
           this.toastComponent.showToast({
@@ -563,7 +563,9 @@ export class ActivitesComponent implements OnInit {
         const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
         if (!value) {
           return false;
-        }}}
+        }
+      }
+    }
     return true;
   }
 

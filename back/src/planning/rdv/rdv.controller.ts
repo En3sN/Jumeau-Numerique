@@ -5,6 +5,7 @@ import { UpdateRdvDto } from './DTO/update-rdv.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 import { GetRdvCreneauxDto } from './DTO/get-rdv-creneaux.dto';
 import { AddPrerequisDto } from './DTO/AddPrerequis.dto';
+import { LockCreneauDto } from './DTO/lock-creneau.dto';
 
 @Controller('rdv')
 export class RdvController {
@@ -32,6 +33,18 @@ export class RdvController {
       throw new BadRequestException('Unable to add activite prerequis');
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('lock-creneau')
+  @HttpCode(HttpStatus.OK)
+  async lockCreneauRdv(
+    @Body(new ValidationPipe({ transform: true })) lockCreneauDto: LockCreneauDto,
+    @Request() req
+  ) {
+    const { activiteId, startTime, endTime, userId, action } = lockCreneauDto;
+    return await this.rdvService.lockCreneauRdv(activiteId, startTime, endTime, userId, action, req.user.sessionCode);
+  }
+  
 
   @UseGuards(JwtAuthGuard)
   @Get()

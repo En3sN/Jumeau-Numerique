@@ -124,4 +124,19 @@ export class RdvService {
       }
     }, sessionCode);
   }
+
+  async lockCreneauRdv(activiteId: number, startTime: string, endTime: string, userId: number, action: string, sessionCode: string): Promise<string> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      try {
+        const result = await manager.query(
+          'SELECT planning.lock_creneau_rdv($1, $2, $3, $4, $5)',
+          [activiteId, startTime, endTime, userId, action]
+        );
+        return result[0].lock_creneau_rdv;
+      } catch (error) {
+        throw new BadRequestException('Unable to lock or release the creneau');
+      }
+    }, sessionCode);
+  }
+
 }
