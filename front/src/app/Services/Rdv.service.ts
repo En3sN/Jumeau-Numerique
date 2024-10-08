@@ -57,4 +57,9 @@ export class RdvService {
     const body = { activite_id: activiteId, user_id: userId, prerequis };
     return this.http.post<any>(`${this.apiUrl}/rdv/prerequis`, body, { withCredentials: true });
   }
+
+  lockCreneauRdv(activiteId: number, startTime: string, endTime: string, userId: number, action: string): Observable<any> {
+    const body = { activiteId, startTime, endTime, userId, action };
+    return this.http.post<any>(`${this.apiUrl}/rdv/lock-creneau`, body, { withCredentials: true });
+  }
 }

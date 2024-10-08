@@ -43,6 +43,7 @@ export class ActivitesComponent implements OnInit {
   subscriptionRequested: { [key: number]: boolean } = {};
   currentStartDate: Date = new Date();
   creneaux: any[] = [];
+  confirmationMessage: string = '';
 
   filters: any = {
     nom: '',
@@ -63,6 +64,7 @@ export class ActivitesComponent implements OnInit {
       right: 'timeGridWeek,timeGridDay'
     },
     locale: frLocale,
+    timeZone: 'Europe/Paris',
     slotMinTime: '07:00:00',
     slotMaxTime: '20:00:00',
     height: '100%',
@@ -340,18 +342,23 @@ export class ActivitesComponent implements OnInit {
   handleEventClick(event: any) {
     this.selectedCreneau = {
       heure: event.event.start,
-      date: event.event.end
+      date: event.event.end,
+      startTime: event.event.start.toISOString(), // Convertir en UTC
+      endTime: event.event.end.toISOString() // Convertir en UTC
     };
+  
+    console.log('handleEventClick - selectedCreneau:', this.selectedCreneau);
+  
     if (this.hasReservedCreneau[this.selectedActivity.id]) {
       const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
       const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
-
+  
       const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
       const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
       const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
-
+  
       const confirmationMessage = `Vous avez déjà sélectionné un créneau. Voulez-vous remplacer votre créneau actuel par celui-ci de ${startDate} de ${startTime} à ${endTime} ?`;
-
+  
       const modalElement = document.getElementById('replaceConfirmationModal');
       if (modalElement) {
         const modal = new bootstrap.Modal(modalElement);
@@ -365,44 +372,176 @@ export class ActivitesComponent implements OnInit {
       this.reserveCreneau();
     }
   }
-
-  reserveCreneau() {
+  
+  saveRdvAndCloseModal(): void {
+    if (this.selectedCreneau && this.selectedActivity?.id && this.userId) {
+      const rdvData = {
+        user_id: this.userId,
+        activite_id: this.selectedActivity.id,
+        date_rdv: this.selectedCreneau.startTime, // Utiliser startTime du créneau verrouillé
+        type_rdv: 'rdv_initial',
+        status: 'Demande'
+      };
+  
+      console.log('saveRdvAndCloseModal - rdvData:', rdvData);
+  
+      this.rdvService.createRdv(rdvData).subscribe(response => {
+        console.log('saveRdvAndCloseModal - response:', response);
+  
+        this.toastComponent.showToast({
+          title: 'Succès',
+          message: 'Rendez-vous enregistré avec succès.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-success',
+          duration: 5000
+        });
+        this.subscriptionRequested[this.selectedActivity.id] = true;
+        this.closeSubscribeModal();
+        this.subscribeToActivity();
+      }, error => {
+        console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Erreur lors de l\'enregistrement du rendez-vous.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-primary',
+          duration: 5000
+        });
+      });
+    }
+  }
+  
+  lockNewCreneau(startTime: string, endTime: string): void {
+    console.log('lockNewCreneau - startTime:', startTime, 'endTime:', endTime);
+  
+    this.rdvService.lockCreneauRdv(this.selectedActivity.id, startTime, endTime, this.userId!, 'lock').subscribe(
+      response => {
+        console.log('lockNewCreneau - response:', response);
+  
+        if (response.message === 'Créneau disponible') {
+          this.selectedCreneau = { startTime, endTime, heure: new Date(startTime), date: new Date(endTime) };
+          this.previousCreneau = this.selectedCreneau;
+  
+          const calendarApi = this.calendarComponent.getApi();
+          const events = calendarApi.getEvents();
+  
+          events.forEach(event => {
+            if (event.start?.toISOString() === startTime && event.end?.toISOString() === endTime) {
+              event.setProp('backgroundColor', '#28a745');
+              event.setProp('borderColor', '#28a745');
+              event.setProp('classNames', ['reserved']);
+            } else {
+              event.setProp('backgroundColor', '');
+              event.setProp('borderColor', '');
+              event.setProp('classNames', []);
+            }
+          });
+  
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Le créneau a été verrouillé avec succès.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+        } else {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Le créneau est déjà pris.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
+      },
+      error => {
+        console.error('Erreur lors du verrouillage du créneau:', error);
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Erreur lors du verrouillage du créneau.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-danger',
+          duration: 5000
+        });
+      }
+    );
+  }
+  
+  reserveCreneau(): void {
     const calendarApi = this.calendarComponent.getApi();
     const events = calendarApi.getEvents();
-
+  
     if (this.previousCreneau) {
-      const previousEvent = events.find((e: any) => e.start.getTime() === this.previousCreneau.heure.getTime() && e.end.getTime() === this.previousCreneau.date.getTime());
+      const previousEvent = events.find((e: any) => 
+        new Date(e.start).getTime() === new Date(this.previousCreneau.heure).getTime() && 
+        new Date(e.end).getTime() === new Date(this.previousCreneau.date).getTime()
+      );
       if (previousEvent) {
         previousEvent.setProp('backgroundColor', '');
         previousEvent.setProp('borderColor', '');
         previousEvent.setProp('classNames', []);
       }
     }
-
-    const event = events.find((e: any) => e.start.getTime() === this.selectedCreneau.heure.getTime() && e.end.getTime() === this.selectedCreneau.date.getTime());
-
+  
+    const event = events.find((e: any) => 
+      new Date(e.start).getTime() === new Date(this.selectedCreneau.heure).getTime() && 
+      new Date(e.end).getTime() === new Date(this.selectedCreneau.date).getTime()
+    );
+  
     if (event) {
       event.setProp('backgroundColor', '#28a745');
       event.setProp('borderColor', '#28a745');
       event.setProp('classNames', ['reserved']);
       this.hasReservedCreneau[this.selectedActivity.id] = true;
       this.previousCreneau = this.selectedCreneau;
+      this.lockNewCreneau(this.selectedCreneau.startTime, this.selectedCreneau.endTime); // Verrouiller le créneau
     } else {
       console.error('Event not found');
     }
     this.closeConfirmationModal();
   }
-
-  confirmReplaceCreneau() {
-    this.reserveCreneau();
+  
+  confirmReplaceCreneau(): void {
+    if (this.previousCreneau) {
+      // Libérer le créneau précédent
+      this.rdvService.lockCreneauRdv(this.selectedActivity.id, this.previousCreneau.startTime, this.previousCreneau.endTime, this.userId!, 'release').subscribe(
+        () => {
+          // Verrouiller le nouveau créneau
+          this.lockNewCreneau(this.selectedCreneau.startTime, this.selectedCreneau.endTime);
+        },
+        error => {
+          console.error('Erreur lors de la libération du créneau précédent:', error);
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la libération du créneau précédent.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
+      );
+    } else {
+      this.reserveCreneau();
+    }
     this.closeReplaceConfirmationModal();
   }
-
-  cancelCreneauSelection(): void {
-    this.selectedCreneau = null;
-    this.closeConfirmationModal();
+  
+  openReplaceConfirmationModal(): void {
+    const modalElement = document.getElementById('replaceConfirmationModal');
+    if (modalElement) {
+      const modalInstance = new bootstrap.Modal(modalElement);
+      modalInstance.show();
+    }
   }
-
+  
+  closeReplaceConfirmationModal(): void {
+    const modalElement = document.getElementById('replaceConfirmationModal');
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance?.hide();
+    }
+  }
+  
   closeConfirmationModal(): void {
     const modalElement = document.getElementById('confirmationModal');
     if (modalElement) {
@@ -411,12 +550,9 @@ export class ActivitesComponent implements OnInit {
     }
   }
 
-  closeReplaceConfirmationModal(): void {
-    const modalElement = document.getElementById('replaceConfirmationModal');
-    if (modalElement) {
-      const modalInstance = bootstrap.Modal.getInstance(modalElement);
-      modalInstance?.hide();
-    }
+  cancelCreneauSelection(): void {
+    this.selectedCreneau = null;
+    this.closeConfirmationModal();
   }
 
   onSubmitInfoForm(): void {
@@ -476,40 +612,6 @@ export class ActivitesComponent implements OnInit {
       }
     } else {
       console.error('ID de l\'activité ou ID utilisateur manquant');
-    }
-  }
-
-  saveRdvAndCloseModal(): void {
-    if (this.selectedCreneau && this.selectedActivity?.id && this.userId) {
-      const rdvData = {
-        user_id: this.userId,
-        activite_id: this.selectedActivity.id,
-        date_rdv: this.selectedCreneau.heure.toISOString(),
-        type_rdv: 'rdv_initial',
-        status: 'Demande'
-      };
-      this.rdvService.createRdv(rdvData).subscribe(response => {
-        console.log('Rendez-vous enregistré avec succès');
-        this.toastComponent.showToast({
-          title: 'Succès',
-          message: 'Rendez-vous enregistré avec succès.',
-          toastClass: 'bg-light',
-          headerClass: 'bg-success',
-          duration: 5000
-        });
-        this.subscriptionRequested[this.selectedActivity.id] = true;
-        this.closeSubscribeModal();
-        this.subscribeToActivity();
-      }, error => {
-        console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
-        this.toastComponent.showToast({
-          title: 'Erreur',
-          message: 'Erreur lors de l\'enregistrement du rendez-vous.',
-          toastClass: 'bg-light',
-          headerClass: 'bg-primary',
-          duration: 5000
-        });
-      });
     }
   }
 

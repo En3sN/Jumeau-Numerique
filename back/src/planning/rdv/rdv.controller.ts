@@ -42,9 +42,9 @@ export class RdvController {
     @Request() req
   ) {
     const { activiteId, startTime, endTime, userId, action } = lockCreneauDto;
-    return await this.rdvService.lockCreneauRdv(activiteId, startTime, endTime, userId, action, req.user.sessionCode);
+    const message = await this.rdvService.lockCreneauRdv(activiteId, startTime, endTime, userId, action, req.user.sessionCode);
+    return { message };
   }
-  
 
   @UseGuards(JwtAuthGuard)
   @Get()
