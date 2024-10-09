@@ -340,42 +340,91 @@ export class ActivitesComponent implements OnInit {
   }
 
   handleEventClick(event: any) {
-    this.selectedCreneau = {
-      heure: event.event.start,
-      date: event.event.end,
-      startTime: event.event.start.toISOString(),
-      endTime: event.event.end.toISOString()
+    const clickedCreneau = {
+        heure: event.event.start,
+        date: event.event.end,
+        startTime: event.event.start.toISOString(),
+        endTime: event.event.end.toISOString()
     };
-
-    console.log('handleEventClick - selectedCreneau:', this.selectedCreneau);
-
-    if (this.hasReservedCreneau[this.selectedActivity.id]) {
-      const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-      const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
-
-      const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
-      const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
-      const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
-
-      const confirmationMessage = `Vous avez déjà sélectionné un créneau. Voulez-vous remplacer votre créneau actuel par celui-ci de ${startDate} de ${startTime} à ${endTime} ?`;
-
-      const modalElement = document.getElementById('replaceConfirmationModal');
-      if (modalElement) {
-        const modal = new bootstrap.Modal(modalElement);
-        const modalBody = modalElement.querySelector('.modal-body');
-        if (modalBody) {
-          modalBody.textContent = confirmationMessage;
-        }
-        modal.show();
-      }
+    if (this.selectedCreneau && this.selectedCreneau.startTime === clickedCreneau.startTime && this.selectedCreneau.endTime === clickedCreneau.endTime) {
+        this.releaseCreneau(clickedCreneau);
     } else {
-      this.reserveCreneau();
-    }
-  }
+        this.selectedCreneau = clickedCreneau;
+        if (this.hasReservedCreneau[this.selectedActivity.id]) {
+            const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
 
+            const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
+            const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
+            const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
+
+            const confirmationMessage = `Vous avez déjà sélectionné un créneau. Voulez-vous remplacer votre créneau actuel par celui-ci de ${startDate} de ${startTime} à ${endTime} ?`;
+
+            const modalElement = document.getElementById('replaceConfirmationModal');
+            if (modalElement) {
+                const modal = new bootstrap.Modal(modalElement);
+                const modalBody = modalElement.querySelector('.modal-body');
+                if (modalBody) {
+                    modalBody.textContent = confirmationMessage;
+                }
+                modal.show();
+            }
+        } else {
+            this.reserveCreneau();
+        }
+    }
+}
+
+releaseCreneau(creneau: any): void {
+  this.rdvService.lockCreneauRdv(this.selectedActivity.id, creneau.startTime, creneau.endTime, this.userId!, 'release').subscribe(
+      response => {
+          if (response.message === 'Créneau libéré') {
+              const calendarApi = this.calendarComponent.getApi();
+              const events = calendarApi.getEvents();
+
+              const event = events.find((e: any) =>
+                  new Date(e.start).getTime() === new Date(creneau.heure).getTime() &&
+                  new Date(e.end).getTime() === new Date(creneau.date).getTime()
+              );
+              if (event) {
+                  event.setProp('backgroundColor', '');
+                  event.setProp('borderColor', '');
+                  event.setProp('classNames', []);
+              }
+              this.selectedCreneau = null;
+              this.hasReservedCreneau[this.selectedActivity.id] = false;
+
+              this.toastComponent.showToast({
+                  title: 'Succès',
+                  message: 'Le créneau a été libéré avec succès.',
+                  toastClass: 'bg-light',
+                  headerClass: 'bg-success',
+                  duration: 5000
+              });
+          } else {
+              this.toastComponent.showToast({
+                  title: 'Erreur',
+                  message: 'Erreur lors de la libération du créneau: ' + response.message,
+                  toastClass: 'bg-light',
+                  headerClass: 'bg-danger',
+                  duration: 5000
+              });
+          }
+      },
+      error => {
+          console.error('Erreur lors de la libération du créneau:', error);
+          this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors de la libération du créneau.',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger',
+              duration: 5000
+          });
+      }
+  );
+}
   saveRdvAndCloseModal(): void {
     if (this.selectedCreneau && this.selectedActivity?.id && this.userId) {
-      // Appeler la méthode validate après avoir verrouillé le créneau
       this.rdvService.lockCreneauRdv(this.selectedActivity.id, this.selectedCreneau.startTime, this.selectedCreneau.endTime, this.userId!, 'validate').subscribe(
         response => {
           if (response.message === 'Créneau validé') {
@@ -424,12 +473,8 @@ export class ActivitesComponent implements OnInit {
   }
 
   lockNewCreneau(startTime: string, endTime: string): void {
-    console.log('lockNewCreneau - startTime:', startTime, 'endTime:', endTime);
-
     this.rdvService.lockCreneauRdv(this.selectedActivity.id, startTime, endTime, this.userId!, 'lock').subscribe(
       response => {
-        console.log('lockNewCreneau - response:', response);
-
         if (response.message === 'Créneau disponible') {
           this.selectedCreneau = { startTime, endTime, heure: new Date(startTime), date: new Date(endTime) };
           this.previousCreneau = this.selectedCreneau;
@@ -506,7 +551,7 @@ export class ActivitesComponent implements OnInit {
       event.setProp('classNames', ['reserved']);
       this.hasReservedCreneau[this.selectedActivity.id] = true;
       this.previousCreneau = this.selectedCreneau;
-      this.lockNewCreneau(this.selectedCreneau.startTime, this.selectedCreneau.endTime); // Verrouiller le créneau
+      this.lockNewCreneau(this.selectedCreneau.startTime, this.selectedCreneau.endTime);
     } else {
       console.error('Event not found');
     }
@@ -633,7 +678,6 @@ export class ActivitesComponent implements OnInit {
         // mail: '', 
         statut: false
       };
-
       this.activiteService.subscribeToActivite(subscriptionData).subscribe({
         next: (response) => {
           this.toastComponent.showToast({
