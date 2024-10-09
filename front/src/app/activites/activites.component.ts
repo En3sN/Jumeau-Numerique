@@ -375,38 +375,24 @@ export class ActivitesComponent implements OnInit {
   
   saveRdvAndCloseModal(): void {
     if (this.selectedCreneau && this.selectedActivity?.id && this.userId) {
-      const rdvData = {
-        user_id: this.userId,
-        activite_id: this.selectedActivity.id,
-        date_rdv: this.selectedCreneau.startTime, // Utiliser startTime du créneau verrouillé
-        type_rdv: 'rdv_initial',
-        status: 'Demande'
-      };
-  
-      console.log('saveRdvAndCloseModal - rdvData:', rdvData);
-  
-      this.rdvService.createRdv(rdvData).subscribe(response => {
-        console.log('saveRdvAndCloseModal - response:', response);
-  
-        this.toastComponent.showToast({
-          title: 'Succès',
-          message: 'Rendez-vous enregistré avec succès.',
-          toastClass: 'bg-light',
-          headerClass: 'bg-success',
-          duration: 5000
-        });
-        this.subscriptionRequested[this.selectedActivity.id] = true;
-        this.closeSubscribeModal();
-        this.subscribeToActivity();
-      }, error => {
-        console.error('Erreur lors de l\'enregistrement du rendez-vous:', error);
-        this.toastComponent.showToast({
-          title: 'Erreur',
-          message: 'Erreur lors de l\'enregistrement du rendez-vous.',
-          toastClass: 'bg-light',
-          headerClass: 'bg-primary',
-          duration: 5000
-        });
+      this.toastComponent.showToast({
+        title: 'Succès',
+        message: 'Rendez-vous enregistré avec succès.',
+        toastClass: 'bg-light',
+        headerClass: 'bg-success',
+        duration: 5000
+      });
+      this.subscriptionRequested[this.selectedActivity.id] = true;
+      this.closeSubscribeModal();
+      this.subscribeToActivity();
+    } else {
+      console.error('Erreur: Informations manquantes pour enregistrer le rendez-vous.');
+      this.toastComponent.showToast({
+        title: 'Erreur',
+        message: 'Erreur lors de l\'enregistrement du rendez-vous. Informations manquantes.',
+        toastClass: 'bg-light',
+        headerClass: 'bg-primary',
+        duration: 5000
       });
     }
   }
