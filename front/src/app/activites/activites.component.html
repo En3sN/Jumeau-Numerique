@@ -226,9 +226,9 @@
                                 vous authentifier.
                             </span>
                         </div>
-                        <p class="mt-2">
+                        <div class="mt-2 mb-1">
                             <span *ngFor="let tag of selectedActivity?.tags" class="badge bg-info me-1">{{ tag }}</span>
-                        </p>
+                        </div>
                         <button *ngIf="showSubscribeButton" type="button" class="btn btn-primary p-2 m-1"
                             id="btActModif" (click)="openSubscribeModal()">
                             S'abonner
@@ -240,7 +240,7 @@
                             id="btActModif">
                             Se désabonner
                         </button>
-                        <button type="button" class="btn btn-primary p-2 m-1" id="btActModif"
+                        <button type="button" class="btn btn-primary mt-1 " id="btActModif"
                             (click)="navigateToServices(selectedActivity.id)">
                             Accéder aux services proposés par l'activité
                         </button>

@@ -145,6 +145,12 @@ export class ActivitesComponent implements OnInit {
       })
     );
     this.setupTabEventListeners();
+    const modalElement = document.getElementById('subscribeModal');
+    if (modalElement) {
+      modalElement.addEventListener('hidden.bs.modal', () => {
+        this.closeSubscribeModal();
+      });
+    }
   }
 
   getSubscribedActivities(): void {
@@ -185,11 +191,11 @@ export class ActivitesComponent implements OnInit {
   get showSubscribeButton(): boolean {
     return this.isUserLoggedIn && this.selectedActivity?.subscription_message === 'Vous n\'êtes pas abonné.';
   }
-  
+
   get showSubscriptionRequestedMessage(): boolean {
     return this.selectedActivity?.subscription_message === 'Une demande d\'abonnement a été faite pour cette activité.';
   }
-  
+
   get showUnsubscribeButton(): boolean {
     return this.selectedActivity?.subscription_message === 'Vous êtes abonné.';
   }
@@ -461,6 +467,7 @@ export class ActivitesComponent implements OnInit {
             duration: 5000
           });
         } else {
+          console.error('Error releasing slot:', response.message);
           this.toastComponent.showToast({
             title: 'Erreur',
             message: 'Erreur lors de la libération du créneau: ' + response.message,
@@ -471,7 +478,7 @@ export class ActivitesComponent implements OnInit {
         }
       },
       error => {
-        console.error('Erreur lors de la libération du créneau:', error);
+        console.error('Error releasing slot:', error);
         this.toastComponent.showToast({
           title: 'Erreur',
           message: 'Erreur lors de la libération du créneau.',
@@ -482,12 +489,8 @@ export class ActivitesComponent implements OnInit {
       }
     );
   }
-  
+
   saveRdvAndCloseModal(): void {
-    console.log('Selected Creneau:', this.selectedCreneau);
-    console.log('Selected Activity ID:', this.selectedActivity?.id);
-    console.log('User ID:', this.userId);
-  
     if (this.selectedActivity?.rdv && !this.selectedCreneau) {
       console.error('Erreur: Aucun créneau sélectionné.');
       this.toastComponent.showToast({
@@ -499,7 +502,7 @@ export class ActivitesComponent implements OnInit {
       });
       return;
     }
-  
+
     if (this.selectedActivity?.user_infos && !this.areAdditionalInfosCompleted()) {
       console.error('Erreur: Informations complémentaires manquantes.');
       this.toastComponent.showToast({
@@ -511,7 +514,7 @@ export class ActivitesComponent implements OnInit {
       });
       return;
     }
-  
+
     if (this.selectedActivity?.id && this.userId) {
       if (this.selectedActivity?.rdv && this.selectedCreneau) {
         this.rdvService.lockCreneauRdv(this.selectedActivity.id, this.selectedCreneau.startTime, this.selectedCreneau.endTime, this.userId!, 'validate').subscribe(
@@ -722,7 +725,7 @@ export class ActivitesComponent implements OnInit {
       });
       return;
     }
-  
+
     if (this.selectedActivity?.user_infos && !this.areAdditionalInfosCompleted()) {
       this.toastComponent.showToast({
         title: 'Erreur',
@@ -733,15 +736,15 @@ export class ActivitesComponent implements OnInit {
       });
       return;
     }
-  
+
     if (this.selectedActivity?.id && this.userId) {
       const additionalInfos: { [key: string]: string } = {};
-  
+
       for (const info of Object.keys(this.selectedActivity.user_infos)) {
         const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
         additionalInfos[info] = value;
       }
-  
+
       if (Object.keys(additionalInfos).length > 0) {
         this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
           .subscribe(response => {
@@ -779,7 +782,11 @@ export class ActivitesComponent implements OnInit {
         // mail: '', 
         statut: false
       };
-      this.activiteService.subscribeToActivite(subscriptionData).subscribe({
+      this.activiteService.subscribeToActivite(subscriptionData).pipe(
+        tap(() => {
+          this.selectedActivity.subscription_message = 'Une demande d\'abonnement a été faite pour cette activité.';
+        })
+      ).subscribe({
         next: (response) => {
           this.toastComponent.showToast({
             title: 'Succès',
@@ -806,19 +813,22 @@ export class ActivitesComponent implements OnInit {
       console.error('ID de l\'activité ou ID utilisateur manquant');
     }
   }
+
   closeSubscribeModal(): void {
+    if (this.selectedCreneau) {
+      this.releaseCreneau(this.selectedCreneau);
+    }
+
     const modalElement = document.getElementById('subscribeModal');
     if (modalElement) {
       const modalInstance = bootstrap.Modal.getInstance(modalElement);
       modalInstance?.hide();
     }
   }
-
   areAdditionalInfosCompleted(): boolean {
     if (this.selectedActivity?.user_infos) {
       for (const info of Object.keys(this.selectedActivity.user_infos)) {
         const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
-        console.log(`Info key: ${info}, value: ${value}`);
         if (!value) {
           return false;
         }
