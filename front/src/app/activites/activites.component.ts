@@ -161,8 +161,6 @@ export class ActivitesComponent implements OnInit {
                 } else {
                   activity.color = 'blue';
                 }
-                console.log('Subscribed activities:', subscribedActivity); // Log to check subscribed activities
-
                 return activity;
               });
             })
@@ -486,42 +484,83 @@ export class ActivitesComponent implements OnInit {
   }
   
   saveRdvAndCloseModal(): void {
-    if (this.selectedCreneau && this.selectedActivity?.id && this.userId) {
-      this.rdvService.lockCreneauRdv(this.selectedActivity.id, this.selectedCreneau.startTime, this.selectedCreneau.endTime, this.userId!, 'validate').subscribe(
-        response => {
-          if (response.message === 'Créneau validé') {
-            this.toastComponent.showToast({
-              title: 'Succès',
-              message: 'Rendez-vous enregistré et validé avec succès.',
-              toastClass: 'bg-light',
-              headerClass: 'bg-success',
-              duration: 5000
-            });
-            this.subscriptionRequested[this.selectedActivity.id] = true;
-            this.closeSubscribeModal();
-            this.subscribeToActivity();
-          } else {
-            console.error('Erreur: ', response.message);
+    console.log('Selected Creneau:', this.selectedCreneau);
+    console.log('Selected Activity ID:', this.selectedActivity?.id);
+    console.log('User ID:', this.userId);
+  
+    if (this.selectedActivity?.rdv && !this.selectedCreneau) {
+      console.error('Erreur: Aucun créneau sélectionné.');
+      this.toastComponent.showToast({
+        title: 'Erreur',
+        message: 'Veuillez choisir un créneau de rendez-vous avant de vous abonner.',
+        toastClass: 'bg-light',
+        headerClass: 'bg-warning',
+        duration: 5000
+      });
+      return;
+    }
+  
+    if (this.selectedActivity?.user_infos && !this.areAdditionalInfosCompleted()) {
+      console.error('Erreur: Informations complémentaires manquantes.');
+      this.toastComponent.showToast({
+        title: 'Erreur',
+        message: 'Veuillez compléter les informations complémentaires avant de vous abonner.',
+        toastClass: 'bg-light',
+        headerClass: 'bg-warning',
+        duration: 5000
+      });
+      return;
+    }
+  
+    if (this.selectedActivity?.id && this.userId) {
+      if (this.selectedActivity?.rdv && this.selectedCreneau) {
+        this.rdvService.lockCreneauRdv(this.selectedActivity.id, this.selectedCreneau.startTime, this.selectedCreneau.endTime, this.userId!, 'validate').subscribe(
+          response => {
+            if (response.message === 'Créneau validé') {
+              this.toastComponent.showToast({
+                title: 'Succès',
+                message: 'Rendez-vous enregistré et validé avec succès.',
+                toastClass: 'bg-light',
+                headerClass: 'bg-success',
+                duration: 5000
+              });
+              this.subscriptionRequested[this.selectedActivity.id] = true;
+              this.closeSubscribeModal();
+              this.subscribeToActivity();
+            } else {
+              console.error('Erreur: ', response.message);
+              this.toastComponent.showToast({
+                title: 'Erreur',
+                message: 'Erreur lors de la validation du rendez-vous: ' + response.message,
+                toastClass: 'bg-light',
+                headerClass: 'bg-danger',
+                duration: 5000
+              });
+            }
+          },
+          error => {
+            console.error('Erreur lors de la validation du créneau:', error);
             this.toastComponent.showToast({
               title: 'Erreur',
-              message: 'Erreur lors de la validation du rendez-vous: ' + response.message,
+              message: 'Erreur lors de la validation du créneau.',
               toastClass: 'bg-light',
               headerClass: 'bg-danger',
               duration: 5000
             });
           }
-        },
-        error => {
-          console.error('Erreur lors de la validation du créneau:', error);
-          this.toastComponent.showToast({
-            title: 'Erreur',
-            message: 'Erreur lors de la validation du créneau.',
-            toastClass: 'bg-light',
-            headerClass: 'bg-danger',
-            duration: 5000
-          });
-        }
-      );
+        );
+      } else {
+        this.toastComponent.showToast({
+          title: 'Succès',
+          message: 'Informations supplémentaires enregistrées avec succès.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-success',
+          duration: 5000
+        });
+        this.subscriptionRequested[this.selectedActivity.id] = true;
+        this.closeSubscribeModal();
+        this.subscribeToActivity();
+      }
     } else {
       console.error('Erreur: Informations manquantes pour enregistrer le rendez-vous.');
       this.toastComponent.showToast({
@@ -683,7 +722,7 @@ export class ActivitesComponent implements OnInit {
       });
       return;
     }
-
+  
     if (this.selectedActivity?.user_infos && !this.areAdditionalInfosCompleted()) {
       this.toastComponent.showToast({
         title: 'Erreur',
@@ -694,15 +733,15 @@ export class ActivitesComponent implements OnInit {
       });
       return;
     }
-
+  
     if (this.selectedActivity?.id && this.userId) {
       const additionalInfos: { [key: string]: string } = {};
-
+  
       for (const info of Object.keys(this.selectedActivity.user_infos)) {
         const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
         additionalInfos[info] = value;
       }
-
+  
       if (Object.keys(additionalInfos).length > 0) {
         this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
           .subscribe(response => {
@@ -779,6 +818,7 @@ export class ActivitesComponent implements OnInit {
     if (this.selectedActivity?.user_infos) {
       for (const info of Object.keys(this.selectedActivity.user_infos)) {
         const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
+        console.log(`Info key: ${info}, value: ${value}`);
         if (!value) {
           return false;
         }
