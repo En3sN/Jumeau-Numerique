@@ -123,3 +123,11 @@ body {
     background-color: #28a745 !important; 
     border-color: #28a745 !important; 
   }
+
+  .border-info {
+    border-color: rgb(51, 102, 153) !important;
+}
+
+.border-success {
+    border-color: green !important;
+}

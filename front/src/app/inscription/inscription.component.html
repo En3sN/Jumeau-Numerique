@@ -78,25 +78,4 @@
     </div>          
   </form>
 </div>
-
-<!-- Toast de confirmation -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
-    <div class="toast-header">
-      <strong class="me-auto">Succès</strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body">
-      Inscription réussie !
-    </div>
-  </div>
-  <div class="toast bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true" id="errorToast">
-    <div class="toast-header bg-danger text-white">
-      <strong class="me-auto">Erreur</strong>
-      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-    </div>
-    <div class="toast-body">
-      Le formulaire est invalide. Veuillez vérifier les champs.
-    </div>
-  </div>
-</div>
+<app-toast #toastComponent></app-toast>

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UtilisateurService } from '../Services/Utilisateur.service';
+import { ToastComponent } from 'src/app/Shared/toast/toast.component'; 
 import * as bootstrap from 'bootstrap'; 
 
 @Component({
@@ -9,7 +10,9 @@ import * as bootstrap from 'bootstrap';
   templateUrl: './inscription.component.html',
   styleUrls: ['./inscription.component.css']
 })
-export class InscriptionComponent implements OnInit {
+export class InscriptionComponent implements OnInit, AfterViewInit {
+  @ViewChild('toastComponent') toastComponent!: ToastComponent;
+
   newPasswordFieldType: string = 'password';
   confirmPasswordFieldType: string = 'password';
   inscriptionForm: FormGroup;
@@ -35,6 +38,12 @@ export class InscriptionComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStatuts();
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.toastComponent) {
+      console.error('ToastComponent is not initialized');
+    }
   }
 
   loadStatuts(): void {
@@ -65,17 +74,51 @@ export class InscriptionComponent implements OnInit {
       delete formValue.confirmPwd;
 
       this.utilisateurService.inscrireUtilisateur(formValue).subscribe(response => {
-        console.log('Inscription réussie');
-        this.showSuccessToast();  
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Inscription réussie',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+        }
+        this.router.navigate(['/login']);
       }, error => {
         if (error.status === 409) {
           this.emailInUse = true;
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Email déjà utilisé',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger',
+              duration: 5000
+            });
+          }
         } else {
           console.error('Erreur lors de l\'inscription', error);
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors de l\'inscription',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger',
+              duration: 5000
+            });
+          }
         }
       });
     } else {
-      this.showErrorToast();  
+      if (this.toastComponent) {
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Formulaire invalide',
+          toastClass: 'bg-light',
+          headerClass: 'bg-danger',
+          duration: 5000
+        });
+      }
       console.log('Formulaire invalide');
     }
   }
@@ -85,22 +128,6 @@ export class InscriptionComponent implements OnInit {
       this.newPasswordFieldType = this.newPasswordFieldType === 'password' ? 'text' : 'password';
     } else if (field === 'confirm') {
       this.confirmPasswordFieldType = this.confirmPasswordFieldType === 'password' ? 'text' : 'password';
-    }
-  }
-
-  showSuccessToast() {
-    const toastElement = document.getElementById('successToast');
-    if (toastElement) {
-      const toast = new bootstrap.Toast(toastElement);
-      toast.show();
-    }
-  }
-
-  showErrorToast() {
-    const toastElement = document.getElementById('errorToast');
-    if (toastElement) {
-      const toast = new bootstrap.Toast(toastElement);
-      toast.show();
     }
   }
 }

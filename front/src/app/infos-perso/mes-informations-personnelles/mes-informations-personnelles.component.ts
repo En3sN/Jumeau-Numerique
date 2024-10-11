@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import { UtilisateurService } from 'src/app/Services/Utilisateur.service';
-
+import { ToastComponent } from 'src/app/Shared/toast/toast.component'; 
 @Component({
   selector: 'app-mes-informations-personnelles',
   templateUrl: './mes-informations-personnelles.component.html',
   styleUrls: ['./mes-informations-personnelles.component.css']
 })
-export class MesInformationsPersonnellesComponent implements OnInit {
+export class MesInformationsPersonnellesComponent implements OnInit, AfterViewInit {
+  @ViewChild('toastComponent') toastComponent!: ToastComponent;
+
   currentPasswordFieldType: string = 'password';
   newPasswordFieldType: string = 'password';
   confirmPasswordFieldType: string = 'password';
@@ -39,6 +41,12 @@ export class MesInformationsPersonnellesComponent implements OnInit {
       this.utilisateur = data;
       this.loadStatuts();
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.toastComponent) {
+      console.error('ToastComponent is not initialized');
+    }
   }
 
   loadStatuts(): void {
@@ -79,13 +87,28 @@ export class MesInformationsPersonnellesComponent implements OnInit {
 
     this.utilisateurService.changePassword(this.currentPassword, this.newPassword).subscribe({
       next: () => {
-        console.log('Password changed successfully');
-        this.showToast('Mot de passe changé avec succès', 'success');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Mot de passe changé avec succès',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+        }
         this.closePasswordModal();
       },
       error: (err) => {
         console.error('Error changing password:', err);
-        this.showToast('Erreur lors du changement de mot de passe', 'danger');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors du changement de mot de passe',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -105,22 +128,38 @@ export class MesInformationsPersonnellesComponent implements OnInit {
     delete updateData.id;
 
     this.utilisateurService.updateUtilisateurInfo(updateData).subscribe(response => {
-      console.log('User info updated successfully');
-      this.showToast('Informations mises à jour avec succès', 'success');
+      if (this.toastComponent) {
+        this.toastComponent.showToast({
+          title: 'Succès',
+          message: 'Informations mises à jour avec succès',
+          toastClass: 'bg-light',
+          headerClass: 'bg-success',
+          duration: 5000
+        });
+      }
     }, error => {
       console.error('Error updating user info');
-      this.showToast('Erreur de mise à jour des informations', 'danger');
+      if (this.toastComponent) {
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Erreur de mise à jour des informations',
+          toastClass: 'bg-light',
+          headerClass: 'bg-danger',
+          duration: 5000
+        });
+      }
     });
   }
 
   showToast(message: string, type: 'success' | 'danger'): void {
-    const toastElement = document.getElementById('updateToast');
-    if (toastElement) {
-      toastElement.querySelector('.toast-body')!.textContent = message;
-      toastElement.classList.remove('bg-success', 'bg-danger');
-      toastElement.classList.add(`bg-${type}`);
-      const toast = new bootstrap.Toast(toastElement, { delay: 4000 });
-      toast.show();
+    if (this.toastComponent) {
+      this.toastComponent.showToast({
+        title: type === 'success' ? 'Succès' : 'Erreur',
+        message: message,
+        toastClass: 'bg-light',
+        headerClass: type === 'success' ? 'bg-success' : 'bg-danger',
+        duration: 5000
+      });
     }
   }
 }

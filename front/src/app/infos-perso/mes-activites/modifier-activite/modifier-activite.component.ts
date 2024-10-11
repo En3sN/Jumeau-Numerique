@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActiviteService } from 'src/app/Services/Activite.service';
-import { ToastService } from 'src/app/Shared/Service/toast.service';
+import { ToastComponent } from 'src/app/Shared/toast/toast.component';
 import { FilesService } from 'src/app/Services/Files.service';
 import * as bootstrap from 'bootstrap';
 
@@ -10,7 +10,9 @@ import * as bootstrap from 'bootstrap';
   templateUrl: './modifier-activite.component.html',
   styleUrls: ['./modifier-activite.component.css']
 })
-export class ModifierActiviteComponent implements OnInit {
+export class ModifierActiviteComponent implements OnInit, AfterViewInit {
+  @ViewChild('toastComponent') toastComponent!: ToastComponent;
+
   activiteId!: number;
   activiteData: any = {};
   newTag: string = '';
@@ -27,8 +29,7 @@ export class ModifierActiviteComponent implements OnInit {
     private route: ActivatedRoute,
     private activiteService: ActiviteService,
     private filesService: FilesService,
-    private router: Router,
-    private toastService: ToastService
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +38,12 @@ export class ModifierActiviteComponent implements OnInit {
       this.loadActivite();
       this.loadDocuments();
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.toastComponent) {
+      console.error('ToastComponent is not initialized');
+    }
   }
 
   loadActivite(): void {
@@ -51,6 +58,15 @@ export class ModifierActiviteComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching activity details:', err);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la récupération des détails de l\'activité.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -62,6 +78,15 @@ export class ModifierActiviteComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching documents:', err);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la récupération des documents.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -78,6 +103,15 @@ export class ModifierActiviteComponent implements OnInit {
       error: (err) => {
         console.error('Error loading logo:', err);
         this.activiteData.logoUrl = null;
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors du chargement du logo.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -88,11 +122,27 @@ export class ModifierActiviteComponent implements OnInit {
       this.activiteService.uploadLogo(this.activiteId, file).subscribe({
         next: () => {
           this.loadLogo();
-          this.toastService.showToast('Succès', 'Logo téléchargé avec succès', 'toast', 'bg-info text-white');
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Logo téléchargé avec succès',
+              toastClass: 'bg-light',
+              headerClass: 'bg-info text-white',
+              duration: 5000
+            });
+          }
         },
         error: (err) => {
           console.error('Error uploading logo:', err);
-          this.toastService.showToast('Erreur', 'Erreur lors du téléchargement du logo', 'toast', 'bg-danger text-white');
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors du téléchargement du logo',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger text-white',
+              duration: 5000
+            });
+          }
         }
       });
     }
@@ -102,11 +152,27 @@ export class ModifierActiviteComponent implements OnInit {
     this.activiteService.deleteLogo(this.activiteId).subscribe({
       next: () => {
         this.activiteData.logoUrl = null;
-        this.toastService.showToast('Succès', 'Logo supprimé avec succès', 'toast', 'bg-info text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Logo supprimé avec succès',
+            toastClass: 'bg-light',
+            headerClass: 'bg-info text-white',
+            duration: 5000
+          });
+        }
       },
       error: (err) => {
         console.error('Error deleting logo:', err);
-        this.toastService.showToast('Erreur', 'Erreur lors de la suppression du logo', 'toast', 'bg-danger text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la suppression du logo',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger text-white',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -141,15 +207,40 @@ export class ModifierActiviteComponent implements OnInit {
       this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
         next: (response) => {
           console.log('Activity updated successfully:');
-          this.toastService.showToast('Succès', 'Mise à jour des données réussie', 'toast', 'bg-info text-white');
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Mise à jour des données réussie',
+              toastClass: 'bg-light',
+              headerClass: 'bg-info text-white',
+              duration: 5000
+            });
+          }
         },
         error: (err) => {
           console.error('Error updating activity:', err);
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors de la mise à jour de l\'activité',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger text-white',
+              duration: 5000
+            });
+          }
         }
       });
     } catch (e) {
       console.error('Error preparing data for update:', e);
-      this.toastService.showToast('Erreur', 'Une erreur est survenue lors de la mise à jour des données', 'toast', 'bg-danger text-white');
+      if (this.toastComponent) {
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Une erreur est survenue lors de la mise à jour des données',
+          toastClass: 'bg-light',
+          headerClass: 'bg-danger text-white',
+          duration: 5000
+        });
+      }
     }
   }
 
@@ -238,11 +329,27 @@ export class ModifierActiviteComponent implements OnInit {
     this.filesService.uploadDocuments(formData, this.activiteId).subscribe({
       next: (res: any) => {
         this.loadDocuments();
-        this.toastService.showToast('Succès', 'Fichiers téléchargés avec succès', 'toast', 'bg-info text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Fichiers téléchargés avec succès',
+            toastClass: 'bg-light',
+            headerClass: 'bg-info text-white',
+            duration: 5000
+          });
+        }
       },
       error: (err: any) => {
         console.error('Error uploading files:', err);
-        this.toastService.showToast('Erreur', 'Erreur lors du téléchargement des fichiers', 'toast', 'bg-danger text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors du téléchargement des fichiers',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger text-white',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -268,11 +375,27 @@ export class ModifierActiviteComponent implements OnInit {
     this.filesService.deleteDocument(documentId).subscribe({
       next: () => {
         this.loadDocuments();
-        this.toastService.showToast('Succès', 'Document supprimé avec succès', 'toast', 'bg-info text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Document supprimé avec succès',
+            toastClass: 'bg-light',
+            headerClass: 'bg-info text-white',
+            duration: 5000
+          });
+        }
       },
       error: (err) => {
         console.error('Error deleting document:', err);
-        this.toastService.showToast('Erreur', 'Erreur lors de la suppression du document', 'toast', 'bg-danger text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la suppression du document',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger text-white',
+            duration: 5000
+          });
+        }
       }
     });
   }

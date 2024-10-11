@@ -57,7 +57,6 @@ export class ActiviteService {
     });
   }
 
-  
   async findAllPublic(queryParams: any): Promise<any[]> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       let query = `
@@ -103,6 +102,36 @@ export class ActiviteService {
     });
   }
 
+  async findAllSubscribed(userId: number): Promise<any[]> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      let query = `
+        SELECT a.*, o.nom as organisation_nom,
+        CASE
+          WHEN aa.statut IS NULL THEN 'blue'
+          WHEN aa.statut = false THEN 'blue'
+          WHEN aa.statut = true THEN 'green'
+        END as color,
+        CASE
+          WHEN aa.statut = false THEN 'Une demande d''abonnement a été faite pour cette activité.'
+          WHEN aa.statut = true THEN 'Vous êtes abonné.'
+          WHEN aa.statut IS NULL THEN 'Vous n''êtes pas abonné.'
+          ELSE ''
+        END as subscription_message
+      `;
+
+      query += `
+        FROM services.activite a
+        JOIN security.organisation o ON a.organisation = o.id
+        LEFT JOIN services.activite_abonnement aa ON aa.activite_id = a.id AND aa.user_id = $1
+        WHERE a.public = true
+      `;
+      const values = [userId];
+      console.log('Query:', query);
+      console.log('Values:', values); 
+      return manager.query(query, values);
+    });
+  }
+
   async findUserActivities(sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const query = `
@@ -113,12 +142,12 @@ export class ActiviteService {
         WHERE u.id = (SELECT security.get_user_from_code($1));
       `;
       const result = await manager.query(query, [sessionCode]);
-      console.log('Activities from DB:', result); 
+      console.log('Activities from DB:', result);
       return result;
     }, sessionCode);
   }
 
-   async subscribeToActivite(subscriptionData: { userId: number, activiteId: number, mail?: string }, sessionCode: string): Promise<any> {
+  async subscribeToActivite(subscriptionData: { userId: number, activiteId: number, mail?: string }, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const { userId, activiteId, mail } = subscriptionData;
 
@@ -149,7 +178,7 @@ export class ActiviteService {
     }, sessionCode);
   }
 
-  
+
 
   async findOne(id: number, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
@@ -196,7 +225,7 @@ export class ActiviteService {
       return result[0];
     }, sessionCode);
   }
-  
+
 
   async update(id: number, updateActiviteDto: UpdateActiviteDto, sessionCode: string): Promise<Activite> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {

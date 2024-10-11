@@ -1,12 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { OrganisationService } from 'src/app/Services/Organisation.service';
+import { ToastComponent } from 'src/app/Shared/toast/toast.component';
 
 @Component({
   selector: 'app-mon-organisation',
   templateUrl: './mon-organisation.component.html',
   styleUrls: ['./mon-organisation.component.css']
 })
-export class MonOrganisationComponent implements OnInit {
+export class MonOrganisationComponent implements OnInit, AfterViewInit {
+  @ViewChild('toastComponent') toastComponent!: ToastComponent;
+
   organisation: any = {};
   hasOrganisation: boolean = false;
   logoFile: File | null = null;
@@ -15,6 +18,12 @@ export class MonOrganisationComponent implements OnInit {
 
   ngOnInit(): void {
     this.getOrganisation();
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.toastComponent) {
+      console.error('ToastComponent is not initialized');
+    }
   }
 
   getOrganisation(): void {
@@ -32,6 +41,15 @@ export class MonOrganisationComponent implements OnInit {
       },
       (error) => {
         console.error('Error fetching organisation data', error);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la récupération des données de l\'organisation.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
         this.hasOrganisation = false;
       }
     );
@@ -89,21 +107,55 @@ export class MonOrganisationComponent implements OnInit {
     if (this.hasOrganisation) {
       this.organisationService.updateOrganisation(this.organisation.id, formData).subscribe(
         (response) => {
-          console.log('Organisation mise à jour avec succès:', response);
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Organisation mise à jour avec succès',
+              toastClass: 'bg-light',
+              headerClass: 'bg-info text-white',
+              duration: 5000
+            });
+          }
         },
         (error) => {
           console.error('Erreur lors de la mise à jour de l\'organisation:', error);
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors de la mise à jour de l\'organisation',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger text-white',
+              duration: 5000
+            });
+          }
         }
       );
     } else {
       this.organisationService.createOrganisation(formData).subscribe(
         (response) => {
-          console.log('Organisation créée avec succès:', response);
           this.hasOrganisation = true;
           this.organisation.id = response.id;
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Organisation créée avec succès',
+              toastClass: 'bg-light',
+              headerClass: 'bg-info text-white',
+              duration: 5000
+            });
+          }
         },
         (error) => {
           console.error('Erreur lors de la création de l\'organisation:', error);
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors de la création de l\'organisation',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger text-white',
+              duration: 5000
+            });
+          }
         }
       );
     }

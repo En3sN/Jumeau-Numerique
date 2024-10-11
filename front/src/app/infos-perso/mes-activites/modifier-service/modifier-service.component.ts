@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ServicesService } from 'src/app/Services/Services.service';
-import { ToastService } from 'src/app/Shared/Service/toast.service';
+import { ToastComponent } from 'src/app/Shared/toast/toast.component'; // Mettez à jour le chemin si nécessaire
 import { FilesService } from 'src/app/Services/Files.service';
 import * as bootstrap from 'bootstrap';
 
@@ -10,7 +10,9 @@ import * as bootstrap from 'bootstrap';
   templateUrl: './modifier-service.component.html',
   styleUrls: ['./modifier-service.component.css']
 })
-export class ModifierServiceComponent implements OnInit {
+export class ModifierServiceComponent implements OnInit, AfterViewInit {
+  @ViewChild('toastComponent') toastComponent!: ToastComponent;
+
   serviceId!: number;
   serviceData: any = { tags: [], documents: [] };
   newTag: string = '';
@@ -25,8 +27,7 @@ export class ModifierServiceComponent implements OnInit {
     private route: ActivatedRoute,
     private servicesService: ServicesService,
     private filesService: FilesService,
-    private router: Router,
-    private toastService: ToastService
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +38,13 @@ export class ModifierServiceComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    // Vérifiez si le toastComponent est défini après la vue initiale
+    if (!this.toastComponent) {
+      console.error('ToastComponent is not initialized');
+    }
+  }
+
   loadService(): void {
     this.servicesService.findOne(this.serviceId).subscribe({
       next: (data: any) => {
@@ -45,6 +53,15 @@ export class ModifierServiceComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error fetching service details:', err);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la récupération des détails du service.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -57,6 +74,15 @@ export class ModifierServiceComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error fetching documents:', err);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la récupération des documents.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -77,6 +103,15 @@ export class ModifierServiceComponent implements OnInit {
       error: (err: any) => {
         console.error('Error loading logo:', err);
         this.serviceData.logoUrl = null;
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors du chargement du logo.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -138,15 +173,40 @@ export class ModifierServiceComponent implements OnInit {
         if (this.logoFile) {
           this.servicesService.updateLogo(this.serviceId, this.logoFile).subscribe({
             next: () => {
-              this.toastService.showToast('Succès', 'Service et logo mis à jour avec succès', 'toast', 'bg-info text-white');
+              if (this.toastComponent) {
+                this.toastComponent.showToast({
+                  title: 'Succès',
+                  message: 'Service et logo mis à jour avec succès',
+                  toastClass: 'bg-light',
+                  headerClass: 'bg-success',
+                  duration: 5000
+                });
+              }
               this.loadLogo();
             },
             error: (err: any) => {
               console.error('Error updating logo:', err);
+              if (this.toastComponent) {
+                this.toastComponent.showToast({
+                  title: 'Erreur',
+                  message: 'Erreur lors de la mise à jour du logo.',
+                  toastClass: 'bg-light',
+                  headerClass: 'bg-danger',
+                  duration: 5000
+                });
+              }
             }
           });
         } else {
-          this.toastService.showToast('Succès', 'Service mis à jour avec succès', 'toast', 'bg-info text-white');
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Service mis à jour avec succès',
+              toastClass: 'bg-light',
+              headerClass: 'bg-success',
+              duration: 5000
+            });
+          }
         }
 
         if (this.documentFiles.length > 0) {
@@ -154,18 +214,44 @@ export class ModifierServiceComponent implements OnInit {
           this.documentFiles.forEach(file => formData.append('files', file));
           this.filesService.uploadDocumentsForService(formData, this.serviceId).subscribe({
             next: () => {
-              this.toastService.showToast('Succès', 'Documents mis à jour avec succès', 'toast', 'bg-info text-white');
+              if (this.toastComponent) {
+                this.toastComponent.showToast({
+                  title: 'Succès',
+                  message: 'Documents mis à jour avec succès',
+                  toastClass: 'bg-light',
+                  headerClass: 'bg-success',
+                  duration: 5000
+                });
+              }
               this.documentFiles = [];
               this.loadDocuments();
             },
             error: (err: any) => {
               console.error('Error updating documents:', err);
+              if (this.toastComponent) {
+                this.toastComponent.showToast({
+                  title: 'Erreur',
+                  message: 'Erreur lors de la mise à jour des documents.',
+                  toastClass: 'bg-light',
+                  headerClass: 'bg-danger',
+                  duration: 5000
+                });
+              }
             }
           });
         }
       },
       error: (err: any) => {
         console.error('Error updating service:', err);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la mise à jour du service.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -202,11 +288,27 @@ export class ModifierServiceComponent implements OnInit {
     this.filesService.deleteDocument(documentId).subscribe({
       next: () => {
         this.loadDocuments();
-        this.toastService.showToast('Succès', 'Document supprimé avec succès', 'toast', 'bg-info text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Document supprimé avec succès',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+        }
       },
       error: (err: any) => {
         console.error('Error deleting document:', err);
-        this.toastService.showToast('Erreur', 'Erreur lors de la suppression du document', 'toast', 'bg-danger text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la suppression du document',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -224,6 +326,15 @@ export class ModifierServiceComponent implements OnInit {
         },
         error: (err: any) => {
           console.error('Error downloading document:', err);
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors du téléchargement du document.',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger',
+              duration: 5000
+            });
+          }
         }
       });
     } else {
@@ -251,6 +362,15 @@ export class ModifierServiceComponent implements OnInit {
       },
       error: (err: any) => {
         console.error('Error downloading all documents:', err);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors du téléchargement de tous les documents.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }

@@ -16,6 +16,13 @@ export class ActiviteController {
   async findAllPublic(@Query() queryParams: any): Promise<any[]> {
     return await this.activiteService.findAllPublic(queryParams);
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('subscribed')
+  async findAllSubscribed(@Request() req): Promise<any[]> {
+    const userId = req.user.id;
+    console.log('User ID:', userId); // Ajoutez ce log pour vérifier l'ID de l'utilisateur
+    return this.activiteService.findAllSubscribed(userId);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')

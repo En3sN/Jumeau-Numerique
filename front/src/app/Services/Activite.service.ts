@@ -57,4 +57,8 @@ export class ActiviteService {
   subscribeToActivite(subscriptionData: { userId: number, activiteId: number, mail?: string, statut: boolean }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/activite/subscribe`, subscriptionData, { withCredentials: true });
   }
+
+  getSubscribedActivities(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/activite/subscribed`, { withCredentials: true });
+  }
 }

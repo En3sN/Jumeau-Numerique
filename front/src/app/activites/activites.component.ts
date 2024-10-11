@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { ActiviteService } from '../Services/Activite.service';
 import { FormControl } from '@angular/forms';
-import { Observable, combineLatest } from 'rxjs';
-import { debounceTime, startWith, switchMap, map } from 'rxjs/operators';
+import { Observable, combineLatest, of } from 'rxjs';
+import { debounceTime, startWith, switchMap, map, tap } from 'rxjs/operators';
 import { FilesService } from '../Services/Files.service';
 import { AuthService } from '../Services/Auth.service';
 import { RdvService } from '../Services/Rdv.service';
@@ -16,6 +16,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import { ToastComponent } from '../Shared/toast/toast.component';
+import { OrganisationService } from '../Services/Organisation.service';
 
 @Component({
   selector: 'app-activites',
@@ -44,6 +45,8 @@ export class ActivitesComponent implements OnInit {
   currentStartDate: Date = new Date();
   creneaux: any[] = [];
   confirmationMessage: string = '';
+  organisation: any;
+  selectedOrganisationId: number | null = null;
 
   filters: any = {
     nom: '',
@@ -81,23 +84,32 @@ export class ActivitesComponent implements OnInit {
     private filesService: FilesService,
     private router: Router,
     private authService: AuthService,
-    private rdvService: RdvService
+    private rdvService: RdvService,
+    private organisationService: OrganisationService,
   ) { }
 
   ngOnInit(): void {
-    this.authService.isLoggedIn().subscribe((isLoggedIn: boolean) => {
-      this.isUserLoggedIn = isLoggedIn;
-    });
-    this.authService.getUserStatus().subscribe({
-      next: (user) => {
-        if (user) {
-          this.userId = user.id;
+    this.authService.isLoggedIn().pipe(
+      tap((isLoggedIn: boolean) => {
+        this.isUserLoggedIn = isLoggedIn;
+        if (isLoggedIn) {
+          this.authService.getUserStatus().subscribe({
+            next: (user) => {
+              if (user) {
+                this.userId = user.id;
+                this.getSubscribedActivities();
+              }
+            },
+            error: (error: any) => {
+              console.error('Erreur lors de la récupération du statut utilisateur :', error);
+            }
+          });
+        } else {
+          this.getSubscribedActivities();
         }
-      },
-      error: (error: any) => {
-        console.error('Erreur lors de la récupération du statut utilisateur :', error);
-      }
-    });
+      })
+    ).subscribe();
+
     this.publicActivities$ = combineLatest([
       this.nomFilter.valueChanges.pipe(startWith(this.nomFilter.value)),
       this.typeFilter.valueChanges.pipe(startWith(this.typeFilter.value)),
@@ -133,6 +145,41 @@ export class ActivitesComponent implements OnInit {
       })
     );
     this.setupTabEventListeners();
+  }
+
+  getSubscribedActivities(): void {
+    if (this.isUserLoggedIn) {
+      this.activiteService.getSubscribedActivities().subscribe(
+        (activities) => {
+          this.publicActivities$ = this.publicActivities$.pipe(
+            map((publicActivities) => {
+              return publicActivities.map((activity) => {
+                const subscribedActivity = activities.find((a) => a.id === activity.id);
+                if (subscribedActivity) {
+                  activity.color = subscribedActivity.color;
+                  activity.subscription_message = subscribedActivity.subscription_message;
+                } else {
+                  activity.color = 'blue'; // Default color for non-subscribed activities
+                }
+                return activity;
+              });
+            })
+          );
+        },
+        (error) => {
+          console.error('Error fetching subscribed activities:', error);
+        }
+      );
+    } else {
+      this.publicActivities$ = this.publicActivities$.pipe(
+        map((publicActivities) => {
+          return publicActivities.map((activity) => {
+            activity.color = 'blue'; // Default color for non-subscribed activities
+            return activity;
+          });
+        })
+      );
+    }
   }
 
   handleDatesSet(arg: any): void {
@@ -765,5 +812,59 @@ releaseCreneau(creneau: any): void {
       this.additionalInfos.push({ ...this.newInfo });
       this.newInfo = { key: '', value: '' };
     }
+  }
+
+  openOrganisationInfo(organisationId: number, event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+  
+    // Convert organisationId to a number to handle potential invalid values
+    const validOrganisationId = Number(organisationId);
+  
+    if (isNaN(validOrganisationId)) {
+      console.error('Invalid organisation ID:', organisationId);
+      return;
+    }
+  
+    this.selectedOrganisationId = validOrganisationId;
+    this.loadOrganisationInfo();
+  }
+  
+  loadOrganisationInfo(): void {
+    if (this.selectedOrganisationId) {
+      this.organisationService.getOrganisationById(this.selectedOrganisationId).subscribe({
+        next: (organisation) => {
+          this.organisation = organisation;
+          if (organisation.logo && organisation.logo.type === 'Buffer') {
+            this.loadOrganisationLogo(organisation.logo);
+          } else {
+            console.error('Le logo de l\'organisation n\'est pas un Blob valide:', organisation.logo);
+          }
+          this.showOrganisationOffcanvas();
+        },
+        error: (err) => {
+          console.error('Erreur lors du chargement des informations de l\'organisation:', err);
+        }
+      });
+    }
+  }
+  
+  loadOrganisationLogo(logoBuffer: any): void {
+    if (logoBuffer && logoBuffer.type === 'Buffer' && Array.isArray(logoBuffer.data)) {
+      const blob = new Blob([new Uint8Array(logoBuffer.data)], { type: 'image/png' });
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.organisation.logoUrl = e.target.result;
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      console.error('Le logo fourni n\'est pas un Buffer valide:', logoBuffer);
+    }
+  }
+  
+  showOrganisationOffcanvas(): void {
+    const offcanvasElement = document.getElementById('offcanvasOrganisation1') as HTMLElement;
+    const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
+    offcanvasInstance.show();
   }
 }

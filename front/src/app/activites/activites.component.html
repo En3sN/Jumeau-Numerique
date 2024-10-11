@@ -249,9 +249,10 @@
 
                 <div class="d-flex flex-wrap overflow-auto mt-2">
                     <div *ngFor="let activity of publicActivities$ | async" class="p-1 col-6">
-                        <div class="card border-2 border-info" type="button" (click)="selectActivity(activity)"
-                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasActivite"
-                            aria-controls="offcanvasActivite">
+                        <div class="card border-2"
+                            [ngClass]="{'border-info': activity.color === 'blue', 'border-success': activity.color === 'green'}"
+                            type="button" (click)="selectActivity(activity)" data-bs-toggle="offcanvas"
+                            data-bs-target="#offcanvasActivite" aria-controls="offcanvasActivite">
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-2">
@@ -266,7 +267,11 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <p class="card-text">
-                                            organisme : <a href="#">{{ activity.organisation_nom }}</a>
+                                            Organisme :
+                                            <a href="#offcanvasOrganisation1"
+                                                (click)="openOrganisationInfo(activity.organisation_id, $event)">
+                                                {{ activity.organisation_nom }}
+                                            </a>
                                         </p>
                                         <p>
                                             <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag
@@ -294,30 +299,37 @@
             <div class="modal-body">
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation" *ngIf="selectedActivity?.rdv">
-                        <button class="nav-link" [ngClass]="{'active': selectedActivity?.rdv}" id="rdv-tab" data-bs-toggle="tab" data-bs-target="#rdv"
-                            type="button" role="tab" aria-controls="rdv" aria-selected="true">Rendez-vous</button>
+                        <button class="nav-link" [ngClass]="{'active': selectedActivity?.rdv}" id="rdv-tab"
+                            data-bs-toggle="tab" data-bs-target="#rdv" type="button" role="tab" aria-controls="rdv"
+                            aria-selected="true">Rendez-vous</button>
                     </li>
                     <li class="nav-item" role="presentation"
                         *ngIf="selectedActivity?.user_infos && (selectedActivity?.user_infos | keyvalue).length > 0">
-                        <button class="nav-link" [ngClass]="{'active': !selectedActivity?.rdv && selectedActivity?.user_infos}" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button"
-                            role="tab" aria-controls="info" aria-selected="false">Informations complémentaires</button>
+                        <button class="nav-link"
+                            [ngClass]="{'active': !selectedActivity?.rdv && selectedActivity?.user_infos}" id="info-tab"
+                            data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info"
+                            aria-selected="false">Informations complémentaires</button>
                     </li>
                     <li class="nav-item" role="presentation"
                         *ngIf="selectedActivity?.prerequis && (selectedActivity?.prerequis | keyvalue).length > 0">
-                        <button class="nav-link" [ngClass]="{'active': !selectedActivity?.rdv && !selectedActivity?.user_infos && selectedActivity?.prerequis}" id="docs-tab" data-bs-toggle="tab" data-bs-target="#docs" type="button"
-                            role="tab" aria-controls="docs" aria-selected="false">Élément à fournir</button>
+                        <button class="nav-link"
+                            [ngClass]="{'active': !selectedActivity?.rdv && !selectedActivity?.user_infos && selectedActivity?.prerequis}"
+                            id="docs-tab" data-bs-toggle="tab" data-bs-target="#docs" type="button" role="tab"
+                            aria-controls="docs" aria-selected="false">Élément à fournir</button>
                     </li>
                 </ul>
                 <div class="tab-content mt-3" id="myTabContent">
-                    <div class="tab-pane fade" [ngClass]="{'show active': selectedActivity?.rdv}" id="rdv" role="tabpanel" aria-labelledby="rdv-tab"
-                        *ngIf="selectedActivity?.rdv">
+                    <div class="tab-pane fade" [ngClass]="{'show active': selectedActivity?.rdv}" id="rdv"
+                        role="tabpanel" aria-labelledby="rdv-tab" *ngIf="selectedActivity?.rdv">
                         <div class="mt-3 mb-3 text-center">
                             <h1><u>Réservez un créneau de rendez-vous initial</u></h1>
                         </div>
                         <full-calendar #calendar [options]="calendarOptions"
                             (eventClick)="handleEventClick($event)"></full-calendar>
                     </div>
-                    <div class="tab-pane fade" [ngClass]="{'show active': !selectedActivity?.rdv && selectedActivity?.user_infos}" id="info" role="tabpanel" aria-labelledby="info-tab"
+                    <div class="tab-pane fade"
+                        [ngClass]="{'show active': !selectedActivity?.rdv && selectedActivity?.user_infos}" id="info"
+                        role="tabpanel" aria-labelledby="info-tab"
                         *ngIf="selectedActivity?.user_infos && (selectedActivity?.user_infos | keyvalue).length > 0">
                         <h3>
                             <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
@@ -337,7 +349,9 @@
                         </form>
                     </div>
 
-                    <div class="tab-pane fade" [ngClass]="{'show active': !selectedActivity?.rdv && !selectedActivity?.user_infos && selectedActivity?.prerequis}" id="docs" role="tabpanel" aria-labelledby="docs-tab"
+                    <div class="tab-pane fade"
+                        [ngClass]="{'show active': !selectedActivity?.rdv && !selectedActivity?.user_infos && selectedActivity?.prerequis}"
+                        id="docs" role="tabpanel" aria-labelledby="docs-tab"
                         *ngIf="selectedActivity?.prerequis && (selectedActivity?.prerequis | keyvalue).length > 0">
                         <div>
                             <div class="d-flex justify-content-start align-items-center">
@@ -357,31 +371,16 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" (click)="onSubmitInfoForm()">S'abonner</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button *ngIf="isUserLoggedIn && !selectedActivity?.subscription_message" type="button"
+                    class="btn btn-primary" (click)="onSubmitInfoForm()">
+                    S'abonner
+                </button>
+
+                <span *ngIf="selectedActivity?.subscription_message" class="text-success">
+                    {{ selectedActivity.subscription_message }}
+                </span> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
             <app-toast></app-toast>
-        </div>
-    </div>
-</div>
-
-<!-- Modal de confirmation -->
-<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmationModalLabel">Confirmation de réservation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Voulez-vous réserver ce créneau de {{ selectedCreneau?.heure }} à {{ selectedCreneau?.date }} ?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-                    (click)="cancelCreneauSelection()">Annuler</button>
-                <button type="button" class="btn btn-primary" (click)="reserveCreneau()">Réserver</button>
-            </div>
         </div>
     </div>
 </div>
@@ -403,6 +402,77 @@
                     (click)="cancelCreneauSelection()">Annuler</button>
                 <button type="button" class="btn btn-primary" (click)="confirmReplaceCreneau()">Remplacer</button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Offcanvas pour les informations de l'organisation -->
+<div class="offcanvas offcanvas-start custom-offcanvas-width" tabindex="-1" id="offcanvasOrganisation"
+    aria-labelledby="offcanvasOrganisationLabel">
+    <div class="offcanvas-header bg-light">
+        <h5 class="offcanvas-title text-center w-100" id="offcanvasOrganisationLabel">Informations de l'Organisation
+        </h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <div *ngIf="organisation">
+            <div class="text-center mb-4">
+                <img [src]="organisation.logoUrl" class="img-fluid rounded-circle border" alt="logo"
+                    style="max-width: 130px;">
+            </div>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Nom</h6>
+                        <p class="mb-0">{{ organisation.nom }}</p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Activité</h6>
+                        <p class="mb-0">{{ organisation.activite }}</p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Email</h6>
+                        <p class="mb-0">{{ organisation.email }}</p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Site WEB</h6>
+                        <p class="mb-0"><a [href]="organisation.web" target="_blank">{{ organisation.web }}</a></p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Siret</h6>
+                        <p class="mb-0">{{ organisation.siret }}</p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Descriptif</h6>
+                        <p class="mb-0">{{ organisation.descriptif }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Adresse</h6>
+                        <p class="mb-0">{{ organisation.adresse }}</p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Code postal</h6>
+                        <p class="mb-0">{{ organisation.cp }}</p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Téléphone</h6>
+                        <p class="mb-0">{{ organisation.tel }}</p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Commune</h6>
+                        <p class="mb-0">{{ organisation.commune }}</p>
+                    </div>
+                    <div class="p-3 border bg-light rounded text-center">
+                        <h6 class="fw-bold mb-2">Commentaire</h6>
+                        <p class="mb-0">{{ organisation.commentaire }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="!organisation" class="d-flex justify-content-center align-items-center" style="height: 100%;">
+            <p>Chargement des informations...</p>
         </div>
     </div>
 </div>
