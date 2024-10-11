@@ -61,4 +61,5 @@ export class ActiviteService {
   getSubscribedActivities(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/activite/subscribed`, { withCredentials: true });
   }
+  
 }

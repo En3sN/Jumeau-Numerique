@@ -229,17 +229,17 @@
                         <p class="mt-2">
                             <span *ngFor="let tag of selectedActivity?.tags" class="badge bg-info me-1">{{ tag }}</span>
                         </p>
-
-                        <button *ngIf="isUserLoggedIn && !subscriptionRequested[selectedActivity?.id]" type="button"
-                            class="btn btn-primary p-2 m-1" id="btActModif" (click)="openSubscribeModal()">
+                        <button *ngIf="showSubscribeButton" type="button" class="btn btn-primary p-2 m-1"
+                            id="btActModif" (click)="openSubscribeModal()">
                             S'abonner
                         </button>
-
-                        <span *ngIf="subscriptionRequested[selectedActivity?.id]" class="text-success">
+                        <span *ngIf="showSubscriptionRequestedMessage" class="text-success">
                             Une demande d'abonnement a été faite pour cette activité.
                         </span>
-
-                        <button type="button" class="btn btn-primary p-2 m-1" id="btActModif">Se désabonner</button>
+                        <button *ngIf="showUnsubscribeButton" type="button" class="btn btn-primary p-2 m-1"
+                            id="btActModif">
+                            Se désabonner
+                        </button>
                         <button type="button" class="btn btn-primary p-2 m-1" id="btActModif"
                             (click)="navigateToServices(selectedActivity.id)">
                             Accéder aux services proposés par l'activité
@@ -371,14 +371,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button *ngIf="isUserLoggedIn && !selectedActivity?.subscription_message" type="button"
-                    class="btn btn-primary" (click)="onSubmitInfoForm()">
+                <button type="button" class="btn btn-primary" (click)="onSubmitInfoForm()">
                     S'abonner
                 </button>
-
-                <span *ngIf="selectedActivity?.subscription_message" class="text-success">
-                    {{ selectedActivity.subscription_message }}
-                </span> <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
             <app-toast></app-toast>
         </div>

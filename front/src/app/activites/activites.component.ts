@@ -159,8 +159,10 @@ export class ActivitesComponent implements OnInit {
                   activity.color = subscribedActivity.color;
                   activity.subscription_message = subscribedActivity.subscription_message;
                 } else {
-                  activity.color = 'blue'; // Default color for non-subscribed activities
+                  activity.color = 'blue';
                 }
+                console.log('Subscribed activities:', subscribedActivity); // Log to check subscribed activities
+
                 return activity;
               });
             })
@@ -174,12 +176,24 @@ export class ActivitesComponent implements OnInit {
       this.publicActivities$ = this.publicActivities$.pipe(
         map((publicActivities) => {
           return publicActivities.map((activity) => {
-            activity.color = 'blue'; // Default color for non-subscribed activities
+            activity.color = 'blue';
             return activity;
           });
         })
       );
     }
+  }
+
+  get showSubscribeButton(): boolean {
+    return this.isUserLoggedIn && this.selectedActivity?.subscription_message === 'Vous n\'êtes pas abonné.';
+  }
+  
+  get showSubscriptionRequestedMessage(): boolean {
+    return this.selectedActivity?.subscription_message === 'Une demande d\'abonnement a été faite pour cette activité.';
+  }
+  
+  get showUnsubscribeButton(): boolean {
+    return this.selectedActivity?.subscription_message === 'Vous êtes abonné.';
   }
 
   handleDatesSet(arg: any): void {
@@ -388,88 +402,89 @@ export class ActivitesComponent implements OnInit {
 
   handleEventClick(event: any) {
     const clickedCreneau = {
-        heure: event.event.start,
-        date: event.event.end,
-        startTime: event.event.start.toISOString(),
-        endTime: event.event.end.toISOString()
+      heure: event.event.start,
+      date: event.event.end,
+      startTime: event.event.start.toISOString(),
+      endTime: event.event.end.toISOString()
     };
     if (this.selectedCreneau && this.selectedCreneau.startTime === clickedCreneau.startTime && this.selectedCreneau.endTime === clickedCreneau.endTime) {
-        this.releaseCreneau(clickedCreneau);
+      this.releaseCreneau(clickedCreneau);
     } else {
-        this.selectedCreneau = clickedCreneau;
-        if (this.hasReservedCreneau[this.selectedActivity.id]) {
-            const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
+      this.selectedCreneau = clickedCreneau;
+      if (this.hasReservedCreneau[this.selectedActivity.id]) {
+        const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
 
-            const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
-            const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
-            const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
+        const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
+        const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
+        const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
 
-            const confirmationMessage = `Vous avez déjà sélectionné un créneau. Voulez-vous remplacer votre créneau actuel par celui-ci de ${startDate} de ${startTime} à ${endTime} ?`;
+        const confirmationMessage = `Vous avez déjà sélectionné un créneau. Voulez-vous remplacer votre créneau actuel par celui-ci de ${startDate} de ${startTime} à ${endTime} ?`;
 
-            const modalElement = document.getElementById('replaceConfirmationModal');
-            if (modalElement) {
-                const modal = new bootstrap.Modal(modalElement);
-                const modalBody = modalElement.querySelector('.modal-body');
-                if (modalBody) {
-                    modalBody.textContent = confirmationMessage;
-                }
-                modal.show();
-            }
-        } else {
-            this.reserveCreneau();
-        }
-    }
-}
-
-releaseCreneau(creneau: any): void {
-  this.rdvService.lockCreneauRdv(this.selectedActivity.id, creneau.startTime, creneau.endTime, this.userId!, 'release').subscribe(
-      response => {
-          if (response.message === 'Créneau libéré') {
-              const calendarApi = this.calendarComponent.getApi();
-              const events = calendarApi.getEvents();
-
-              const event = events.find((e: any) =>
-                  new Date(e.start).getTime() === new Date(creneau.heure).getTime() &&
-                  new Date(e.end).getTime() === new Date(creneau.date).getTime()
-              );
-              if (event) {
-                  event.setProp('backgroundColor', '');
-                  event.setProp('borderColor', '');
-                  event.setProp('classNames', []);
-              }
-              this.selectedCreneau = null;
-              this.hasReservedCreneau[this.selectedActivity.id] = false;
-
-              this.toastComponent.showToast({
-                  title: 'Succès',
-                  message: 'Le créneau a été libéré avec succès.',
-                  toastClass: 'bg-light',
-                  headerClass: 'bg-success',
-                  duration: 5000
-              });
-          } else {
-              this.toastComponent.showToast({
-                  title: 'Erreur',
-                  message: 'Erreur lors de la libération du créneau: ' + response.message,
-                  toastClass: 'bg-light',
-                  headerClass: 'bg-danger',
-                  duration: 5000
-              });
+        const modalElement = document.getElementById('replaceConfirmationModal');
+        if (modalElement) {
+          const modal = new bootstrap.Modal(modalElement);
+          const modalBody = modalElement.querySelector('.modal-body');
+          if (modalBody) {
+            modalBody.textContent = confirmationMessage;
           }
+          modal.show();
+        }
+      } else {
+        this.reserveCreneau();
+      }
+    }
+  }
+
+  releaseCreneau(creneau: any): void {
+    this.rdvService.lockCreneauRdv(this.selectedActivity.id, creneau.startTime, creneau.endTime, this.userId!, 'release').subscribe(
+      response => {
+        if (response.message === 'Créneau libéré') {
+          const calendarApi = this.calendarComponent.getApi();
+          const events = calendarApi.getEvents();
+
+          const event = events.find((e: any) =>
+            new Date(e.start).getTime() === new Date(creneau.heure).getTime() &&
+            new Date(e.end).getTime() === new Date(creneau.date).getTime()
+          );
+          if (event) {
+            event.setProp('backgroundColor', '');
+            event.setProp('borderColor', '');
+            event.setProp('classNames', []);
+          }
+          this.selectedCreneau = null;
+          this.hasReservedCreneau[this.selectedActivity.id] = false;
+
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Le créneau a été libéré avec succès.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+        } else {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la libération du créneau: ' + response.message,
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       },
       error => {
-          console.error('Erreur lors de la libération du créneau:', error);
-          this.toastComponent.showToast({
-              title: 'Erreur',
-              message: 'Erreur lors de la libération du créneau.',
-              toastClass: 'bg-light',
-              headerClass: 'bg-danger',
-              duration: 5000
-          });
+        console.error('Erreur lors de la libération du créneau:', error);
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Erreur lors de la libération du créneau.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-danger',
+          duration: 5000
+        });
       }
-  );
-}
+    );
+  }
+  
   saveRdvAndCloseModal(): void {
     if (this.selectedCreneau && this.selectedActivity?.id && this.userId) {
       this.rdvService.lockCreneauRdv(this.selectedActivity.id, this.selectedCreneau.startTime, this.selectedCreneau.endTime, this.userId!, 'validate').subscribe(
@@ -817,19 +832,19 @@ releaseCreneau(creneau: any): void {
   openOrganisationInfo(organisationId: number, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-  
+
     // Convert organisationId to a number to handle potential invalid values
     const validOrganisationId = Number(organisationId);
-  
+
     if (isNaN(validOrganisationId)) {
       console.error('Invalid organisation ID:', organisationId);
       return;
     }
-  
+
     this.selectedOrganisationId = validOrganisationId;
     this.loadOrganisationInfo();
   }
-  
+
   loadOrganisationInfo(): void {
     if (this.selectedOrganisationId) {
       this.organisationService.getOrganisationById(this.selectedOrganisationId).subscribe({
@@ -848,7 +863,7 @@ releaseCreneau(creneau: any): void {
       });
     }
   }
-  
+
   loadOrganisationLogo(logoBuffer: any): void {
     if (logoBuffer && logoBuffer.type === 'Buffer' && Array.isArray(logoBuffer.data)) {
       const blob = new Blob([new Uint8Array(logoBuffer.data)], { type: 'image/png' });
@@ -861,7 +876,7 @@ releaseCreneau(creneau: any): void {
       console.error('Le logo fourni n\'est pas un Buffer valide:', logoBuffer);
     }
   }
-  
+
   showOrganisationOffcanvas(): void {
     const offcanvasElement = document.getElementById('offcanvasOrganisation1') as HTMLElement;
     const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
