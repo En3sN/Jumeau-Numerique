@@ -377,7 +377,14 @@ export class ActivitesComponent implements OnInit {
         this.resizeCalendarOnTabChange();
       }
     } else {
-      alert("Abonnement en cours...");
+      this.toastComponent.showToast({
+        title: 'Information',
+        message: 'Abonnement en cours...',
+        toastClass: 'bg-light',
+        headerClass: 'bg-info',
+        duration: 5000
+      });
+      this.subscribeToActivity();
     }
   }
 
@@ -782,6 +789,7 @@ export class ActivitesComponent implements OnInit {
         // mail: '', 
         statut: false
       };
+
       this.activiteService.subscribeToActivite(subscriptionData).pipe(
         tap(() => {
           this.selectedActivity.subscription_message = 'Une demande d\'abonnement a été faite pour cette activité.';
@@ -797,6 +805,7 @@ export class ActivitesComponent implements OnInit {
           });
           this.subscriptionRequested[this.selectedActivity.id] = true;
           this.closeSubscribeModal();
+          this.getSubscribedActivities();
         },
         error: (error) => {
           console.error('Erreur lors de l\'abonnement à l\'activité :', error);
