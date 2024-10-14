@@ -465,12 +465,16 @@ loadRecurrentCreneaux(activiteId: number, semaine: number, year: number): void {
       const typeCreneau = this.getTypeCreneauFromElement(info.draggedEl, info.draggedEl.getAttribute('data-type-creneau') || undefined);
       const color = this.getColorForTypeCreneau(typeCreneau);
   
+      // Calculer la date de fin en ajoutant 1 heure à la date de début
+      const dateDebut = new Date(info.dateStr);
+      const dateFin = new Date(dateDebut.getTime() + 60 * 60 * 1000);
+  
       const createCreneauDto = {
         user_id: this.userId,
         activite_id: this.activite.id,
         type_creneau: typeCreneau,
-        date_debut: info.dateStr,
-        date_fin: info.dateStr
+        date_debut: dateDebut.toISOString(),
+        date_fin: dateFin.toISOString()
       };
   
       this.creneauAdminService.create(createCreneauDto).subscribe({
