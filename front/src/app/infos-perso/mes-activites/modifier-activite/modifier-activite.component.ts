@@ -4,6 +4,7 @@ import { ActiviteService } from 'src/app/Services/Activite.service';
 import { ToastComponent } from 'src/app/Shared/toast/toast.component';
 import { FilesService } from 'src/app/Services/Files.service';
 import * as bootstrap from 'bootstrap';
+import { RdvDurationService } from 'src/app/Shared/Service/rdv-duration.service';
 
 @Component({
   selector: 'app-modifier-activite',
@@ -29,7 +30,8 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
     private route: ActivatedRoute,
     private activiteService: ActiviteService,
     private filesService: FilesService,
-    private router: Router
+    private router: Router,
+    private rdvDurationService: RdvDurationService
   ) {}
 
   ngOnInit(): void {
@@ -191,9 +193,10 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
 
   updateActivite(): void {
     try {
+      this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
       this.activiteData.user_infos = this.rebuildObject(this.userInfosKeys, this.activiteData.user_infos);
       this.activiteData.prerequis = this.rebuildObject(this.prerequisKeys, this.activiteData.prerequis);
-
+  
       const updateData = { 
         ...this.activiteData, 
         user_infos: JSON.stringify(this.activiteData.user_infos), 
@@ -203,7 +206,7 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
       delete updateData.organisation_nom;
       delete updateData.logo;
       delete updateData.logoUrl;
-
+  
       this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
         next: (response) => {
           console.log('Activity updated successfully:');
@@ -445,5 +448,9 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
 
   removeTag(index: number) {
     this.activiteData.tags.splice(index, 1);
+  }
+
+  checkRdvDuree(): void {
+    this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
   }
 }

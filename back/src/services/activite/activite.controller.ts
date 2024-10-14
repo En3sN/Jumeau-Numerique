@@ -87,6 +87,11 @@ async create(
     if (!sessionCode) {
       throw new Error('Session code is missing from the JWT payload.');
     }
+  
+    if (updateActiviteDto.rdv_duree < 30) {
+      throw new Error('La durée du rendez-vous initial ne peut pas être inférieure à 30 minutes.');
+    }
+  
     return await this.activiteService.update(id, updateActiviteDto, sessionCode);
   }
 

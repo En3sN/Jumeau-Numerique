@@ -7,6 +7,7 @@ import { ToastService } from 'src/app/Shared/Service/toast.service';
 import { FilesService } from 'src/app/Services/Files.service';
 import { OrganisationService } from 'src/app/Services/Organisation.service';
 import { ToastComponent } from 'src/app/Shared/toast/toast.component';
+import { RdvDurationService } from 'src/app/Shared/Service/rdv-duration.service';
 
 @Component({
   selector: 'app-mes-activites',
@@ -58,7 +59,8 @@ export class MesActivitesComponent implements OnInit {
     private organisationService: OrganisationService,
     private router: Router,
     private toastService: ToastService,
-    private filesService: FilesService
+    private filesService: FilesService,
+    private rdvDurationService: RdvDurationService
   ) { }
 
   ngOnInit(): void {
@@ -108,6 +110,7 @@ export class MesActivitesComponent implements OnInit {
   }
 
   createActivity(): void {
+    this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
     const { logoUrl, ...createActiviteDto } = this.activiteData;
     createActiviteDto.Id = this.userId;
   
@@ -495,5 +498,9 @@ confirmDelete(): void {
     const offcanvasElement = document.getElementById('offcanvasOrganisation') as HTMLElement;
     const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
     offcanvasInstance.show();
+  }
+
+  checkRdvDuree(): void {
+    this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
   }
 }

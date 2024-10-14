@@ -198,7 +198,7 @@
                   <label class="col-form-label col-form-label-sm mt-2" for="inputActRdvBody">Corps du mail pour la demande de rendez-vous:</label>
                   <textarea [(ngModel)]="activiteData.mail_rdv" class="form-control form-control-sm" id="inputActRdvBody" rows="3"></textarea>
                   <label class="col-form-label col-form-label-sm mt-2" for="inputActRdvDuree">Durée du rendez-vous initial (en minutes):</label>
-                  <input [(ngModel)]="activiteData.rdv_duree" type="number" class="form-control form-control-sm" id="inputActRdvDuree">
+<input [(ngModel)]="activiteData.rdv_duree" type="number" class="form-control form-control-sm" id="inputActRdvDuree" min="30" (change)="checkRdvDuree()">
                 </div>
               </div>
 
