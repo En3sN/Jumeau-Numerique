@@ -268,14 +268,12 @@
                                     <div class="col-12">
                                         <p class="card-text">
                                             Organisme :
-                                            <a href="#offcanvasOrganisation1"
-                                                (click)="openOrganisationInfo(activity.organisation_id, $event)">
+                                            <a href="#offcanvasOrganisation" (click)="openOrganisationInfo(activity.organisation_id, $event)">
                                                 {{ activity.organisation_nom }}
                                             </a>
                                         </p>
                                         <p>
-                                            <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag
-                                                }}</span>
+                                            <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag }}</span>
                                         </p>
                                     </div>
                                 </div>

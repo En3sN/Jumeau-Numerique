@@ -29,19 +29,19 @@ export class ActiviteService {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const activite = new Activite();
       Object.assign(activite, createActiviteDto);
-
+  
       if (createActiviteDto.logo) {
         activite.logo = createActiviteDto.logo.buffer;
       }
-
+  
       const savedActivite = await manager.save(activite);
-
+  
       if (createActiviteDto.documents && createActiviteDto.documents.length > 0) {
         const documents = createActiviteDto.documents.map(file => {
           const iv = crypto.randomBytes(16);
           const cipher = crypto.createCipheriv('aes-256-ctr', this.cryptoSecretKey, iv);
           const encryptedData = Buffer.concat([cipher.update(file.buffer), cipher.final()]);
-
+  
           const document = new Document();
           document.titre = file.originalname;
           document.mimetype = file.mimetype;
@@ -52,7 +52,16 @@ export class ActiviteService {
         });
         await manager.save(documents);
       }
-
+  
+      const activiteAdmin = {
+        user_id: createActiviteDto.Id, 
+        activite_id: savedActivite.id
+      };
+      await manager.query(
+        'INSERT INTO services.activite_admin (user_id, activite_id) VALUES ($1, $2)',
+        [activiteAdmin.user_id, activiteAdmin.activite_id]
+      );
+  
       return savedActivite;
     });
   }

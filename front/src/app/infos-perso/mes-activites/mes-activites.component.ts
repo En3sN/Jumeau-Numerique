@@ -6,6 +6,7 @@ import { ActiviteService } from 'src/app/Services/Activite.service';
 import { ToastService } from 'src/app/Shared/Service/toast.service';
 import { FilesService } from 'src/app/Services/Files.service';
 import { OrganisationService } from 'src/app/Services/Organisation.service';
+import { ToastComponent } from 'src/app/Shared/toast/toast.component';
 
 @Component({
   selector: 'app-mes-activites',
@@ -14,6 +15,7 @@ import { OrganisationService } from 'src/app/Services/Organisation.service';
 })
 export class MesActivitesComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('toastComponent') toastComponent!: ToastComponent;
 
   showConfirmationToast: boolean = false;
   hasPermission: boolean = false;
@@ -57,7 +59,7 @@ export class MesActivitesComponent implements OnInit {
     private router: Router,
     private toastService: ToastService,
     private filesService: FilesService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadUtilisateurInfo();
@@ -107,22 +109,73 @@ export class MesActivitesComponent implements OnInit {
 
   createActivity(): void {
     const { logoUrl, ...createActiviteDto } = this.activiteData;
+    createActiviteDto.Id = this.userId;
+  
     this.activiteService.createActivite(createActiviteDto).subscribe({
       next: (res: any) => {
         const activiteId = res.id;
+        this.loadUserActivities();
+        this.hideCreateActivityModal();
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Activité créée avec succès.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+        }
         if (this.logoFile) {
           this.uploadLogoFile(activiteId);
         }
         if (this.documents.length > 0) {
           this.uploadDocumentsToActivity(activiteId);
         }
-        this.loadUserActivities();
-        this.hideCreateActivityModal();
-        this.toastService.showToast('Succès', 'Activité créée avec succès.', 'toast', 'bg-success text-white');
       },
       error: (err) => {
         console.error('Erreur lors de la création de l\'activité:', err);
-        this.toastService.showToast('Erreur', 'Erreur lors de la création de l\'activité.', 'toast', 'bg-danger text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la création de l\'activité.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
+      }
+    });
+  }
+  
+  uploadDocumentsToActivity(activiteId: number): void {
+    const formData: FormData = new FormData();
+    this.documents.forEach(file => {
+      formData.append('files', file, file.name);
+    });
+    this.filesService.uploadDocuments(formData, activiteId).subscribe({
+      next: () => {
+        this.loadUserActivities();
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Documents téléchargés avec succès.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors du téléchargement des documents:', err);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors du téléchargement des documents.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -132,16 +185,31 @@ export class MesActivitesComponent implements OnInit {
       this.activiteService.uploadLogo(activiteId, this.logoFile).subscribe({
         next: () => {
           this.loadUserActivities();
-          this.toastService.showToast('Succès', 'Logo téléchargé avec succès.', 'toast', 'bg-success text-white');
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Logo téléchargé avec succès.',
+              toastClass: 'bg-light',
+              headerClass: 'bg-success',
+              duration: 5000
+            });
+          }
         },
         error: (err) => {
           console.error('Erreur lors du téléchargement du logo:', err);
-          this.toastService.showToast('Erreur', 'Erreur lors du téléchargement du logo.', 'toast', 'bg-danger text-white');
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors du téléchargement du logo.',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger',
+              duration: 5000
+            });
+          }
         }
       });
     }
   }
-
   uploadLogo(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -175,32 +243,31 @@ export class MesActivitesComponent implements OnInit {
     }
   }
 
-  uploadDocumentsToActivity(activiteId: number): void {
-    const formData: FormData = new FormData();
-    this.documents.forEach(file => {
-      formData.append('files', file, file.name);
-    });
-    this.filesService.uploadDocuments(formData, activiteId).subscribe({
-      next: () => {
-        this.loadUserActivities();
-        this.toastService.showToast('Succès', 'Documents téléchargés avec succès.', 'toast', 'bg-success text-white');
-      },
-      error: (err) => {
-        console.error('Erreur lors du téléchargement des documents:', err);
-        this.toastService.showToast('Erreur', 'Erreur lors du téléchargement des documents.', 'toast', 'bg-danger text-white');
-      }
-    });
-  }
-
   deleteDocument(documentId: number) {
     this.filesService.deleteDocument(documentId).subscribe({
       next: () => {
         this.loadUserActivities();
-        this.toastService.showToast('Succès', 'Document supprimé avec succès.', 'toast', 'bg-info text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Document supprimé avec succès.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-info',
+            duration: 5000
+          });
+        }
       },
       error: (err) => {
         console.error('Erreur lors de la suppression du document:', err);
-        this.toastService.showToast('Erreur', 'Erreur lors de la suppression du document.', 'toast', 'bg-danger text-white');
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la suppression du document.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
       }
     });
   }
@@ -271,14 +338,20 @@ export class MesActivitesComponent implements OnInit {
       console.error('L\'ID utilisateur est nul');
       return;
     }
-
     this.utilisateurService.hasOrganisation().subscribe({
       next: (response) => {
         if (!response.hasOrganisation) {
-          this.toastService.showToast('Erreur', 'Veuillez renseigner votre organisme avant de faire une demande d\'activation.', 'toast', 'bg-danger text-white');
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Veuillez renseigner votre organisme avant de faire une demande d\'activation.',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger',
+              duration: 5000
+            });
+          }
           return;
         }
-
         const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
         const modalInstance = new bootstrap.Modal(modalElement);
         modalInstance.show();
@@ -333,29 +406,47 @@ export class MesActivitesComponent implements OnInit {
     modalInstance.show();
   }
 
-  confirmDelete(): void {
-    if (this.activityToDelete !== null) {
-      this.activiteService.supprimerActivite(this.activityToDelete).subscribe({
-        next: () => {
-          this.userActivities = this.userActivities.filter(activity => activity.id !== this.activityToDelete);
-          this.activityToDelete = null;
-          const modalElement = document.getElementById('confirmationModal') as HTMLElement;
-          const modalInstance = bootstrap.Modal.getInstance(modalElement);
-          modalInstance?.hide();
-        },
-        error: (err: any) => {
-          console.error('Erreur lors de la suppression de l\'activité:', err);
+confirmDelete(): void {
+  if (this.activityToDelete !== null) {
+    this.activiteService.supprimerActivite(this.activityToDelete).subscribe({
+      next: () => {
+        this.userActivities = this.userActivities.filter(activity => activity.id !== this.activityToDelete);
+        this.activityToDelete = null;
+        const modalElement = document.getElementById('confirmationModal') as HTMLElement;
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        modalInstance?.hide();
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Activité supprimée avec succès.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
         }
-      });
-    }
+      },
+      error: (err: any) => {
+        console.error('Erreur lors de la suppression de l\'activité:', err);
+        if (this.toastComponent) {
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la suppression de l\'activité.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
+      }
+    });
   }
+}
 
   viewDetails(id: number) {
     this.router.navigate(['/details-activite', id]);
   }
 
   openOrganisationInfo(organisationId: number, event: MouseEvent): void {
-    event.preventDefault(); 
+    event.preventDefault();
     event.stopPropagation();
 
 

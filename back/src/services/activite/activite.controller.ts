@@ -16,11 +16,12 @@ export class ActiviteController {
   async findAllPublic(@Query() queryParams: any): Promise<any[]> {
     return await this.activiteService.findAllPublic(queryParams);
   }
+
   @UseGuards(JwtAuthGuard)
   @Get('subscribed')
   async findAllSubscribed(@Request() req): Promise<any[]> {
     const userId = req.user.id;
-    console.log('User ID:', userId); // Ajoutez ce log pour vérifier l'ID de l'utilisateur
+    console.log('User ID:', userId); 
     return this.activiteService.findAllSubscribed(userId);
   }
 
@@ -45,22 +46,24 @@ export class ActiviteController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('create')
-  @HttpCode(HttpStatus.CREATED)
-  @UseInterceptors(FilesInterceptor('documents'), FileInterceptor('logo'))
-  async create(
-    @Body() createActiviteDto: CreateActiviteDto,
-    @UploadedFiles() documents: Express.Multer.File[],
-    @UploadedFile() logo: Express.Multer.File
-  ): Promise<any> {
-    if (logo) {
-      createActiviteDto.logo = logo;
-    }
-    if (documents && documents.length > 0) {
-      createActiviteDto.documents = documents;
-    }
-    return await this.activiteService.create(createActiviteDto);
+@Post('create')
+@HttpCode(HttpStatus.CREATED)
+@UseInterceptors(FilesInterceptor('documents'), FileInterceptor('logo'))
+async create(
+  @Body() createActiviteDto: CreateActiviteDto,
+  @UploadedFiles() documents: Express.Multer.File[],
+  @UploadedFile() logo: Express.Multer.File,
+  @Request() req: any 
+): Promise<any> {
+  if (logo) {
+    createActiviteDto.logo = logo;
   }
+  if (documents && documents.length > 0) {
+    createActiviteDto.documents = documents;
+  }
+  createActiviteDto.Id = req.user.id;
+  return await this.activiteService.create(createActiviteDto);
+}
 
   @UseGuards(JwtAuthGuard)
   @Post('subscribe')

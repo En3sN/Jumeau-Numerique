@@ -2,8 +2,8 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UtilisateurService } from '../Services/Utilisateur.service';
-import { ToastComponent } from 'src/app/Shared/toast/toast.component'; 
-import * as bootstrap from 'bootstrap'; 
+import { ToastComponent } from 'src/app/Shared/toast/toast.component';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-inscription',
@@ -83,7 +83,6 @@ export class InscriptionComponent implements OnInit, AfterViewInit {
             duration: 5000
           });
         }
-        this.router.navigate(['/login']);
       }, error => {
         if (error.status === 409) {
           this.emailInUse = true;

@@ -1,6 +1,10 @@
 import { IsString, IsNotEmpty, IsOptional, IsArray, IsNumber, IsBoolean } from 'class-validator';
 
 export class CreateActiviteDto {
+  @IsNumber()
+  @IsNotEmpty()
+  Id: number; 
+
   @IsString()
   @IsNotEmpty()
   nom: string;

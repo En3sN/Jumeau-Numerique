@@ -251,11 +251,12 @@ export class ActivitesComponent implements OnInit {
       .filter(([key, value]) => value && (Array.isArray(value) ? value.length : true))
       .map(([key, value]) => ({ key, value }));
   }
-
   loadPublicActivities(): void {
     this.publicActivities$ = this.activiteService.getPublicActivities(this.filters).pipe(
       map((activities: any[]) => {
         return activities.map(activity => {
+          console.log('Activity:', activity);
+  
           if (activity.logo) {
             this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
               const reader = new FileReader();
@@ -891,16 +892,16 @@ export class ActivitesComponent implements OnInit {
   openOrganisationInfo(organisationId: number, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-
-    // Convert organisationId to a number to handle potential invalid values
-    const validOrganisationId = Number(organisationId);
-
-    if (isNaN(validOrganisationId)) {
+  
+    // Ajoutez ce log pour vérifier l'ID de l'organisation passé
+    console.log('Organisation ID:', organisationId);
+  
+    if (!organisationId) {
       console.error('Invalid organisation ID:', organisationId);
       return;
     }
-
-    this.selectedOrganisationId = validOrganisationId;
+  
+    this.selectedOrganisationId = organisationId;
     this.loadOrganisationInfo();
   }
 
@@ -937,7 +938,7 @@ export class ActivitesComponent implements OnInit {
   }
 
   showOrganisationOffcanvas(): void {
-    const offcanvasElement = document.getElementById('offcanvasOrganisation1') as HTMLElement;
+    const offcanvasElement = document.getElementById('offcanvasOrganisation') as HTMLElement;
     const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
     offcanvasInstance.show();
   }
