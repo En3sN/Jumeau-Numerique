@@ -294,4 +294,23 @@ export class ActiviteService {
     }
     return activite.logo;
   }
+
+  async unsubscribeFromActivite(userId: number, activiteId: number): Promise<void> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      await manager.query(
+        'DELETE FROM planning.rdv WHERE user_id = $1 AND activite_id = $2',
+        [userId, activiteId]
+      );
+  
+      await manager.query(
+        'DELETE FROM services.activite_abonnement WHERE user_id = $1 AND activite_id = $2',
+        [userId, activiteId]
+      );
+  
+      await manager.query(
+        'DELETE FROM services.activite_prerequis WHERE user_id = $1 AND activite_id = $2',
+        [userId, activiteId]
+      );
+    });
+  }
 }

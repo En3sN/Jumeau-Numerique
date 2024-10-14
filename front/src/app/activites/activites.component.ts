@@ -256,7 +256,7 @@ export class ActivitesComponent implements OnInit {
       map((activities: any[]) => {
         return activities.map(activity => {
           console.log('Activity:', activity);
-  
+
           if (activity.logo) {
             this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
               const reader = new FileReader();
@@ -892,15 +892,11 @@ export class ActivitesComponent implements OnInit {
   openOrganisationInfo(organisationId: number, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-  
-    // Ajoutez ce log pour vérifier l'ID de l'organisation passé
-    console.log('Organisation ID:', organisationId);
-  
     if (!organisationId) {
       console.error('Invalid organisation ID:', organisationId);
       return;
     }
-  
+
     this.selectedOrganisationId = organisationId;
     this.loadOrganisationInfo();
   }
@@ -941,5 +937,49 @@ export class ActivitesComponent implements OnInit {
     const offcanvasElement = document.getElementById('offcanvasOrganisation') as HTMLElement;
     const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
     offcanvasInstance.show();
+  }
+
+  openUnsubscribeModal(): void {
+    const modalElement = document.getElementById('unsubscribeModal');
+    if (modalElement) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+  }
+
+  confirmUnsubscribe(): void {
+    if (this.selectedActivity?.id) {
+      this.activiteService.unsubscribeFromActivite(this.selectedActivity.id).subscribe({
+        next: (res) => {
+          this.toastComponent.showToast({
+            title: 'Succès',
+            message: 'Vous vous êtes désabonné avec succès de l\'activité.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-success',
+            duration: 5000
+          });
+          this.getSubscribedActivities();
+          this.closeUnsubscribeModal();
+        },
+        error: (err) => {
+          console.error('Erreur lors du désabonnement:', err);
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors du désabonnement.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
+      });
+    }
+  }
+  
+  closeUnsubscribeModal(): void {
+    const modalElement = document.getElementById('unsubscribeModal');
+    if (modalElement) {
+      const modalInstance = bootstrap.Modal.getInstance(modalElement);
+      modalInstance?.hide();
+    }
   }
 }

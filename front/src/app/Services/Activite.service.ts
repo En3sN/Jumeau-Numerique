@@ -62,4 +62,7 @@ export class ActiviteService {
     return this.http.get<any[]>(`${this.apiUrl}/activite/subscribed`, { withCredentials: true });
   }
   
+  unsubscribeFromActivite(activiteId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/activite/unsubscribe/${activiteId}`, { withCredentials: true });
+  }
 }

@@ -190,8 +190,7 @@
                             *ngIf="selectedActivity?.user_infos && (selectedActivity?.user_infos | keyvalue).length > 0">
                             <div class="d-flex justify-content-start align-items-center">
                                 <h3>
-                                    <i aria-hidden="true"
-                                        class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                                    <i aria-hidden="true"class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
                                 </h3>
                                 Des informations complémentaires seront demandées lors de l'inscription :
                             </div>
@@ -205,8 +204,7 @@
                         <div *ngIf="selectedActivity?.prerequis && (selectedActivity?.prerequis | keyvalue).length > 0">
                             <div class="d-flex justify-content-start align-items-center">
                                 <h3>
-                                    <i aria-hidden="true"
-                                        class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                                    <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
                                 </h3>
                                 Élément à fournir pour valider l'abonnement :
                             </div>
@@ -218,8 +216,7 @@
                         </div>
                         <div class="d-flex justify-content-start align-items-center" *ngIf="!isUserLoggedIn">
                             <h3>
-                                <i aria-hidden="true"
-                                    class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
+                                <i aria-hidden="true" class="fa fa-exclamation-triangle align-middle m-2 text-warning"></i>
                             </h3>
                             <span>
                                 Pour pouvoir bénéficier de cette activité, veuillez vous inscrire sur la plateforme ou
@@ -229,18 +226,18 @@
                         <div class="mt-2 mb-1">
                             <span *ngFor="let tag of selectedActivity?.tags" class="badge bg-info me-1">{{ tag }}</span>
                         </div>
-                        <button *ngIf="showSubscribeButton" type="button" class="btn btn-primary p-2 m-1"
+                        <button *ngIf="showSubscribeButton" type="button" class="btn btn-primary mt-1 p-2 me-1"
                             id="btActModif" (click)="openSubscribeModal()">
                             S'abonner
                         </button>
                         <span *ngIf="showSubscriptionRequestedMessage" class="text-success">
                             Une demande d'abonnement a été faite pour cette activité.
                         </span>
-                        <button *ngIf="showUnsubscribeButton" type="button" class="btn btn-primary p-2 m-1"
-                            id="btActModif">
+                        <button *ngIf="showUnsubscribeButton" type="button" class="btn btn-primary mt-1 p-2 me-1"
+                            id="btActModif" (click)="openUnsubscribeModal()">
                             Se désabonner
                         </button>
-                        <button type="button" class="btn btn-primary mt-1 " id="btActModif"
+                        <button type="button" class="btn btn-primary mt-1 p-2" id="btActModif"
                             (click)="navigateToServices(selectedActivity.id)">
                             Accéder aux services proposés par l'activité
                         </button>
@@ -268,12 +265,14 @@
                                     <div class="col-12">
                                         <p class="card-text">
                                             Organisme :
-                                            <a href="#offcanvasOrganisation" (click)="openOrganisationInfo(activity.organisation_id, $event)">
+                                            <a href="#offcanvasOrganisation"
+                                                (click)="openOrganisationInfo(activity.organisation_id, $event)">
                                                 {{ activity.organisation_nom }}
                                             </a>
                                         </p>
                                         <p>
-                                            <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag }}</span>
+                                            <span *ngFor="let tag of activity.tags" class="badge bg-info me-1">{{ tag
+                                                }}</span>
                                         </p>
                                     </div>
                                 </div>
@@ -395,6 +394,26 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
                     (click)="cancelCreneauSelection()">Annuler</button>
                 <button type="button" class="btn btn-primary" (click)="confirmReplaceCreneau()">Remplacer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmation de Désabonnement -->
+<div class="modal fade" id="unsubscribeModal" tabindex="-1" aria-labelledby="unsubscribeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="unsubscribeModalLabel">Confirmation de Désabonnement<i aria-hidden="true"class="fa fa-exclamation-triangle align-middle m-2 text-red" style="color:red"></i></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir vous désabonner de cette activité ? Toutes vos données associées seront
+                supprimées.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" (click)="confirmUnsubscribe()">Confirmer</button>
             </div>
         </div>
     </div>

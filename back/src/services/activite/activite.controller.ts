@@ -21,7 +21,7 @@ export class ActiviteController {
   @Get('subscribed')
   async findAllSubscribed(@Request() req): Promise<any[]> {
     const userId = req.user.id;
-    console.log('User ID:', userId); 
+    console.log('User ID:', userId);
     return this.activiteService.findAllSubscribed(userId);
   }
 
@@ -46,24 +46,48 @@ export class ActiviteController {
   }
 
   @UseGuards(JwtAuthGuard)
-@Post('create')
-@HttpCode(HttpStatus.CREATED)
-@UseInterceptors(FilesInterceptor('documents'), FileInterceptor('logo'))
-async create(
-  @Body() createActiviteDto: CreateActiviteDto,
-  @UploadedFiles() documents: Express.Multer.File[],
-  @UploadedFile() logo: Express.Multer.File,
-  @Request() req: any 
-): Promise<any> {
-  if (logo) {
-    createActiviteDto.logo = logo;
+  @Get(':id/all-services')
+  async getServicesByActiviteId(@Param('id') id: number, @Request() req): Promise<any> {
+    const sessionCode = req.user.sessionCode;
+    return this.activiteService.findAllServicesByActiviteId(id, sessionCode);
   }
-  if (documents && documents.length > 0) {
-    createActiviteDto.documents = documents;
+
+  @UseGuards(JwtAuthGuard)
+  @Get(':id/service')
+  async getServiceById(@Param('id') id: number, @Request() req): Promise<any> {
+    const sessionCode = req.user.sessionCode;
+    return this.activiteService.findServiceById(id, sessionCode);
   }
-  createActiviteDto.Id = req.user.id;
-  return await this.activiteService.create(createActiviteDto);
-}
+
+  @Get('logo/:id')
+  async getLogo(@Param('id') id: number, @Res() res: Response) {
+    const logo = await this.activiteService.getLogo(id);
+    if (!logo) {
+      throw new NotFoundException('Logo non trouvé');
+    }
+    res.setHeader('Content-Type', 'image/jpeg');
+    res.send(logo);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('create')
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FilesInterceptor('documents'), FileInterceptor('logo'))
+  async create(
+    @Body() createActiviteDto: CreateActiviteDto,
+    @UploadedFiles() documents: Express.Multer.File[],
+    @UploadedFile() logo: Express.Multer.File,
+    @Request() req: any
+  ): Promise<any> {
+    if (logo) {
+      createActiviteDto.logo = logo;
+    }
+    if (documents && documents.length > 0) {
+      createActiviteDto.documents = documents;
+    }
+    createActiviteDto.Id = req.user.id;
+    return await this.activiteService.create(createActiviteDto);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('subscribe')
@@ -80,6 +104,13 @@ async create(
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('logo/:id')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadLogo(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) {
+    return this.activiteService.uploadLogo(id, file.buffer);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async update(@Param('id') id: number, @Body() updateActiviteDto: UpdateActiviteDto, @Request() req): Promise<any> {
@@ -87,11 +118,11 @@ async create(
     if (!sessionCode) {
       throw new Error('Session code is missing from the JWT payload.');
     }
-  
+
     if (updateActiviteDto.rdv_duree < 30) {
       throw new Error('La durée du rendez-vous initial ne peut pas être inférieure à 30 minutes.');
     }
-  
+
     return await this.activiteService.update(id, updateActiviteDto, sessionCode);
   }
 
@@ -108,38 +139,20 @@ async create(
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get(':id/all-services')
-  async getServicesByActiviteId(@Param('id') id: number, @Request() req): Promise<any> {
-    const sessionCode = req.user.sessionCode;
-    return this.activiteService.findAllServicesByActiviteId(id, sessionCode);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get(':id/service')
-  async getServiceById(@Param('id') id: number, @Request() req): Promise<any> {
-    const sessionCode = req.user.sessionCode;
-    return this.activiteService.findServiceById(id, sessionCode);
-  }
-  @UseGuards(JwtAuthGuard)
-  @Post('logo/:id')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadLogo(@Param('id') id: number, @UploadedFile() file: Express.Multer.File) {
-    return this.activiteService.uploadLogo(id, file.buffer);
-  }
-
-  @UseGuards(JwtAuthGuard)
   @Delete('logo/:id')
   async deleteLogo(@Param('id') id: number) {
     return this.activiteService.deleteLogo(id);
   }
 
-  @Get('logo/:id')
-  async getLogo(@Param('id') id: number, @Res() res: Response) {
-    const logo = await this.activiteService.getLogo(id);
-    if (!logo) {
-      throw new NotFoundException('Logo non trouvé');
-    }
-    res.setHeader('Content-Type', 'image/jpeg');
-    res.send(logo);
+  @UseGuards(JwtAuthGuard)
+  @Delete('unsubscribe/:activiteId')
+  @HttpCode(HttpStatus.OK)
+  async unsubscribeFromActivite(
+    @Param('activiteId') activiteId: number,
+    @Request() req
+  ): Promise<any> {
+    const userId = req.user.id;
+    await this.activiteService.unsubscribeFromActivite(userId, activiteId);
+    return { message: 'Désabonnement réussi et données supprimées.' };
   }
 }
