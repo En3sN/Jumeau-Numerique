@@ -89,13 +89,13 @@
                 demandées :</label>
               <select multiple class="form-select" id="inputActInfo">
                 <option *ngFor="let info of activite?.user_infos | keyvalue">
-                  {{ info.key }}: {{ info.value }}
+                  - {{ info.key }}: {{ info.value }}
                 </option>
               </select>
               <label class="col-form-label mt-2">Éléments à fournir :</label>
               <select multiple class="form-select" id="inputActItem">
-                <option *ngFor="let prerequis of activite?.prerequis | keyvalue">
-                  {{ prerequis.key }}: {{ prerequis.value }}
+                <option class="list-group-item" *ngFor="let prerequis of activite?.prerequis">
+                  - {{ prerequis }}
                 </option>
               </select>
             </div>
