@@ -153,26 +153,21 @@
         <div class="card mb-4">
           <div class="card-body">
             <h3 class="mlh_verdana">Élément à fournir</h3>
-            <div class="list-group">
-              <a *ngFor="let key of prerequisKeys; let i = index" class="list-group-item list-group-item-action"
-                (dblclick)="editPrerequis(i)">
-                {{key}}: {{activiteData.prerequis[key]}}
-                <button class="btn btn-danger btn-sm ms-2 float-end" (click)="removePrerequisKey(i, $event)">
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let prerequis of activiteData.prerequis; let i = index">
+                {{ prerequis }}
+                <button class="btn btn-danger btn-sm" (click)="removePrerequis(i)">
                   <i class="fa fa-trash"></i>
                 </button>
-              </a>
-              <div *ngIf="newPrerequisKey !== null" class="d-flex align-items-center mt-2">
-                <input type="text" class="form-control form-control-sm me-2" placeholder="Connaissance"
-                  [(ngModel)]="newPrerequisKey" style="width: 30%;">
-                <input type="text" class="form-control form-control-sm me-2" placeholder="Niveau"
-                  [(ngModel)]="newPrerequisValue" style="width: 50%;">
-                <button (click)="saveNewPrerequis()" class="btn btn-primary btn-sm me-2">Enregistrer</button>
-                <button (click)="cancelNewPrerequis()" class="btn btn-secondary btn-sm">Annuler</button>
-              </div>
+              </li>
+            </ul>
+            <div class="input-group mt-3">
+              <input [(ngModel)]="newPrerequis" type="text" class="form-control" placeholder="Ajouter un élément à fournir">
+              <button class="btn btn-info" (click)="addPrerequis()">Ajouter</button>
             </div>
-            <button (click)="addPrerequisKey()" class="btn btn-primary mt-2">Ajouter Élément</button>
           </div>
         </div>
+      </div>
 
         <div class="card mb-4">
           <div class="card-body">

@@ -311,6 +311,21 @@ export class ActiviteService {
         'DELETE FROM services.activite_prerequis WHERE user_id = $1 AND activite_id = $2',
         [userId, activiteId]
       );
+  
+      await manager.query(
+        'DELETE FROM planning.creneau_admin WHERE user_id = $1',
+        [userId]
+      );
+  
+      await manager.query(
+        'DELETE FROM planning.reservation WHERE user_id = $1',
+        [userId]
+      );
+  
+      await manager.query(
+        'DELETE FROM services.activite_admin WHERE user_id = $1',
+        [userId]
+      );
     });
   }
 }

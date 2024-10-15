@@ -23,8 +23,7 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
   documentToDelete!: number;
   newUserInfoKey: string | null = null;
   newUserInfoValue: string | null = null;
-  newPrerequisKey: string | null = null;
-  newPrerequisValue: string | null = null;
+  newPrerequis: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -54,6 +53,9 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
         this.activiteData = data;
         this.activiteData.user_infos = this.ensureJsonParsed(this.activiteData.user_infos);
         this.activiteData.prerequis = this.ensureJsonParsed(this.activiteData.prerequis);
+        if (!Array.isArray(this.activiteData.prerequis)) {
+          this.activiteData.prerequis = [];
+        }
         this.userInfosKeys = Object.keys(this.activiteData.user_infos);
         this.prerequisKeys = Object.keys(this.activiteData.prerequis);
         this.loadLogo();
@@ -185,18 +187,19 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
         return JSON.parse(data);
       } catch (e) {
         console.error('Error parsing JSON:', e);
-        return {};
+        return [];
       }
     }
-    return data || {};
+    return data || [];
   }
 
   updateActivite(): void {
     try {
       this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
       this.activiteData.user_infos = this.rebuildObject(this.userInfosKeys, this.activiteData.user_infos);
-      this.activiteData.prerequis = this.rebuildObject(this.prerequisKeys, this.activiteData.prerequis);
-  
+      if (!Array.isArray(this.activiteData.prerequis)) {
+        this.activiteData.prerequis = [];
+      }
       const updateData = { 
         ...this.activiteData, 
         user_infos: JSON.stringify(this.activiteData.user_infos), 
@@ -281,23 +284,18 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
     this.userInfosKeys.splice(index, 1);
   }
 
-  addPrerequisKey() {
-    this.newPrerequisKey = '';
-    this.newPrerequisValue = '';
-  }
-
-  saveNewPrerequis() {
-    if (this.newPrerequisKey && this.newPrerequisValue) {
-      this.activiteData.prerequis[this.newPrerequisKey] = this.newPrerequisValue;
-      this.prerequisKeys.push(this.newPrerequisKey);
-      this.newPrerequisKey = null;
-      this.newPrerequisValue = null;
+  addPrerequis(): void {
+    if (this.newPrerequis) {
+      if (!Array.isArray(this.activiteData.prerequis)) {
+        this.activiteData.prerequis = [];
+      }
+      this.activiteData.prerequis.push(this.newPrerequis);
+      this.newPrerequis = '';
     }
   }
 
-  cancelNewPrerequis() {
-    this.newPrerequisKey = null;
-    this.newPrerequisValue = null;
+  removePrerequis(index: number): void {
+    this.activiteData.prerequis.splice(index, 1);
   }
 
   removePrerequisKey(index: number, event: Event) {

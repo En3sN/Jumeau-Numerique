@@ -155,7 +155,32 @@
 
               <div class="card mb-4">
                 <div class="card-body">
-                  <h3 class="mlh_verdana">Prérequis</h3>
+                  <h3 class="mlh_verdana">Élément à fournir</h3>
+                  <div class="row">
+                    <div class="col-12 mb-3">
+                      <label class="col-form-label col-form-label-sm" for="inputActItem">Eléments nécessaires pour bénéficier de l'activité:</label>
+                      <div class="mb-2">
+                        <ul class="list-group">
+                          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let prereq of activiteData.prerequis; let i = index">
+                            {{ prereq }}
+                            <button class="btn btn-danger btn-sm" (click)="removePrereq(i)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="input-group mb-2">
+                        <input type="text" [(ngModel)]="newPrereq" class="form-control" placeholder="Ajouter un élément" />
+                        <button type="button" class="btn btn-info" (click)="addPrereq()"><strong> + </strong></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h3 class="mlh_verdana">Informations complémentaires</h3>
                   <div class="row">
                     <div class="col-12 mb-3">
                       <label class="col-form-label col-form-label-sm" for="inputActInfo">Informations complémentaires:</label>
@@ -168,19 +193,6 @@
                         <input type="text" [(ngModel)]="newInfo" class="form-control" placeholder="Ajouter une information" />
                         <button type="button" class="btn btn-info" (click)="addInfo()"><strong> + </strong></button>
                         <button type="button" class="btn btn-danger" (click)="removeInfo()"><strong> - </strong></button>
-                      </div>
-                    </div>
-                    <div class="col-12 mb-3">
-                      <label class="col-form-label col-form-label-sm" for="inputActItem">Eléments nécessaires pour bénéficier de l'activité:</label>
-                      <div class="mb-2">
-                        <select [(ngModel)]="activiteData.prerequis" multiple class="form-select" id="inputActItem">
-                          <option *ngFor="let prereq of activiteData.prerequis">{{ prereq }}</option>
-                        </select>
-                      </div>
-                      <div class="input-group mb-2">
-                        <input type="text" [(ngModel)]="newPrereq" class="form-control" placeholder="Ajouter un élément" />
-                        <button type="button" class="btn btn-info" (click)="addPrereq()"><strong> + </strong></button>
-                        <button type="button" class="btn btn-danger" (click)="removePrereq()"><strong> - </strong></button>
                       </div>
                     </div>
                   </div>

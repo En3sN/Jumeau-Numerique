@@ -21,7 +21,6 @@ export class ActiviteController {
   @Get('subscribed')
   async findAllSubscribed(@Request() req): Promise<any[]> {
     const userId = req.user.id;
-    console.log('User ID:', userId);
     return this.activiteService.findAllSubscribed(userId);
   }
 

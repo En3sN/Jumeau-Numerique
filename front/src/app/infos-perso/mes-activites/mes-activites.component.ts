@@ -110,44 +110,54 @@ export class MesActivitesComponent implements OnInit {
   }
 
   createActivity(): void {
-    this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
-    const { logoUrl, ...createActiviteDto } = this.activiteData;
-    createActiviteDto.Id = this.userId;
-  
-    this.activiteService.createActivite(createActiviteDto).subscribe({
-      next: (res: any) => {
-        const activiteId = res.id;
-        this.loadUserActivities();
-        this.hideCreateActivityModal();
-        if (this.toastComponent) {
-          this.toastComponent.showToast({
-            title: 'Succès',
-            message: 'Activité créée avec succès.',
-            toastClass: 'bg-light',
-            headerClass: 'bg-success',
-            duration: 5000
-          });
-        }
-        if (this.logoFile) {
-          this.uploadLogoFile(activiteId);
-        }
-        if (this.documents.length > 0) {
-          this.uploadDocumentsToActivity(activiteId);
-        }
-      },
-      error: (err) => {
-        console.error('Erreur lors de la création de l\'activité:', err);
-        if (this.toastComponent) {
-          this.toastComponent.showToast({
-            title: 'Erreur',
-            message: 'Erreur lors de la création de l\'activité.',
-            toastClass: 'bg-light',
-            headerClass: 'bg-danger',
-            duration: 5000
-          });
-        }
+    try {
+      this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
+      if (!Array.isArray(this.activiteData.prerequis)) {
+        this.activiteData.prerequis = [];
       }
-    });
+      const { logoUrl, ...createActiviteDto } = this.activiteData;
+      createActiviteDto.Id = this.userId; 
+      createActiviteDto.user_infos = JSON.stringify(this.activiteData.user_infos);
+      this.activiteService.createActivite(createActiviteDto).subscribe({
+        next: (response) => {
+          console.log('Activity created successfully:');
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Création de l\'activité réussie',
+              toastClass: 'bg-light',
+              headerClass: 'bg-info text-white',
+              duration: 5000
+            });
+          }
+          this.loadUserActivities();
+          this.hideCreateActivityModal();
+        },
+        error: (err) => {
+          console.error('Error creating activity:', err);
+          if (this.toastComponent) {
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors de la création de l\'activité',
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger text-white',
+              duration: 5000
+            });
+          }
+        }
+      });
+    } catch (e) {
+      console.error('Error preparing data for creation:', e);
+      if (this.toastComponent) {
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Une erreur est survenue lors de la création des données',
+          toastClass: 'bg-light',
+          headerClass: 'bg-danger text-white',
+          duration: 5000
+        });
+      }
+    }
   }
   
   uploadDocumentsToActivity(activiteId: number): void {
@@ -325,15 +335,16 @@ export class MesActivitesComponent implements OnInit {
 
   addPrereq(): void {
     if (this.newPrereq) {
-      this.activiteData.prerequis = [...this.activiteData.prerequis, this.newPrereq];
+      if (!Array.isArray(this.activiteData.prerequis)) {
+        this.activiteData.prerequis = [];
+      }
+      this.activiteData.prerequis.push(this.newPrereq);
       this.newPrereq = '';
     }
   }
 
-  removePrereq(): void {
-    if (this.activiteData.prerequis.length > 0) {
-      this.activiteData.prerequis.pop();
-    }
+  removePrereq(index: number): void {
+    this.activiteData.prerequis.splice(index, 1);
   }
 
   openModal(): void {
