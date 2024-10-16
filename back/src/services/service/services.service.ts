@@ -51,6 +51,33 @@ export class ServicesService {
     return service.logo;
   }
 
+  async subscribeToService(subscriptionData: { userId: number, serviceId: number, validation: boolean }, sessionCode: string): Promise<any> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const { userId, serviceId, validation } = subscriptionData;
+
+      const abonnement = {
+        user_id: userId,
+        service_id: serviceId,
+        validation: validation,
+      };
+
+      const query = `
+        INSERT INTO services.service_validation (user_id, service_id, validation)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id, service_id) DO UPDATE
+        SET validation = EXCLUDED.validation;
+      `;
+
+      await manager.query(query, [
+        abonnement.user_id,
+        abonnement.service_id,
+        abonnement.validation,
+      ]);
+
+      return { message: 'Abonnement au service enregistré avec succès.' };
+    }, sessionCode);
+  }
+
   async create(createServiceDto: CreateServiceDto): Promise<Service> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const service = new Service();

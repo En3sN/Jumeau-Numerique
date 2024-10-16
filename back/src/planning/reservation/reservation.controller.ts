@@ -5,6 +5,7 @@ import { UpdateReservationDto } from './DTO/update-reservation.dto';
 import { JwtAuthGuard } from 'src/security/jwt-auth.guard/jwt-auth.guard';
 import { GetServiceCreneauxDto } from './DTO/get-service-creneaux.dto';
 import { ValidationPipe } from '@nestjs/common';
+import { LockReservationCreneauDto } from './DTO/LockReservationCreneau.dto';
 
 @Controller('reservation')
 export class ReservationController {
@@ -27,6 +28,18 @@ export class ReservationController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('lock-creneau')
+  @HttpCode(HttpStatus.OK)
+  async lockCreneauReservation(
+    @Body(new ValidationPipe({ transform: true })) lockCreneauDto: LockReservationCreneauDto,
+    @Request() req
+  ) {
+    const { serviceId, startTime, endTime, userId, action } = lockCreneauDto;
+    const message = await this.reservationService.lockCreneauReservation(serviceId, startTime, endTime, userId, action, req.user.sessionCode);
+    return { message };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('service/:serviceId')
   async findAllReservationsByService(@Param('serviceId') serviceId: string) {
     const parsedServiceId = parseInt(serviceId, 10);
@@ -45,7 +58,9 @@ export class ReservationController {
   ) {
     const sessionCode = req.user.sessionCode;
     const { serviceId, semaine, year, duree } = query;
-
+  
+    console.log('Requête reçue avec les paramètres:', { serviceId, semaine, year, duree, sessionCode });
+  
     return this.reservationService.getServiceCreneaux(serviceId, semaine, year, duree, sessionCode);
   }
 

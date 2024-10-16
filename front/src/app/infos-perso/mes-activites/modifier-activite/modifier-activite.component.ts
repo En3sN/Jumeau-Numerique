@@ -23,6 +23,7 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
   documentToDelete!: number;
   newUserInfoKey: string | null = null;
   newUserInfoValue: string | null = null;
+  newUserInfo: string = '';
   newPrerequis: string = '';
 
   constructor(
@@ -56,8 +57,9 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
         if (!Array.isArray(this.activiteData.prerequis)) {
           this.activiteData.prerequis = [];
         }
-        this.userInfosKeys = Object.keys(this.activiteData.user_infos);
-        this.prerequisKeys = Object.keys(this.activiteData.prerequis);
+        if (!Array.isArray(this.activiteData.user_infos)) {
+          this.activiteData.user_infos = [];
+        }
         this.loadLogo();
       },
       error: (err) => {
@@ -196,10 +198,6 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
   updateActivite(): void {
     try {
       this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
-      this.activiteData.user_infos = this.rebuildObject(this.userInfosKeys, this.activiteData.user_infos);
-      if (!Array.isArray(this.activiteData.prerequis)) {
-        this.activiteData.prerequis = [];
-      }
       const updateData = { 
         ...this.activiteData, 
         user_infos: JSON.stringify(this.activiteData.user_infos), 
@@ -450,5 +448,16 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
 
   checkRdvDuree(): void {
     this.activiteData.rdv_duree = this.rdvDurationService.checkRdvDuree(this.activiteData.rdv_duree, this.toastComponent);
+  }
+
+  addUserInfo(): void {
+    if (this.newUserInfo) {
+      this.activiteData.user_infos.push(this.newUserInfo);
+      this.newUserInfo = '';
+    }
+  }
+  
+  removeUserInfo(index: number): void {
+    this.activiteData.user_infos.splice(index, 1);
   }
 }

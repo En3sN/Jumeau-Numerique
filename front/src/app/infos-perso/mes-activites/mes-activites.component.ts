@@ -28,6 +28,10 @@ export class MesActivitesComponent implements OnInit {
   documentToDelete: number | null = null;
   organisation: any;
   selectedOrganisationId: number | null = null;
+  newTag: string = '';
+  newInfo: string = '';
+  newPrereq: string = '';
+  logoFile: File | null = null;
 
   activiteData: any = {
     nom: '',
@@ -42,16 +46,14 @@ export class MesActivitesComponent implements OnInit {
     adresse: '',
     cp: '',
     commune: '',
-    infos: [],
+    infos: [], 
     prerequis: [],
     rdv: false,
     mail_rdv: '',
-    rdv_duree: ''
+    rdv_duree: '',
+    user_infos: [] 
   };
-  newTag: string = '';
-  newInfo: string = '';
-  newPrereq: string = '';
-  logoFile: File | null = null;
+
 
   constructor(
     private utilisateurService: UtilisateurService,
@@ -66,6 +68,7 @@ export class MesActivitesComponent implements OnInit {
   ngOnInit(): void {
     this.loadUtilisateurInfo();
     this.loadUserActivities();
+    this.activiteData.user_infos = this.ensureJsonParsed(this.activiteData.user_infos);
   }
 
   loadUtilisateurInfo(): void {
@@ -117,7 +120,7 @@ export class MesActivitesComponent implements OnInit {
       }
       const { logoUrl, ...createActiviteDto } = this.activiteData;
       createActiviteDto.Id = this.userId; 
-      createActiviteDto.user_infos = JSON.stringify(this.activiteData.user_infos);
+      createActiviteDto.user_infos = this.activiteData.user_infos; // Assurez-vous que user_infos est un tableau
       this.activiteService.createActivite(createActiviteDto).subscribe({
         next: (response) => {
           console.log('Activity created successfully:');
@@ -153,11 +156,37 @@ export class MesActivitesComponent implements OnInit {
           title: 'Erreur',
           message: 'Une erreur est survenue lors de la création des données',
           toastClass: 'bg-light',
-          headerClass: 'bg-danger text-white',
+          headerClass: 'bg-danger',
           duration: 5000
         });
       }
     }
+  }
+
+  addInfo(): void {
+    if (this.newInfo) {
+      if (!Array.isArray(this.activiteData.user_infos)) {
+        this.activiteData.user_infos = [];
+      }
+      this.activiteData.user_infos.push(this.newInfo);
+      this.newInfo = '';
+    }
+  }
+  
+  removeInfo(index: number): void {
+    this.activiteData.user_infos.splice(index, 1);
+  }
+
+  ensureJsonParsed(data: any): any {
+    if (typeof data === 'string') {
+      try {
+        return JSON.parse(data);
+      } catch (e) {
+        console.error('Error parsing JSON:', e);
+        return [];
+      }
+    }
+    return data || [];
   }
   
   uploadDocumentsToActivity(activiteId: number): void {
@@ -317,19 +346,6 @@ export class MesActivitesComponent implements OnInit {
   removeTag(index: number): void {
     if (index >= 0 && index < this.activiteData.tags.length) {
       this.activiteData.tags.splice(index, 1);
-    }
-  }
-
-  addInfo(): void {
-    if (this.newInfo) {
-      this.activiteData.infos = [...this.activiteData.infos, this.newInfo];
-      this.newInfo = '';
-    }
-  }
-
-  removeInfo(): void {
-    if (this.activiteData.infos.length > 0) {
-      this.activiteData.infos.pop();
     }
   }
 

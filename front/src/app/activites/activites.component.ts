@@ -748,13 +748,20 @@ export class ActivitesComponent implements OnInit {
     if (this.selectedActivity?.id && this.userId) {
       const additionalInfos: { [key: string]: string } = {};
 
-      for (const info of Object.keys(this.selectedActivity.user_infos)) {
-        const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
-        additionalInfos[info] = value;
+      for (let i = 0; i < this.selectedActivity.user_infos.length; i++) {
+        const key = this.selectedActivity.user_infos[i];
+        const value = (document.getElementById('info-value-' + i) as HTMLInputElement).value;
+        additionalInfos[key] = value;
       }
+      const existingInfos: { [key: string]: string } = {};
+      for (let i = 0; i < this.selectedActivity.user_infos.length; i++) {
+        const key = this.selectedActivity.user_infos[i];
+        existingInfos[key] = key;
+      }
+      const combinedInfos = { ...existingInfos, ...additionalInfos };
 
-      if (Object.keys(additionalInfos).length > 0) {
-        this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, additionalInfos)
+      if (Object.keys(combinedInfos).length > 0) {
+        this.rdvService.addActivitePrerequis(this.selectedActivity.id, this.userId, combinedInfos)
           .subscribe(response => {
             this.toastComponent.showToast({
               title: 'Succès',
@@ -835,6 +842,7 @@ export class ActivitesComponent implements OnInit {
       modalInstance?.hide();
     }
   }
+
   areAdditionalInfosCompleted(): boolean {
     if (this.selectedActivity?.user_infos) {
       for (const info of Object.keys(this.selectedActivity.user_infos)) {
@@ -974,7 +982,7 @@ export class ActivitesComponent implements OnInit {
       });
     }
   }
-  
+
   closeUnsubscribeModal(): void {
     const modalElement = document.getElementById('unsubscribeModal');
     if (modalElement) {

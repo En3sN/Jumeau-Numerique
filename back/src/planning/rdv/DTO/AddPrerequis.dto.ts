@@ -1,12 +1,15 @@
-import { IsInt, IsObject } from "class-validator";
+import { IsNotEmpty, IsNumber, IsObject } from 'class-validator';
 
 export class AddPrerequisDto {
-    @IsInt()
-    activite_id: number;
+  @IsNumber()
+  @IsNotEmpty()
+  activite_id: number;
 
-    @IsInt()
-    user_id: number;
+  @IsNumber()
+  @IsNotEmpty()
+  user_id: number;
 
-    @IsObject()
-    prerequis: Record<string, any>;  
+  @IsObject()
+  @IsNotEmpty()
+  prerequis: { [key: string]: string };
 }

@@ -45,4 +45,9 @@ export class ReservationService {
     }
     return this.http.get<any>(`${this.apiUrl}/reservation/all`, { params, withCredentials: true });
   }
+
+  lockReservationCreneauRdv(serviceId: number, startTime: string, endTime: string, userId: number, action: string): Observable<any> {
+    const body = { serviceId, startTime, endTime, userId, action };
+    return this.http.post<any>(`${this.apiUrl}/reservation/lock-creneau`, body, { withCredentials: true });
+  }
 }

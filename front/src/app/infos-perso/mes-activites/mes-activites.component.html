@@ -185,20 +185,24 @@
                     <div class="col-12 mb-3">
                       <label class="col-form-label col-form-label-sm" for="inputActInfo">Informations complémentaires:</label>
                       <div class="mb-2">
-                        <select [(ngModel)]="activiteData.infos" multiple class="form-select" id="inputActInfo">
-                          <option *ngFor="let info of activiteData.infos">{{ info }}</option>
-                        </select>
+                        <ul class="list-group">
+                          <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let info of activiteData.user_infos; let i = index">
+                            {{ info }}
+                            <button class="btn btn-danger btn-sm" (click)="removeInfo(i)">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </li>
+                        </ul>
                       </div>
                       <div class="input-group mb-2">
                         <input type="text" [(ngModel)]="newInfo" class="form-control" placeholder="Ajouter une information" />
                         <button type="button" class="btn btn-info" (click)="addInfo()"><strong> + </strong></button>
-                        <button type="button" class="btn btn-danger" (click)="removeInfo()"><strong> - </strong></button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <div class="card mb-4">
                 <div class="card-body">
                   <h3 class="mlh_verdana">Rendez-vous initial</h3>

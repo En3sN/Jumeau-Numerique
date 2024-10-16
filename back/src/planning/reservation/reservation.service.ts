@@ -39,6 +39,20 @@ export class ReservationService {
     return reservations;
   }
 
+  async lockCreneauReservation(serviceId: number, startTime: string, endTime: string, userId: number, action: string, sessionCode: string): Promise<string> {
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      try {
+        const result = await manager.query(
+          'SELECT planning.lock_creneau_reservation($1, $2, $3, $4, $5)',
+          [serviceId, startTime, endTime, userId, action]
+        );
+        return result[0].lock_creneau_reservation;
+      } catch (error) {
+        throw new BadRequestException('Unable to lock or release the creneau');
+      }
+    }, sessionCode);
+  }
+
   async findOne(id: number): Promise<Reservation> {
     const reservation = await this.reservationRepository.findOne({ where: { id } });
     if (!reservation) {
@@ -77,6 +91,7 @@ export class ReservationService {
         );
         return result;
       } catch (error) {
+        console.error('Erreur lors de l\'exécution de la requête SQL:', error);
         throw new BadRequestException('Impossible de récupérer les créneaux de service pour l\'ID spécifié');
       }
     }, sessionCode);

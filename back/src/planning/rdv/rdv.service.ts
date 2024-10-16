@@ -25,21 +25,31 @@ export class RdvService {
     }, sessionCode);
   }
 
-  async addActivitePrerequis(activiteId: number, userId: number, prerequis: any, sessionCode: string): Promise<any> {
+  async addActivitePrerequis(activiteId: number, userId: number, userInfos: any, sessionCode: string): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       try {
+        const existingInfosResult = await manager.query(
+          `SELECT user_infos FROM services.activite_prerequis WHERE activite_id = $1 AND user_id = $2`,
+          [activiteId, userId]
+        );
+  
+        let existingInfos = {};
+        if (existingInfosResult.length > 0) {
+          existingInfos = existingInfosResult[0].user_infos;
+        }
+        const combinedInfos = { ...existingInfos, ...userInfos };
         const result = await manager.query(
-          `INSERT INTO services.activite_prerequis (activite_id, user_id, prerequis)
+          `INSERT INTO services.activite_prerequis (activite_id, user_id, user_infos)
            VALUES ($1, $2, $3)
            ON CONFLICT (activite_id, user_id) DO UPDATE 
-           SET prerequis = EXCLUDED.prerequis
+           SET user_infos = EXCLUDED.user_infos
            RETURNING *;`,
-          [activiteId, userId, prerequis]
+          [activiteId, userId, combinedInfos]
         );
-
+  
         return result;
       } catch (error) {
-        throw new BadRequestException('Unable to add or update activite prerequis');
+        throw new BadRequestException('Unable to add or update activite user infos');
       }
     }, sessionCode);
   }

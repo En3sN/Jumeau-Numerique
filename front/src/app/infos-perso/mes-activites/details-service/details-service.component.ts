@@ -43,30 +43,32 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-        this.serviceId = +params.get('id')!;
-        this.loadService();
-        this.loadDocuments();
-        this.loadTypesCreneaux();
-        this.loadRendezVous();
-        this.loadCreneaux(this.serviceId); 
+      this.serviceId = +params.get('id')!;
+      this.loadService();
+      this.loadDocuments();
+      this.loadTypesCreneaux();
+      this.loadRendezVous();
+      this.loadCreneaux(this.serviceId); 
+      if (this.calendarComponent) {
         const currentView = this.calendarComponent.getApi().view;
         const start = currentView.activeStart;
         const weekNumber = this.getWeekNumber(start);
         const year = start.getFullYear();
         this.loadRecurrentCreneaux(this.serviceId, weekNumber, year);
+      }
     });
-
+  
     document.querySelectorAll('a[data-bs-toggle="tab"]').forEach(tab => {
-        tab.addEventListener('shown.bs.tab', (event) => {
-            const target = (event.target as HTMLElement).getAttribute('href');
-            if (target === '#Disponibilités' || target === '#RendezVous') {
-                setTimeout(() => {
-                    window.dispatchEvent(new Event('resize'));
-                }, 100);
-            }
-        });
+      tab.addEventListener('shown.bs.tab', (event) => {
+        const target = (event.target as HTMLElement).getAttribute('href');
+        if (target === '#Disponibilités' || target === '#RendezVous') {
+          setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+          }, 100);
+        }
+      });
     });
-}
+  }
 
   loadService(): void {
     this.servicesService.findOne(this.serviceId).subscribe({
@@ -168,39 +170,39 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
 
   loadRecurrentCreneaux(serviceId: number, semaine: number, year: number): void {
     this.creneauServiceService.getRecurrentCreneaux(serviceId, semaine, year).subscribe({
-        next: (recurrentCreneaux: any[]) => {            
-            this.calendarComponent.getApi().getEvents().forEach(event => {
-                if (event.id.startsWith('recurrent-')) {
-                    event.remove();
-                }
-            });            
-            recurrentCreneaux.forEach(creneau => {
-                const color = this.getColorForTypeCreneau('recurrent');
-                const event = {
-                    id: `recurrent-${creneau.creneau_id}`,
-                    title: 'Recurrent',
-                    start: creneau.date_debut,
-                    end: creneau.date_fin,
-                    backgroundColor: color,
-                    borderColor: color,
-                    textColor: 'white',
-                    extendedProps: {
-                        service_id: creneau.service_id,
-                        user_id: creneau.user_id,
-                        type_creneau: 'recurrent',
-                        date_debut: creneau.date_debut,
-                        date_fin: creneau.date_fin
-                    }
-                };
-                this.calendarComponent.getApi().addEvent(event);
-            });
-            this.calendarComponent.getApi().refetchEvents();
-        },
-        error: (err) => {
-            console.error('Error fetching recurrent creneaux:', err);
-        }
+      next: (recurrentCreneaux: any[]) => {
+        this.calendarComponent.getApi().getEvents().forEach(event => {
+          if (event.id.startsWith('recurrent-')) {
+            event.remove();
+          }
+        });
+        recurrentCreneaux.forEach(creneau => {
+          const color = this.getColorForTypeCreneau('recurrent');
+          const event = {
+            id: `recurrent-${creneau.creneau_id}`,
+            title: 'Recurrent',
+            start: creneau.date_debut,
+            end: creneau.date_fin,
+            backgroundColor: color,
+            borderColor: color,
+            textColor: 'white',
+            extendedProps: {
+              service_id: creneau.service_id,
+              user_id: creneau.user_id,
+              type_creneau: 'recurrent',
+              date_debut: creneau.date_debut,
+              date_fin: creneau.date_fin
+            }
+          };
+          this.calendarComponent.getApi().addEvent(event);
+        });
+        this.calendarComponent.getApi().refetchEvents();
+      },
+      error: (err) => {
+        console.error('Error fetching recurrent creneaux:', err);
+      }
     });
-}
+  }
 
   loadTypesCreneaux(): void {
     this.typesService.getAllTypes().subscribe({
@@ -275,21 +277,28 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       console.error('type_creneau is missing or empty');
       return;
     }
+  
+    // Calculer la date de fin en ajoutant 1 heure à la date de début
+    const dateDebut = new Date(info.dateStr);
+    const dateFin = new Date(dateDebut.getTime() + 60 * 60 * 1000); // Ajouter 1 heure
+  
     const createCreneauDto = {
       service_id: this.serviceId,
       type_creneau: typeCreneau,
-      date_debut: info.dateStr,
-      date_fin: info.dateStr
+      date_debut: dateDebut.toISOString(),
+      date_fin: dateFin.toISOString() // Utiliser la date de fin calculée
     };
-
+  
     this.creneauServiceService.create(createCreneauDto).subscribe({
       next: (res) => {
         this.loadCreneaux(this.serviceId);
-        const currentView = this.calendarComponent.getApi().view;
-        const start = currentView.activeStart;
-        const weekNumber = this.getWeekNumber(start);
-        const year = start.getFullYear();
-        this.loadRecurrentCreneaux(this.serviceId, weekNumber, year);
+        if (this.calendarComponent) {
+          const currentView = this.calendarComponent.getApi().view;
+          const start = currentView.activeStart;
+          const weekNumber = this.getWeekNumber(start);
+          const year = start.getFullYear();
+          this.loadRecurrentCreneaux(this.serviceId, weekNumber, year);
+        }
       },
       error: (err) => {
         if (err.error && err.error.message) {
@@ -300,7 +309,13 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
       }
     });
   }
-
+  
+  private calculateEndDate(dateDebut: Date): Date {
+    const startDate = new Date(dateDebut);
+    const endDate = new Date(startDate.getTime() + 60 * 60 * 1000); 
+    return endDate;
+  }
+  
   refreshCalendar() {
     if (this.calendarComponent) {
       setTimeout(() => {
@@ -335,7 +350,6 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
             const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
             this.creneauServiceService.remove(recurrentId).subscribe({
                 next: () => {
-                    console.log('Créneau récurrent supprimé avec succès');
                     this.loadCreneaux(this.service.id); 
                     const currentView = this.calendarComponent.getApi().view;
                     const start = currentView.activeStart;
@@ -350,7 +364,6 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
         } else {
             this.creneauServiceService.remove(parseInt(id)).subscribe({
                 next: () => {
-                    console.log('Créneau supprimé avec succès');
                     this.loadCreneaux(this.service.id);
                 },
                 error: (err) => {
@@ -415,48 +428,51 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
   handleEventChange(info: any) {
     const eventEl = info.el;
     const event: EventApi = info.event;
-
+  
     if (eventEl && event.start && event.end) {
-        const eventStart = event.start.toISOString();
-        const eventEnd = event.end.toISOString();
-        const typeCreneau = event.extendedProps['type_creneau'];
-        const updateCreneauDto = {
-            service_id: this.serviceId,
-            type_creneau: typeCreneau,
-            date_debut: eventStart,
-            date_fin: eventEnd
-        };
-        const id = event.id.startsWith('recurrent-') ? event.id.split('-')[1] : event.id;
-
-        if (event.id.startsWith('recurrent-')) {
-            const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
-            this.creneauServiceService.update(recurrentId, updateCreneauDto).subscribe({
-                next: (res) => {
-                    console.log('Créneau récurrent mis à jour avec succès');
-                    this.loadCreneaux(this.service.id);
-                    const currentView = this.calendarComponent.getApi().view;
-                    const start = currentView.activeStart;
-                    const weekNumber = this.getWeekNumber(start);
-                    const year = start.getFullYear();
-                    this.loadRecurrentCreneaux(this.service.id, weekNumber, year);
-                },
-                error: (err) => {
-                    console.error('Erreur lors de la mise à jour du créneau récurrent:', err);
-                }
-            });
-        } else {
-            this.creneauServiceService.update(parseInt(id), updateCreneauDto).subscribe({
-                next: (res) => {
-                    console.log('Créneau mis à jour avec succès');
-                    this.loadCreneaux(this.service.id);
-                },
-                error: (err) => {
-                    console.error('Erreur lors de la mise à jour du créneau:', err);
-                }
-            });
-        }
+      const eventStart = event.start.toISOString();
+      const eventEnd = event.end.toISOString();
+      const typeCreneau = event.extendedProps['type_creneau'];
+      const updateCreneauDto = {
+        service_id: this.serviceId,
+        type_creneau: typeCreneau,
+        date_debut: eventStart,
+        date_fin: eventEnd
+      };
+      const id = event.id.startsWith('recurrent-') ? event.id.split('-')[1] : event.id;
+  
+      if (event.id.startsWith('recurrent-')) {
+        const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
+        this.creneauServiceService.update(recurrentId, updateCreneauDto).subscribe({
+          next: (res) => {
+            this.loadCreneaux(this.service.id);
+            const currentView = this.calendarComponent.getApi().view;
+            const start = currentView.activeStart;
+            const weekNumber = this.getWeekNumber(start);
+            const year = start.getFullYear();
+            this.loadRecurrentCreneaux(this.service.id, weekNumber, year);
+          },
+          error: (err) => {
+            console.error('Erreur lors de la mise à jour du créneau récurrent:', err);
+          }
+        });
+      } else {
+        this.creneauServiceService.update(parseInt(id), updateCreneauDto).subscribe({
+          next: (res) => {
+            this.loadCreneaux(this.service.id);
+            const updatedEvent = this.calendarComponent.getApi().getEventById(event.id);
+            if (updatedEvent) {
+              updatedEvent.setDates(eventStart, eventEnd);
+            }
+          },
+          error: (err) => {
+            console.error('Erreur lors de la mise à jour du créneau:', err);
+          }
+        });
+      }
     }
-}
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['service'] && this.service) {
       this.initCalendar();
@@ -542,4 +558,5 @@ export class DetailsServiceComponent implements AfterViewInit, OnDestroy, OnInit
   modifyService() {
     this.router.navigate(['/modifier-service', this.serviceId]);
   }
+
 }

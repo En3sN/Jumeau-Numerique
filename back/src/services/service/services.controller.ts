@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, UploadedFile, UseInterceptors, Res, NotFoundException, UseGuards, HttpStatus, HttpCode, UploadedFiles, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, UploadedFile, UseInterceptors, Res, NotFoundException, UseGuards, HttpStatus, HttpCode, UploadedFiles, Patch, Request } from '@nestjs/common';
 import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { ServicesService } from './services.service';
@@ -50,6 +50,20 @@ export class ServicesController {
     return await this.servicesService.create(createServiceDto);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('subscribe')
+  @HttpCode(HttpStatus.CREATED)
+  async subscribeToService(
+    @Body() subscriptionData: { userId: number, serviceId: number, validation: boolean },
+    @Request() req
+  ): Promise<any> {
+    const sessionCode = req.user.sessionCode;
+    if (!sessionCode) {
+      throw new Error('Session code is missing from the JWT payload.');
+    }
+    return await this.servicesService.subscribeToService(subscriptionData, sessionCode);
+  }
+  
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   async update(

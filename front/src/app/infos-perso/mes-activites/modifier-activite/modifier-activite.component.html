@@ -169,29 +169,23 @@
         </div>
       </div>
 
-        <div class="card mb-4">
-          <div class="card-body">
-            <h3 class="mlh_verdana">Informations complémentaires</h3>
-            <div class="list-group">
-              <a *ngFor="let key of userInfosKeys; let i = index" class="list-group-item list-group-item-action"
-                (dblclick)="editUserInfo(i)">
-                {{key}}: {{activiteData.user_infos[key]}}
-                <!-- <button class="btn btn-danger btn-sm ms-2 float-end" (click)="removeUserInfoKey(i, $event)"> -->
-                <!-- <i class="fa fa-trash"></i> -->
-                <!-- </button> -->
-              </a>
-              <div *ngIf="newUserInfoKey !== null" class="d-flex align-items-center mt-2">
-                <input type="text" class="form-control form-control-sm me-2" placeholder="Clé"
-                  [(ngModel)]="newUserInfoKey" style="width: 30%;">
-                <input type="text" class="form-control form-control-sm me-2" placeholder="Valeur"
-                  [(ngModel)]="newUserInfoValue" style="width: 50%;">
-                <button (click)="saveNewUserInfo()" class="btn btn-primary btn-sm me-2">Enregistrer</button>
-                <button (click)="cancelNewUserInfo()" class="btn btn-secondary btn-sm">Annuler</button>
-              </div>
-            </div>
-            <button (click)="addUserInfoKey()" class="btn btn-primary mt-2">Ajouter Élément</button>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h3 class="mlh_verdana">Informations complémentaires</h3>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center" *ngFor="let info of activiteData.user_infos; let i = index">
+              {{ info }}
+              <button class="btn btn-danger btn-sm" (click)="removeUserInfo(i)">
+                <i class="fa fa-trash"></i>
+              </button>
+            </li>
+          </ul>
+          <div class="input-group mt-3">
+            <input [(ngModel)]="newUserInfo" type="text" class="form-control" placeholder="Ajouter une information complémentaire">
+            <button class="btn btn-info" (click)="addUserInfo()">Ajouter</button>
           </div>
         </div>
+      </div>
 
         <div class="card mb-4">
           <div class="card-body">

@@ -56,4 +56,8 @@ export class ServicesService {
   deleteLogo(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/services/logo/${id}`, { withCredentials: true });
   }
+
+  subscribeToService(subscriptionData: { userId: number, serviceId: number, validation: boolean }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/services/subscribe`, subscriptionData, { withCredentials: true });
+  }
 }
