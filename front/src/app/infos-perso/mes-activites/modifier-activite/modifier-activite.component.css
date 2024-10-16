@@ -49,10 +49,12 @@
   width: calc(100% - 100px);
 }
 
-.d-flex .btn {
-  margin-left: 10px;
-}
-
 .border-top {
   border-top: 2px solid #ddd !important;
+}
+
+.input-group .form-control,
+.input-group .btn {
+  height: auto; 
+  margin: 0; 
 }
