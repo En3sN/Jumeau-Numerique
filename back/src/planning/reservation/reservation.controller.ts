@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpCode, HttpStatus, BadRequestException, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpCode, HttpStatus, BadRequestException, Logger, Query, ParseIntPipe } from '@nestjs/common';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './DTO/create-reservation.dto';
 import { UpdateReservationDto } from './DTO/update-reservation.dto';
@@ -25,6 +25,17 @@ export class ReservationController {
   @Get()
   async findAll() {
     return await this.reservationService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('can-reserve')
+  async canReserveService(
+    @Query('serviceId', ParseIntPipe) serviceId: number,
+    @Query('userId', ParseIntPipe) userId: number,
+    @Request() req
+  ): Promise<boolean> {
+    const sessionCode = req.user.sessionCode;
+    return this.reservationService.canReserveService(serviceId, userId, sessionCode);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -97,4 +108,5 @@ export class ReservationController {
     const sessionCode = req.user.sessionCode;
     return await this.reservationService.remove(parsedId, sessionCode);
   }
+
 }

@@ -205,7 +205,7 @@ export class ActiviteService {
     }, sessionCode);
   }
 
-  async findAllServicesByActiviteId(activiteId: number, sessionCode: string): Promise<any> {
+  async findAllServicesByActiviteId(activiteId: number): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       const query = `
         SELECT *
@@ -217,7 +217,7 @@ export class ActiviteService {
         throw new NotFoundException(`Services not found for activite ID ${activiteId}`);
       }
       return result;
-    }, sessionCode);
+    });
   }
 
   async findServiceById(serviceId: number, sessionCode: string): Promise<any> {

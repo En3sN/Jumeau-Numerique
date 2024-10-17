@@ -210,7 +210,6 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
   
       this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
         next: (response) => {
-          console.log('Activity updated successfully:');
           if (this.toastComponent) {
             this.toastComponent.showToast({
               title: 'Succès',

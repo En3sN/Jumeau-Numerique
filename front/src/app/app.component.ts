@@ -24,9 +24,22 @@ export class AppComponent {
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
       this.authService.isLoggedIn().subscribe(isLoggedIn => {
         const currentUrl = this.router.url;
-        const allowedWithoutLogin = ['/activites', '/inscription', '/accueil','/contacts', '/aide', 'services-associes'];
 
-        if (!isLoggedIn && !allowedWithoutLogin.includes(currentUrl)) {
+        const allowedWithoutLogin = [
+          '/activites', 
+          '/inscription', 
+          '/accueil',
+          '/contacts', 
+          '/aide'
+        ];
+
+        const dynamicRoutes = [
+          /^\/services-associes\/\d+$/ 
+        ];
+
+        const isAllowed = allowedWithoutLogin.includes(currentUrl) || dynamicRoutes.some(route => route.test(currentUrl));
+
+        if (!isLoggedIn && !isAllowed) {
           this.router.navigate(['/accueil']);
         }
       });

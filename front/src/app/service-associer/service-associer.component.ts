@@ -15,6 +15,7 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { ReservationService } from '../Services/Reservation.service';
+import { ActiviteService } from '../Services/Activite.service';
 
 @Component({
   selector: 'app-service-associer',
@@ -35,6 +36,8 @@ export class ServiceAssocierComponent implements OnInit {
   hasReservedCreneau: { [key: number]: boolean } = {};
   subscriptionRequested: { [key: number]: boolean } = {};
   confirmationMessage: string = '';
+  canReserve: boolean = false;
+  isSubscribed: boolean = false;
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -61,6 +64,7 @@ export class ServiceAssocierComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private servicesService: ServicesService,
+    private activiteService: ActiviteService,
     private filesService: FilesService,
     private authService: AuthService,
     private reservationService: ReservationService,
@@ -71,14 +75,16 @@ export class ServiceAssocierComponent implements OnInit {
     this.activiteId = +this.route.snapshot.paramMap.get('id')!;
     this.serviceId = +this.route.snapshot.paramMap.get('serviceId')!;
     this.loadPublicServices();
-
-    this.authService.isLoggedIn().subscribe(isLoggedIn => {
+  
+    this.authService.isLoggedIn().subscribe(async isLoggedIn => {
       this.isUserLoggedIn = isLoggedIn;
       if (isLoggedIn) {
         this.authService.getUserStatus().subscribe({
-          next: (user) => {
+          next: async (user) => {
             if (user) {
               this.userId = user.id;
+              await this.checkSubscription(); 
+              await this.checkCanReserve();
             }
           },
           error: (error: any) => {
@@ -87,9 +93,19 @@ export class ServiceAssocierComponent implements OnInit {
         });
       }
     });
-
     this.setupModalEventListeners();
   }
+  
+  async selectService(service: any): Promise<void> {
+    this.selectedService = service;
+    this.serviceId = service.id;
+    this.loadServiceDocuments(service.id);
+    this.setupCalendar();
+    this.hasReservedCreneau[service.id] = false;
+    await this.checkSubscription(); 
+    await this.checkCanReserve();
+  }
+  
 
   loadPublicServices(): void {
     this.publicServices$ = this.servicesService.getAllServicesByActiviteId(this.activiteId).pipe(
@@ -108,14 +124,6 @@ export class ServiceAssocierComponent implements OnInit {
         });
       })
     );
-  }
-
-  selectService(service: any): void {
-    this.selectedService = service;
-    this.serviceId = service.id;
-    this.loadServiceDocuments(service.id);
-    this.setupCalendar();
-    this.hasReservedCreneau[service.id] = false;
   }
 
   loadServiceDocuments(serviceId: number): void {
@@ -658,5 +666,36 @@ export class ServiceAssocierComponent implements OnInit {
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
     this.router.navigate(['/activites']);
+  }
+
+  async checkSubscription(): Promise<void> {
+    if (this.userId) {
+      try {
+        const subscribedActivities = await this.activiteService.getSubscribedActivities().toPromise();
+        if (subscribedActivities) {
+          this.isSubscribed = subscribedActivities.some(activity => activity.id === this.activiteId);
+        } else {
+          this.isSubscribed = false;
+        }
+      } catch (error) {
+        console.error('Erreur lors de la vérification de l\'abonnement :', error);
+        this.isSubscribed = false; 
+      }
+    } else {
+      this.isSubscribed = false;
+    }
+  }
+  
+  async checkCanReserve(): Promise<void> {
+    if (this.selectedService?.id && this.userId) {
+      try {
+        const canReserve = await this.reservationService.canReserveService(this.selectedService.id, this.userId).toPromise();
+        this.canReserve = canReserve ?? false; 
+      } catch (error) {
+        this.canReserve = false; 
+      }
+    } else {
+      this.canReserve = false; 
+    }
   }
 }

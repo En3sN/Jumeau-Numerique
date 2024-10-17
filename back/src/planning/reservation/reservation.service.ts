@@ -53,6 +53,45 @@ export class ReservationService {
     }, sessionCode);
   }
 
+  async canReserveService(serviceId: number, userId: number, sessionCode: string): Promise<boolean> {
+    console.log('canReserveService - serviceId:', serviceId, 'userId:', userId, 'sessionCode:', sessionCode); // Log des paramètres
+  
+    return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
+      const query = `
+        SELECT 
+          a.all_services, 
+          sv.validation,
+          aa.statut
+        FROM 
+          services.service s
+        LEFT JOIN 
+          services.activite a ON s.activite_id = a.id
+        LEFT JOIN 
+          services.service_validation sv ON s.id = sv.service_id AND sv.user_id = $2
+        LEFT JOIN 
+          services.activite_abonnement aa ON a.id = aa.activite_id AND aa.user_id = $2
+        WHERE 
+          s.id = $1
+      `;
+      const result = await manager.query(query, [serviceId, userId]);
+      
+      console.log('canReserveService - query result:', result);
+  
+      if (result.length > 0) {
+        const { all_services, validation, statut } = result[0];
+        console.log('canReserveService - all_services:', all_services, 'validation:', validation, 'statut:', statut); // Log des valeurs extraites
+  
+        if (statut === null) {
+          return false;
+        }
+  
+        return (all_services === true || validation === true) && statut === true;
+      }
+  
+      return false;
+    }, sessionCode);
+  }
+
   async findOne(id: number): Promise<Reservation> {
     const reservation = await this.reservationRepository.findOne({ where: { id } });
     if (!reservation) {

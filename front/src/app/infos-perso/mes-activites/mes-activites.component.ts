@@ -120,10 +120,9 @@ export class MesActivitesComponent implements OnInit {
       }
       const { logoUrl, ...createActiviteDto } = this.activiteData;
       createActiviteDto.Id = this.userId; 
-      createActiviteDto.user_infos = this.activiteData.user_infos; // Assurez-vous que user_infos est un tableau
+      createActiviteDto.user_infos = this.activiteData.user_infos;
       this.activiteService.createActivite(createActiviteDto).subscribe({
         next: (response) => {
-          console.log('Activity created successfully:');
           if (this.toastComponent) {
             this.toastComponent.showToast({
               title: 'Succès',

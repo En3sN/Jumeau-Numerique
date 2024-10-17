@@ -44,11 +44,9 @@ export class ActiviteController {
     return await this.activiteService.findUserActivities(sessionCode);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id/all-services')
-  async getServicesByActiviteId(@Param('id') id: number, @Request() req): Promise<any> {
-    const sessionCode = req.user.sessionCode;
-    return this.activiteService.findAllServicesByActiviteId(id, sessionCode);
+  async getServicesByActiviteId(@Param('id') id: number): Promise<any> {
+    return this.activiteService.findAllServicesByActiviteId(id);
   }
 
   @UseGuards(JwtAuthGuard)

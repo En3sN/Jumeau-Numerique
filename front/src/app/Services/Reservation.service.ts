@@ -50,4 +50,11 @@ export class ReservationService {
     const body = { serviceId, startTime, endTime, userId, action };
     return this.http.post<any>(`${this.apiUrl}/reservation/lock-creneau`, body, { withCredentials: true });
   }
+
+  canReserveService(serviceId: number, userId: number): Observable<boolean> {
+    let params = new HttpParams();
+    params = params.append('serviceId', serviceId.toString());
+    params = params.append('userId', userId.toString());
+    return this.http.get<boolean>(`${this.apiUrl}/reservation/can-reserve`, { params, withCredentials: true });
+  }
 }

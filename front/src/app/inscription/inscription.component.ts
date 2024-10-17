@@ -118,7 +118,6 @@ export class InscriptionComponent implements OnInit, AfterViewInit {
           duration: 5000
         });
       }
-      console.log('Formulaire invalide');
     }
   }
 

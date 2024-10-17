@@ -479,7 +479,6 @@ loadRecurrentCreneaux(activiteId: number, semaine: number, year: number): void {
   
       this.creneauAdminService.create(createCreneauDto).subscribe({
         next: (res) => {
-          console.log('Créneau créé avec succès');
           const currentView = this.calendarComponent.getApi().view;
           const start = currentView.activeStart;
           const weekNumber = this.getWeekNumber(start);
@@ -525,7 +524,6 @@ loadRecurrentCreneaux(activiteId: number, semaine: number, year: number): void {
           const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
           this.creneauAdminService.remove(recurrentId).subscribe({
             next: () => {
-              console.log('Créneau récurrent supprimé avec succès');
               const currentView = this.calendarComponent.getApi().view;
               const start = currentView.activeStart;
               const weekNumber = this.getWeekNumber(start);
@@ -539,7 +537,6 @@ loadRecurrentCreneaux(activiteId: number, semaine: number, year: number): void {
         } else {
           this.creneauAdminService.remove(parseInt(event.id)).subscribe({
             next: () => {
-              console.log('Créneau supprimé avec succès');
               this.loadCreneaux(this.activite.id);
             },
             error: (err) => {
@@ -610,7 +607,6 @@ loadRecurrentCreneaux(activiteId: number, semaine: number, year: number): void {
         const recurrentId = parseInt(event.id.replace('recurrent-', ''), 10);
         this.creneauAdminService.update(recurrentId, updateCreneauDto).subscribe({
           next: (res) => {
-            console.log('Créneau récurrent mis à jour avec succès');
             const currentView = this.calendarComponent.getApi().view;
             const start = currentView.activeStart;
             const weekNumber = this.getWeekNumber(start);
@@ -624,7 +620,6 @@ loadRecurrentCreneaux(activiteId: number, semaine: number, year: number): void {
       } else {
         this.creneauAdminService.update(parseInt(event.id), updateCreneauDto).subscribe({
           next: (res) => {
-            console.log('Créneau mis à jour avec succès');
             this.loadCreneaux(this.activite.id);
           },
           error: (err) => {
