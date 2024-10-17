@@ -1,4 +1,4 @@
-<div class="container mlh_top_container">
+<div class="container mlh_top_container overflow-auto">
     <div class="d-flex  align-items-center justify-content-center">
         <div class="col-12 activity-column">
             <div class="row mt-2">
@@ -66,7 +66,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex flex-wrap overflow-auto mt-2">
+                <div class="d-flex flex-wrap mt-2">
                     <div *ngFor="let service of publicServices$ | async" class="p-1 col-6">
                         <div class="card border-2 border-info" type="button" (click)="selectService(service)"
                             data-bs-toggle="offcanvas" data-bs-target="#offcanvasService"
@@ -78,11 +78,10 @@
                                 </div>
                                 <div class="col-10">
                                     <h4 class="card-title">{{ service.nom }}</h4>
-                                    <p class="card-text">{{ service.description }}</p>
-                                    <p>
-                                        <span *ngFor="let tag of service.tags" class="badge bg-info me-1">{{ tag
-                                            }}</span>
-                                    </p>
+                                    <div class="card-text mb-1">{{ service.description }}</div>
+                                    <div>
+                                        <span *ngFor="let tag of service.tags" class="badge bg-info me-1">{{ tag}}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -115,6 +114,26 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-primary" (click)="saveRdvAndCloseModal()">Confirmer la
                     réservation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal de Confirmation de Remplacement -->
+<div class="modal fade" id="replaceConfirmationModal" tabindex="-1" aria-labelledby="replaceConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="replaceConfirmationModalLabel">Confirmation de Remplacement</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {{ confirmationMessage }}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cancelCreneauSelection()">Annuler</button>
+                <button type="button" class="btn btn-primary" (click)="confirmReplaceCreneau()">Remplacer</button>
             </div>
         </div>
     </div>

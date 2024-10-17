@@ -990,4 +990,4 @@ export class ActivitesComponent implements OnInit {
       modalInstance?.hide();
     }
   }
-}
+} 

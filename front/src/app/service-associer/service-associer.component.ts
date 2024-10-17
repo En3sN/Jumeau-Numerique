@@ -4,7 +4,6 @@ import * as bootstrap from 'bootstrap';
 import { ServicesService } from '../Services/Services.service';
 import { FilesService } from '../Services/Files.service';
 import { AuthService } from '../Services/Auth.service';
-import { RdvService } from '../Services/Rdv.service';
 import { CalendarOptions } from '@fullcalendar/core';
 import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -35,6 +34,7 @@ export class ServiceAssocierComponent implements OnInit {
   previousCreneau: any = null;
   hasReservedCreneau: { [key: number]: boolean } = {};
   subscriptionRequested: { [key: number]: boolean } = {};
+  confirmationMessage: string = '';
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -63,16 +63,15 @@ export class ServiceAssocierComponent implements OnInit {
     private servicesService: ServicesService,
     private filesService: FilesService,
     private authService: AuthService,
-    private rdvService: RdvService,
     private reservationService: ReservationService,
-    private location: Location 
-  ) {}
+    private location: Location
+  ) { }
 
   ngOnInit(): void {
     this.activiteId = +this.route.snapshot.paramMap.get('id')!;
     this.serviceId = +this.route.snapshot.paramMap.get('serviceId')!;
     this.loadPublicServices();
-  
+
     this.authService.isLoggedIn().subscribe(isLoggedIn => {
       this.isUserLoggedIn = isLoggedIn;
       if (isLoggedIn) {
@@ -88,8 +87,8 @@ export class ServiceAssocierComponent implements OnInit {
         });
       }
     });
-  
-    this.setupModalEventListeners(); 
+
+    this.setupModalEventListeners();
   }
 
   loadPublicServices(): void {
@@ -180,14 +179,16 @@ export class ServiceAssocierComponent implements OnInit {
     const serviceId = this.selectedService?.id || this.serviceId;
     const semaine = this.getWeekNumber(new Date());
     const year = new Date().getFullYear();
-    const duree = 60;  
+    const duree = 60;
     this.reservationService.getServiceCreneaux(serviceId, semaine, year, duree).subscribe(data => {
       if (data && data.length > 0 && data[0]?.get_json_service_creneaux) {
         const creneaux = data[0].get_json_service_creneaux;
         const formattedCreneaux = creneaux.map((creneau: any) => ({
           start: creneau.debut,
           end: creneau.fin,
-          title: 'Disponible'
+          title: 'Disponible',
+          reserved: creneau.reserved || false,
+          reservedByCurrentUser: creneau.reservedByCurrentUser || false // Assurez-vous que cette propriété existe dans les données retournées
         }));
         this.calendarOptions = {
           ...this.calendarOptions,
@@ -206,20 +207,45 @@ export class ServiceAssocierComponent implements OnInit {
       startTime: event.event.start.toISOString(),
       endTime: event.event.end.toISOString()
     };
+  
+    // Vérifiez si le créneau est déjà pris par un autre utilisateur
+    if (event.event.extendedProps.reserved && !event.event.extendedProps.reservedByCurrentUser) {
+      this.toastComponent.showToast({
+        title: 'Erreur',
+        message: 'Ce créneau est déjà pris par un autre utilisateur.',
+        toastClass: 'bg-light',
+        headerClass: 'bg-danger',
+        duration: 5000
+      });
+      this.resetCreneauSelection(); // Réinitialiser la sélection de créneau
+      return;
+    }
+  
     if (this.selectedCreneau && this.selectedCreneau.startTime === clickedCreneau.startTime && this.selectedCreneau.endTime === clickedCreneau.endTime) {
-      this.releaseCreneau(clickedCreneau);
+      if (event.event.extendedProps.reservedByCurrentUser) {
+        this.releaseCreneau(clickedCreneau);
+      } else {
+        this.toastComponent.showToast({
+          title: 'Erreur',
+          message: 'Vous ne pouvez pas libérer ce créneau car il est réservé par un autre utilisateur.',
+          toastClass: 'bg-light',
+          headerClass: 'bg-danger',
+          duration: 5000
+        });
+      }
+      return;
     } else {
       this.selectedCreneau = clickedCreneau;
       if (this.hasReservedCreneau[this.selectedService.id]) {
         const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
-
+  
         const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
         const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
         const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
-
+  
         const confirmationMessage = `Vous avez déjà sélectionné un créneau. Voulez-vous remplacer votre créneau actuel par celui-ci de ${startDate} de ${startTime} à ${endTime} ?`;
-
+  
         const modalElement = document.getElementById('replaceConfirmationModal');
         if (modalElement) {
           const modal = new bootstrap.Modal(modalElement);
@@ -234,7 +260,7 @@ export class ServiceAssocierComponent implements OnInit {
       }
     }
   }
-
+  
   saveRdvAndCloseModal(): void {
     if (this.selectedService?.rdv && !this.selectedCreneau) {
       console.error('Erreur: Aucun créneau sélectionné.');
@@ -248,67 +274,40 @@ export class ServiceAssocierComponent implements OnInit {
       return;
     }
   
-    if (this.selectedService?.user_infos && !this.areAdditionalInfosCompleted()) {
-      console.error('Erreur: Informations complémentaires manquantes.');
-      this.toastComponent.showToast({
-        title: 'Erreur',
-        message: 'Veuillez compléter les informations complémentaires avant de vous abonner.',
-        toastClass: 'bg-light',
-        headerClass: 'bg-warning',
-        duration: 5000
-      });
-      return;
-    }
-  
-    if (this.selectedService?.id && this.userId) {
-      if (this.selectedService?.rdv && this.selectedCreneau) {
-        this.reservationService.lockReservationCreneauRdv(this.selectedService.id, this.selectedCreneau.startTime, this.selectedCreneau.endTime, this.userId!, 'validate').subscribe(
-          response => {
-            if (response.message === 'Créneau validé') {
-              this.toastComponent.showToast({
-                title: 'Succès',
-                message: 'Rendez-vous enregistré et validé avec succès.',
-                toastClass: 'bg-light',
-                headerClass: 'bg-success',
-                duration: 5000
-              });
-              this.subscriptionRequested[this.selectedService.id] = true;
-              this.closeSubscribeModal();
-              this.subscribeToService();
-            } else {
-              console.error('Erreur: ', response.message);
-              this.toastComponent.showToast({
-                title: 'Erreur',
-                message: 'Erreur lors de la validation du rendez-vous: ' + response.message,
-                toastClass: 'bg-light',
-                headerClass: 'bg-danger',
-                duration: 5000
-              });
-            }
-          },
-          error => {
-            console.error('Erreur lors de la validation du créneau:', error);
+    if (this.selectedService?.id && this.userId && this.selectedCreneau) {
+      this.reservationService.lockReservationCreneauRdv(this.selectedService.id, this.selectedCreneau.startTime, this.selectedCreneau.endTime, this.userId!, 'validate').subscribe(
+        response => {
+          if (response.message === 'Créneau validé') {
+            this.toastComponent.showToast({
+              title: 'Succès',
+              message: 'Rendez-vous enregistré et validé avec succès.',
+              toastClass: 'bg-light',
+              headerClass: 'bg-success',
+              duration: 5000
+            });
+            this.closeSubscribeModal();
+          } else {
+            console.error('Erreur: ', response.message);
             this.toastComponent.showToast({
               title: 'Erreur',
-              message: 'Erreur lors de la validation du créneau.',
+              message: 'Erreur lors de la validation du rendez-vous: ' + response.message,
               toastClass: 'bg-light',
               headerClass: 'bg-danger',
               duration: 5000
             });
           }
-        );
-      } else {
-        this.toastComponent.showToast({
-          title: 'Succès',
-          message: 'Informations supplémentaires enregistrées avec succès.',
-          toastClass: 'bg-light',
-          headerClass: 'bg-success',
-          duration: 5000
-        });
-        this.subscriptionRequested[this.selectedService.id] = true;
-        this.closeSubscribeModal();
-        this.subscribeToService();
-      }
+        },
+        error => {
+          console.error('Erreur lors de la validation du créneau:', error);
+          this.toastComponent.showToast({
+            title: 'Erreur',
+            message: 'Erreur lors de la validation du créneau.',
+            toastClass: 'bg-light',
+            headerClass: 'bg-danger',
+            duration: 5000
+          });
+        }
+      );
     } else {
       console.error('Erreur: Informations manquantes pour enregistrer le rendez-vous.');
       this.toastComponent.showToast({
@@ -336,6 +335,8 @@ export class ServiceAssocierComponent implements OnInit {
             event.setProp('backgroundColor', '');
             event.setProp('borderColor', '');
             event.setProp('classNames', []);
+            event.setExtendedProp('reserved', false);
+            event.setExtendedProp('reservedByCurrentUser', false);
           }
           this.selectedCreneau = null;
           this.hasReservedCreneau[this.selectedService.id] = false;
@@ -348,7 +349,7 @@ export class ServiceAssocierComponent implements OnInit {
             duration: 5000
           });
         } else {
-          console.error('Error releasing slot:', response.message);
+          console.error('Erreur lors de la libération du créneau:', response.message);
           this.toastComponent.showToast({
             title: 'Erreur',
             message: 'Erreur lors de la libération du créneau: ' + response.message,
@@ -359,7 +360,7 @@ export class ServiceAssocierComponent implements OnInit {
         }
       },
       error => {
-        console.error('Error releasing slot:', error);
+        console.error('Erreur lors de la libération du créneau:', error);
         this.toastComponent.showToast({
           title: 'Erreur',
           message: 'Erreur lors de la libération du créneau.',
@@ -370,7 +371,7 @@ export class ServiceAssocierComponent implements OnInit {
       }
     );
   }
-  
+
   lockNewCreneau(startTime: string, endTime: string): void {
     this.reservationService.lockReservationCreneauRdv(this.selectedService.id, startTime, endTime, this.userId!, 'lock').subscribe(
       response => {
@@ -386,6 +387,8 @@ export class ServiceAssocierComponent implements OnInit {
               event.setProp('backgroundColor', '#28a745');
               event.setProp('borderColor', '#28a745');
               event.setProp('classNames', ['reserved']);
+              event.setExtendedProp('reserved', true); // Marquer le créneau comme réservé
+              event.setExtendedProp('reservedByCurrentUser', true); // Marquer le créneau comme réservé par l'utilisateur actuel
             } else {
               event.setProp('backgroundColor', '');
               event.setProp('borderColor', '');
@@ -422,6 +425,24 @@ export class ServiceAssocierComponent implements OnInit {
       }
     );
   }
+
+  resetCreneauSelection(): void {
+    const calendarApi = this.calendarComponent.getApi();
+    const events = calendarApi.getEvents();
+  
+    events.forEach(event => {
+      event.setProp('backgroundColor', '');
+      event.setProp('borderColor', '');
+      event.setProp('classNames', []);
+      event.setExtendedProp('reserved', false);
+      event.setExtendedProp('reservedByCurrentUser', false);
+    });
+  
+    this.selectedCreneau = null;
+    this.previousCreneau = null;
+    this.hasReservedCreneau[this.selectedService.id] = false;
+  }
+
   reserveCreneau(): void {
     const calendarApi = this.calendarComponent.getApi();
     const events = calendarApi.getEvents();
@@ -458,9 +479,20 @@ export class ServiceAssocierComponent implements OnInit {
 
   confirmReplaceCreneau(): void {
     if (this.previousCreneau) {
-      this.rdvService.lockCreneauRdv(this.selectedService.id, this.previousCreneau.startTime, this.previousCreneau.endTime, this.userId!, 'release').subscribe(
-        () => {
-          this.lockNewCreneau(this.selectedCreneau.startTime, this.selectedCreneau.endTime);
+      this.reservationService.lockReservationCreneauRdv(this.selectedService.id, this.previousCreneau.startTime, this.previousCreneau.endTime, this.userId!, 'release').subscribe(
+        response => {
+          if (response.message === 'Créneau libéré') {
+            this.lockNewCreneau(this.selectedCreneau.startTime, this.selectedCreneau.endTime);
+          } else {
+            console.error('Erreur lors de la libération du créneau précédent:', response.message);
+            this.toastComponent.showToast({
+              title: 'Erreur',
+              message: 'Erreur lors de la libération du créneau précédent: ' + response.message,
+              toastClass: 'bg-light',
+              headerClass: 'bg-danger',
+              duration: 5000
+            });
+          }
         },
         error => {
           console.error('Erreur lors de la libération du créneau précédent:', error);
@@ -494,7 +526,6 @@ export class ServiceAssocierComponent implements OnInit {
       modalInstance?.hide();
     }
   }
-
   closeConfirmationModal(): void {
     const modalElement = document.getElementById('confirmationModal');
     if (modalElement) {
@@ -519,53 +550,6 @@ export class ServiceAssocierComponent implements OnInit {
       });
       return;
     }
-
-    if (this.selectedService?.user_infos && !this.areAdditionalInfosCompleted()) {
-      this.toastComponent.showToast({
-        title: 'Erreur',
-        message: 'Veuillez compléter les informations complémentaires avant de vous abonner.',
-        toastClass: 'bg-light',
-        headerClass: 'bg-warning',
-        duration: 5000
-      });
-      return;
-    }
-
-    if (this.selectedService?.id && this.userId) {
-      const additionalInfos: { [key: string]: string } = {};
-
-      for (const info of Object.keys(this.selectedService.user_infos)) {
-        const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
-        additionalInfos[info] = value;
-      }
-
-      if (Object.keys(additionalInfos).length > 0) {
-        this.rdvService.addActivitePrerequis(this.selectedService.id, this.userId, additionalInfos)
-          .subscribe(response => {
-            this.toastComponent.showToast({
-              title: 'Succès',
-              message: 'Informations supplémentaires enregistrées avec succès.',
-              toastClass: 'bg-light',
-              headerClass: 'bg-success',
-              duration: 5000
-            });
-            this.saveRdvAndCloseModal();
-          }, error => {
-            console.error('Erreur lors de l\'enregistrement des informations supplémentaires:', error);
-            this.toastComponent.showToast({
-              title: 'Erreur',
-              message: 'Erreur lors de l\'enregistrement des informations supplémentaires.',
-              toastClass: 'bg-light',
-              headerClass: 'bg-primary',
-              duration: 5000
-            });
-          });
-      } else {
-        this.saveRdvAndCloseModal();
-      }
-    } else {
-      console.error('ID de l\'activité ou ID utilisateur manquant');
-    }
   }
 
   subscribeToService(): void {
@@ -575,7 +559,7 @@ export class ServiceAssocierComponent implements OnInit {
         serviceId: this.selectedService.id,
         validation: false
       };
-  
+
       this.servicesService.subscribeToService(subscriptionData).pipe(
         tap(() => {
           this.selectedService.subscription_message = 'Une demande d\'abonnement a été faite pour cette activité.';
@@ -620,18 +604,6 @@ export class ServiceAssocierComponent implements OnInit {
     }
   }
 
-  areAdditionalInfosCompleted(): boolean {
-    if (this.selectedService?.user_infos) {
-      for (const info of Object.keys(this.selectedService.user_infos)) {
-        const value = (document.getElementById('info-value-' + info) as HTMLInputElement).value;
-        if (!value) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
   getWeekNumber(d: Date): number {
     const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
     const dayNum = date.getUTCDay() || 7;
@@ -650,7 +622,7 @@ export class ServiceAssocierComponent implements OnInit {
       });
     }
   }
-  
+
   resizeCalendarOnTabChange(): void {
     setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
@@ -660,20 +632,20 @@ export class ServiceAssocierComponent implements OnInit {
   handleDatesSet(arg: any): void {
     const start = arg.start;
     const end = arg.end;
-    const serviceId = this.serviceId; 
+    const serviceId = this.serviceId;
     const duree = 60;
     const weekNumber = this.getWeekNumber(start);
-    const year = start.getFullYear();  
+    const year = start.getFullYear();
     this.reservationService.getServiceCreneaux(serviceId, weekNumber, year, duree).subscribe(data => {
-  
+
       if (data && data.length > 0 && data[0]?.get_json_service_creneaux) {
-        const creneaux = data[0].get_json_service_creneaux;  
+        const creneaux = data[0].get_json_service_creneaux;
         const formattedCreneaux = creneaux.map((creneau: any) => ({
           start: creneau.debut,
           end: creneau.fin,
           title: 'Disponible'
         }));
-  
+
         const calendarApi = this.calendarComponent.getApi();
         calendarApi.removeAllEvents();
         formattedCreneaux.forEach((creneau: { start: string; end: string; title: string }) => {
@@ -685,9 +657,9 @@ export class ServiceAssocierComponent implements OnInit {
     });
   }
 
-goBack(): void {
-  document.body.classList.remove('modal-open');
-  document.body.style.overflow = '';
-  this.router.navigate(['/activites']);
-}
+  goBack(): void {
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    this.router.navigate(['/activites']);
+  }
 }
