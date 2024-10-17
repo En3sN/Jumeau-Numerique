@@ -255,8 +255,6 @@ export class ActivitesComponent implements OnInit {
     this.publicActivities$ = this.activiteService.getPublicActivities(this.filters).pipe(
       map((activities: any[]) => {
         return activities.map(activity => {
-          console.log('Activity:', activity);
-
           if (activity.logo) {
             this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
               const reader = new FileReader();
@@ -426,13 +424,13 @@ export class ActivitesComponent implements OnInit {
       if (this.hasReservedCreneau[this.selectedActivity.id]) {
         const optionsDate: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const optionsTime: Intl.DateTimeFormatOptions = { hour: 'numeric', minute: 'numeric' };
-
+  
         const startDate = new Intl.DateTimeFormat('fr-FR', optionsDate).format(this.selectedCreneau.heure);
         const startTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.heure);
         const endTime = new Intl.DateTimeFormat('fr-FR', optionsTime).format(this.selectedCreneau.date);
-
+  
         const confirmationMessage = `Vous avez déjà sélectionné un créneau. Voulez-vous remplacer votre créneau actuel par celui-ci de ${startDate} de ${startTime} à ${endTime} ?`;
-
+  
         const modalElement = document.getElementById('replaceConfirmationModal');
         if (modalElement) {
           const modal = new bootstrap.Modal(modalElement);
@@ -590,22 +588,22 @@ export class ActivitesComponent implements OnInit {
         if (response.message === 'Créneau disponible') {
           this.selectedCreneau = { startTime, endTime, heure: new Date(startTime), date: new Date(endTime) };
           this.previousCreneau = this.selectedCreneau;
-
+  
           const calendarApi = this.calendarComponent.getApi();
           const events = calendarApi.getEvents();
-
           events.forEach(event => {
             if (event.start?.toISOString() === startTime && event.end?.toISOString() === endTime) {
               event.setProp('backgroundColor', '#28a745');
               event.setProp('borderColor', '#28a745');
               event.setProp('classNames', ['reserved']);
+              event.setExtendedProp('reserved', true); 
+              event.setExtendedProp('reservedByCurrentUser', true); 
             } else {
               event.setProp('backgroundColor', '');
               event.setProp('borderColor', '');
               event.setProp('classNames', []);
             }
           });
-
           this.toastComponent.showToast({
             title: 'Succès',
             message: 'Le créneau a été verrouillé avec succès.',
@@ -613,10 +611,11 @@ export class ActivitesComponent implements OnInit {
             headerClass: 'bg-success',
             duration: 5000
           });
-        } else {
+        } else if (response.message === 'Créneau déjà réservé') {
+          this.resetCreneauSelection();
           this.toastComponent.showToast({
             title: 'Erreur',
-            message: 'Le créneau est déjà pris.',
+            message: 'Le créneau est déjà pris. Veuillez sélectionner un autre créneau',
             toastClass: 'bg-light',
             headerClass: 'bg-danger',
             duration: 5000
@@ -634,6 +633,21 @@ export class ActivitesComponent implements OnInit {
         });
       }
     );
+  }
+
+  resetCreneauSelection(): void {
+    const calendarApi = this.calendarComponent.getApi();
+    const events = calendarApi.getEvents();
+    events.forEach(event => {      
+      event.setProp('backgroundColor', '');
+      event.setProp('borderColor', '');
+      event.setProp('classNames', []);
+      event.setExtendedProp('reserved', false);
+      event.setExtendedProp('reservedByCurrentUser', false);
+    });
+    this.selectedCreneau = null;
+    this.previousCreneau = null;
+    this.hasReservedCreneau[this.selectedActivity.id] = false;
   }
 
   reserveCreneau(): void {
