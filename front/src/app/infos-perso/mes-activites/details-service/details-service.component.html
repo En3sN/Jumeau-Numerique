@@ -21,10 +21,10 @@
               <a class="nav-link" data-bs-toggle="tab" href="#Tags" aria-selected="false" role="tab">Tags</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a class="nav-link" data-bs-toggle="tab" href="#Disponibilités" aria-selected="false" role="tab" (shown.bs.tab)="refreshCalendar()">Disponibilités</a>
+              <a class="nav-link" data-bs-toggle="tab" href="#Disponibilités" aria-selected="false" role="tab" (shown.bs.tab)="refreshCalendar()">Créneaux de réservation</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a class="nav-link" data-bs-toggle="tab" href="#RendezVous" aria-selected="false" role="tab" (shown.bs.tab)="refreshCalendar()">Rendez-Vous</a>
+              <a class="nav-link" data-bs-toggle="tab" href="#RendezVous" aria-selected="false" role="tab" (shown.bs.tab)="refreshCalendar()">Réservation</a>
             </li>
           </ul>
           <div class="tab-content p-3 border border-top-0">
@@ -69,6 +69,10 @@
               </div>
             </div>
             <div class="tab-pane fade mt-2" id="Disponibilités" role="tabpanel">
+              <div class="alert alert-dismissible alert-light">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                En tant qu'administrateur de l'organisme, cette page vous permet de gérer les créneaux de réservation pour les rendez-vous.
+              </div>
               <div class="mb-4 mt-2">
                 <h4>Informations rendez-vous</h4>
                 <p>La durée d'un rendez-vous est définie dans l'activité à
@@ -92,12 +96,17 @@
                   </div>
                 </div>
                 <div class="col-md-9">
-                  <h3 class="mlh_verdana text-center mb-2"><u>Rendez-Vous</u></h3>
+                  <h3 class="mlh_verdana text-center mb-2"><u>Créneaux de réservation</u></h3>
                   <full-calendar #calendar [options]="calendarOptions"></full-calendar>
                 </div>
               </div>
             </div>
-            <div class="tab-pane fade mt-2" id="RendezVous" role="tabpanel">
+            <div class="tab-pane fade mt-2" id="RendezVous" role="tabpanel"> 
+              <div class="alert alert-dismissible alert-light">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                 Cette page permet de gérer les réservations de rendez-vous.
+              </div>
+              <h3 class="mlh_verdana text-center mb-2 mt-2"><u>Réservation</u></h3>
               <app-rendezvous-calendar [events]="reservations"></app-rendezvous-calendar>
             </div>
           </div>
