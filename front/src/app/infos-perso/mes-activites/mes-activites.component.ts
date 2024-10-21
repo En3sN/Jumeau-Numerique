@@ -477,13 +477,10 @@ confirmDelete(): void {
   openOrganisationInfo(organisationId: number, event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
-
-
     if (!organisationId) {
       console.error('Invalid organisation ID:', organisationId);
       return;
     }
-
     this.selectedOrganisationId = organisationId;
     this.loadOrganisationInfo();
   }

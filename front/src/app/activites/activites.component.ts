@@ -30,9 +30,6 @@ export class ActivitesComponent implements OnInit {
   nomFilter = new FormControl('');
   typeFilter = new FormControl([]);
   domaineFilter = new FormControl([]);
-  organisationNomFilter = new FormControl('');
-  tagFilter = new FormControl('');
-  statutFilter = new FormControl([]);
   selectedActivity: any = null;
   isUserLoggedIn: boolean = false;
   additionalInfos: { key: string, value: string }[] = [];
@@ -47,6 +44,11 @@ export class ActivitesComponent implements OnInit {
   confirmationMessage: string = '';
   organisation: any;
   selectedOrganisationId: number | null = null;
+  types: string[] = [];
+  domaines: string[] = [];
+  showAllTypes: boolean = false;
+  showAllDomaines: boolean = false;
+  tagFilter = new FormControl('');
 
   filters: any = {
     nom: '',
@@ -109,40 +111,28 @@ export class ActivitesComponent implements OnInit {
         }
       })
     ).subscribe();
-
+  
     this.publicActivities$ = combineLatest([
       this.nomFilter.valueChanges.pipe(startWith(this.nomFilter.value)),
       this.typeFilter.valueChanges.pipe(startWith(this.typeFilter.value)),
       this.domaineFilter.valueChanges.pipe(startWith(this.domaineFilter.value)),
-      this.organisationNomFilter.valueChanges.pipe(startWith(this.organisationNomFilter.value)),
-      this.tagFilter.valueChanges.pipe(startWith(this.tagFilter.value)),
-      this.statutFilter.valueChanges.pipe(startWith(this.statutFilter.value))
+      this.tagFilter.valueChanges.pipe(startWith(this.tagFilter.value))
     ]).pipe(
       debounceTime(300),
-      switchMap(([nom, type, domaine, organisation_nom, tag, statut]) =>
+      switchMap(([nom, type, domaine, tag]) =>
         this.activiteService.getPublicActivities({
           nom,
           type,
           domaine,
-          organisation_nom,
-          tag,
-          statut
+          tag 
         })
       ),
-      map((activities: any[]) => {
-        return activities.map(activity => {
-          if (activity.logo) {
-            this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
-              const reader = new FileReader();
-              reader.onload = (e: any) => {
-                activity.logoUrl = e.target.result;
-              };
-              reader.readAsDataURL(logoBlob);
-            });
-          }
-          return activity;
-        });
-      })
+      tap(response => {
+        console.log('getPublicActivities response:', response);
+        this.types = response.types;  
+        this.domaines = response.domaines; 
+      }),
+      map((response: { activities: any[] }) => this.processActivities(response.activities))
     );
     this.setupTabEventListeners();
     const modalElement = document.getElementById('subscribeModal');
@@ -151,6 +141,36 @@ export class ActivitesComponent implements OnInit {
         this.closeSubscribeModal();
       });
     }
+  }
+  
+  processActivities(activities: any[]): any[] {
+    console.log('Processing activities:', activities);
+    // Vérification supplémentaire
+    if (!Array.isArray(activities)) {
+      console.error('Activities is not an array:', activities);
+      activities = [];
+    }
+  
+    return activities.map((activity: any) => {
+      if (activity.logo) {
+        this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            activity.logoUrl = e.target.result;
+          };
+          reader.readAsDataURL(logoBlob);
+        });
+      }
+      return activity;
+    });
+  }
+
+  toggleShowAllTypes(): void {
+    this.showAllTypes = !this.showAllTypes;
+  }
+
+  toggleShowAllDomaines(): void {
+    this.showAllDomaines = !this.showAllDomaines;
   }
 
   getSubscribedActivities(): void {
@@ -245,16 +265,12 @@ export class ActivitesComponent implements OnInit {
     this.updateAppliedFilters();
     this.loadPublicActivities();
   }
-
-  updateAppliedFilters() {
-    this.appliedFilters = Object.entries(this.filters)
-      .filter(([key, value]) => value && (Array.isArray(value) ? value.length : true))
-      .map(([key, value]) => ({ key, value }));
-  }
+  
   loadPublicActivities(): void {
+    console.log('Applying filters:', this.filters); 
     this.publicActivities$ = this.activiteService.getPublicActivities(this.filters).pipe(
-      map((activities: any[]) => {
-        return activities.map(activity => {
+      map((response: { activities: any[] }) => {
+        return response.activities.map(activity => {
           if (activity.logo) {
             this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
               const reader = new FileReader();
@@ -268,6 +284,19 @@ export class ActivitesComponent implements OnInit {
         });
       })
     );
+  }
+
+  updateAppliedFilters() {
+    this.appliedFilters = Object.entries(this.filters)
+      .filter(([key, value]) => value && (Array.isArray(value) ? value.length : true))
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          return value.map(v => ({ key, value: v }));
+        } else {
+          return { key, value };
+        }
+      })
+      .flat();
   }
 
   openModal(): void {
@@ -308,8 +337,23 @@ export class ActivitesComponent implements OnInit {
   removeFilter(filterName: string, value: any) {
     if (Array.isArray(this.filters[filterName])) {
       this.filters[filterName] = this.filters[filterName].filter((item: any) => item !== value);
+      // Décoche la case correspondante
+      const checkbox = document.querySelector(`input[type="checkbox"][id="${filterName}-${value}"]`) as HTMLInputElement;
+      if (checkbox) {
+        checkbox.checked = false;
+      }
     } else {
       this.filters[filterName] = '';
+      // Réinitialise la barre de recherche
+      if (filterName === 'nom') {
+        this.nomFilter.setValue('');
+        const inputField = document.getElementById('inputFiltreNom') as HTMLInputElement;
+        if (inputField) {
+          inputField.value = '';
+        }
+      } else if (filterName === 'tag') {
+        this.tagFilter.setValue('');
+      }
     }
     this.updateAppliedFilters();
     this.loadPublicActivities();
@@ -957,8 +1001,12 @@ export class ActivitesComponent implements OnInit {
 
   showOrganisationOffcanvas(): void {
     const offcanvasElement = document.getElementById('offcanvasOrganisation') as HTMLElement;
-    const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
-    offcanvasInstance.show();
+    if (offcanvasElement) {
+      const offcanvasInstance = new bootstrap.Offcanvas(offcanvasElement);
+      offcanvasInstance.show();
+    } else {
+      console.error('Offcanvas element not found');
+    }
   }
 
   openUnsubscribeModal(): void {

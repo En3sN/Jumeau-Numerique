@@ -1,21 +1,10 @@
 <div class="container mlh_top_container">
     <div class="row">
         <div class="col-3 mt-4 border-end filter-column">
-            <div>
-                <h4 class="mlh_verdana bg-secondary rounded p-2 text-light">Tri</h4>
-                <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
-                    <input type="checkbox" class="btn-check" id="btncheck1" checked autocomplete="off">
-                    <label class="btn btn-primary" for="btncheck1">Récente</label>
-                    <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off">
-                    <label class="btn btn-primary" for="btncheck2">Populaire</label>
-                    <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off">
-                    <label class="btn btn-primary" for="btncheck3">A-Z</label>
-                </div>
-            </div>
-            <div class="border-bottom mt-2">
+            <div class="border-bottom">
                 <h4 class="mlh_verdana bg-secondary rounded p-2 text-light">Filtre</h4>
                 <div>
-                    <h5 class="mlh_verdana">Éléments du filtre</h5>
+                    <!-- <h5 class="mlh_verdana">Éléments du filtre</h5> -->
                     <div id="filterItems">
                         <span *ngFor="let filter of appliedFilters" class="badge bg-info">
                             {{ filter.key }} : {{ filter.value }}
@@ -36,55 +25,37 @@
                     <button class="btn btn-primary" type="button" id="button-addon1">Appliquer</button>
                 </div>
 
-                <h6 class="mlh_verdana">Type :</h6>
-                <div class="list-group">
-                    <div class="form-check list-group-item">
-                        <input class="form-check-input" type="checkbox" value="Location / Réservation"
-                            id="flexCheckChecked1" (change)="onFilterChange('type', $event)">
-                        <label class="form-check-label" for="flexCheckChecked1">Location / Réservation</label>
+                <div class="types-section">
+                    <h3>Types</h3>
+                    <div class="list-group">
+                        <div class="form-check list-group-item"
+                            *ngFor="let type of (showAllTypes ? types : types.slice(0, 4))">
+                            <input class="form-check-input" type="checkbox" [value]="type" [id]="'type-' + type"
+                                (change)="onFilterChange('type', $event)">
+                            <label class="form-check-label" [for]="'type-' + type">{{ type }}</label>
+                        </div>
                     </div>
-                    <div class="form-check list-group-item">
-                        <input class="form-check-input" type="checkbox" value="Formation" id="flexCheckChecked2"
-                            (change)="onFilterChange('type', $event)">
-                        <label class="form-check-label" for="flexCheckChecked2">Formation</label>
-                    </div>
-                    <div class="form-check list-group-item">
-                        <input class="form-check-input" type="checkbox" value="Evénements" id="flexCheckChecked3"
-                            (change)="onFilterChange('type', $event)">
-                        <label class="form-check-label" for="flexCheckChecked3">Evénements</label>
-                    </div>
-                    <div class="form-check list-group-item">
-                        <input class="form-check-input" type="checkbox" value="Atelier" id="flexCheckChecked3"
-                            (change)="onFilterChange('type', $event)">
-                        <label class="form-check-label" for="flexCheckChecked3">Atelier</label>
-                    </div>
+                    <button class="btn btn-link" (click)="toggleShowAllTypes()">
+                        {{ showAllTypes ? 'Voir moins' : 'Voir plus' }}
+                    </button>
                 </div>
 
-                <h6 class="mlh_verdana">Domaine :</h6>
-                <div class="list-group">
-                    <div class="form-check list-group-item">
-                        <input class="form-check-input" type="checkbox" value="Couture" id="flexCheckChecked4"
-                            (change)="onFilterChange('domaine', $event)">
-                        <label class="form-check-label" for="flexCheckChecked4">Couture</label>
+                <div class="domaines-section">
+                    <h3>Domaines</h3>
+                    <div class="list-group">
+                        <div class="form-check list-group-item"
+                            *ngFor="let domaine of (showAllDomaines ? domaines : domaines.slice(0, 4))">
+                            <input class="form-check-input" type="checkbox" [value]="domaine"
+                                [id]="'domaine-' + domaine" (change)="onFilterChange('domaine', $event)">
+                            <label class="form-check-label" [for]="'domaine-' + domaine">{{ domaine }}</label>
+                        </div>
                     </div>
-                    <div class="form-check list-group-item">
-                        <input class="form-check-input" type="checkbox" value="Bricolage" id="flexCheckChecked5"
-                            (change)="onFilterChange('domaine', $event)">
-                        <label class="form-check-label" for="flexCheckChecked5">Bricolage</label>
-                    </div>
-                    <div class="form-check list-group-item">
-                        <input class="form-check-input" type="checkbox" value="Informatique" id="flexCheckChecked6"
-                            (change)="onFilterChange('domaine', $event)">
-                        <label class="form-check-label" for="flexCheckChecked6">Informatique</label>
-                    </div>
-                    <div class="form-check list-group-item">
-                        <input class="form-check-input" type="checkbox" value="Langue vivante" id="flexCheckChecked7"
-                            (change)="onFilterChange('domaine', $event)">
-                        <label class="form-check-label" for="flexCheckChecked7">Langue vivante</label>
-                    </div>
+                    <button class="btn btn-link" (click)="toggleShowAllDomaines()">
+                        {{ showAllDomaines ? 'Voir moins' : 'Voir plus' }}
+                    </button>
                 </div>
 
-                <h6 class="mlh_verdana">Organisation :</h6>
+                <!-- <h6 class="mlh_verdana">Organisation :</h6>
                 <div class="input-group mb-3">
                     <input type="text" id="inputFiltreOrganisation" class="form-control"
                         placeholder="Organisation à rechercher" aria-label="Recipient's username"
@@ -98,9 +69,9 @@
                         aria-label="Recipient's username" aria-describedby="button-addon2"
                         (input)="onFilterChange('tag', $event)">
                     <button class="btn btn-primary" type="button" id="button-addon2">Appliquer</button>
-                </div>
+                </div> -->
 
-                <h6 class="mlh_verdana">Statut :</h6>
+                <!-- <h6 class="mlh_verdana">Statut :</h6>
                 <div class="list-group">
                     <div class="form-check list-group-item">
                         <input class="form-check-input" type="checkbox" value="Abonné à l'activité"
@@ -112,7 +83,7 @@
                             id="flexCheckChecked9" (change)="onFilterChange('statut', $event)">
                         <label class="form-check-label" for="flexCheckChecked9">Référent de l'activité</label>
                     </div>
-                </div>
+                </div>-->
             </div>
         </div>
         <div class="col-9 activity-column">
@@ -131,7 +102,7 @@
                     </div>
                     <div class="offcanvas-body">
                         <h4 class="offcanvas-title" id="offcanvasServiceLabel">{{ selectedActivity?.nom }}</h4>
-                        <h5 class="offcanvas-title" id="offcanvasServiceLabel"><a href="#">Ref :
+                        <h5 class="offcanvas-title" id="offcanvasServiceLabel"><a>Ref :
                                 {{ selectedActivity?.reference }}</a></h5>
                         <p>{{ selectedActivity?.description }}</p>
                         <p>

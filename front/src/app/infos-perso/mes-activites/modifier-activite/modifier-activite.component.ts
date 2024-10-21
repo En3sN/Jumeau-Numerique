@@ -207,6 +207,7 @@ export class ModifierActiviteComponent implements OnInit, AfterViewInit {
       delete updateData.organisation_nom;
       delete updateData.logo;
       delete updateData.logoUrl;
+      delete updateData.all_services;
   
       this.activiteService.updateActivite(this.activiteId, updateData).subscribe({
         next: (response) => {

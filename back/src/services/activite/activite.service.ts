@@ -66,7 +66,7 @@ export class ActiviteService {
     });
   }
 
-  async findAllPublic(queryParams: any): Promise<any[]> {
+  async findAllPublic(queryParams: any): Promise<any> {
     return this.transactionManager.executeInTransaction(async (manager: EntityManager) => {
       let query = `
         SELECT a.*, o.nom as organisation_nom
@@ -74,40 +74,57 @@ export class ActiviteService {
         JOIN security.organisation o ON a.organisation = o.id
         WHERE a.public = true
       `;
-
+  
       const filters = [];
       const values = [];
-
-      if (queryParams.nom) {
-        filters.push(`LOWER(a.nom) ILIKE LOWER($${values.length + 1})`);
-        values.push(`%${queryParams.nom}%`);
+  
+      if (queryParams.nom && queryParams.nom.trim() !== '') {
+        const searchValue = `%${queryParams.nom.toLowerCase()}%`;
+        filters.push(`(
+          LOWER(a.nom) ILIKE LOWER($${values.length + 1}) OR
+          LOWER(a.description) ILIKE LOWER($${values.length + 1}) OR
+          LOWER(o.nom) ILIKE LOWER($${values.length + 1}) OR
+          EXISTS (SELECT 1 FROM unnest(a.tags) tag WHERE LOWER(tag) ILIKE LOWER($${values.length + 1}))
+        )`);
+        values.push(searchValue);
       }
-      if (queryParams.type) {
+  
+      if (queryParams.type && queryParams.type.length > 0) {
+        const typeValue = `%${queryParams.type.toLowerCase()}%`;
         filters.push(`LOWER(a.type) ILIKE LOWER($${values.length + 1})`);
-        values.push(`%${queryParams.type}%`);
+        values.push(typeValue);
       }
-      if (queryParams.domaine) {
+  
+      if (queryParams.domaine && queryParams.domaine.length > 0) {
+        const domaineValue = `%${queryParams.domaine.toLowerCase()}%`;
         filters.push(`LOWER(a.domaine) ILIKE LOWER($${values.length + 1})`);
-        values.push(`%${queryParams.domaine}%`);
+        values.push(domaineValue);
       }
-      if (queryParams.organisation_nom) {
-        filters.push(`LOWER(o.nom) ILIKE LOWER($${values.length + 1})`);
-        values.push(`%${queryParams.organisation_nom}%`);
-      }
-      if (queryParams.tag) {
-        filters.push(`LOWER($${values.length + 1}) = ANY(ARRAY(SELECT LOWER(unnest(a.tags))))`);
-        values.push(queryParams.tag.toLowerCase());
-      }
-      if (queryParams.statut && Array.isArray(queryParams.statut) && queryParams.statut.length > 0) {
-        filters.push(`LOWER(a.statut) IN (${queryParams.statut.map((_, index) => `LOWER($${values.length + 1 + index})`).join(', ')})`);
-        values.push(...queryParams.statut.map((statut: string) => statut.toLowerCase()));
-      }
-
+  
       if (filters.length > 0) {
         query += ` AND ${filters.join(' AND ')}`;
       }
-
-      return manager.query(query, values);
+  
+      console.log('Executing query:', query, values); 
+  
+      const activities = await manager.query(query, values);
+      const typesQuery = `SELECT DISTINCT type FROM services.activite WHERE public = true`;
+      const domainesQuery = `SELECT DISTINCT domaine FROM services.activite WHERE public = true`;
+  
+      const [types, domaines] = await Promise.all([
+        manager.query(typesQuery),
+        manager.query(domainesQuery)
+      ]);
+  
+      const result = {
+        activities,
+        types: types.map((t: any) => t.type),
+        domaines: domaines.map((d: any) => d.domaine)
+      };
+  
+      console.log('findAllPublic result:', result);
+  
+      return result;
     });
   }
 

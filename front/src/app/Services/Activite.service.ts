@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -15,14 +15,24 @@ export class ActiviteService {
     return this.http.post<any>(`${this.apiUrl}/activite/create`, activiteData, { withCredentials: true });
   }
 
-  getPublicActivities(filters: any): Observable<any[]> {
+  getPublicActivities(filters: any): Observable<{ activities: any[], types: string[], domaines: string[] }> {
     let params = new HttpParams();
     for (const key in filters) {
       if (filters.hasOwnProperty(key)) {
         params = params.append(key, filters[key]);
       }
     }
-    return this.http.get<any[]>(`${this.apiUrl}/activite`, { params });
+    return this.http.get<{ activities: any[], types: string[], domaines: string[] }>(`${this.apiUrl}/activite`, { params }).pipe(
+      map(response => {
+        // Vérification de la réponse
+        if (response && Array.isArray(response.activities)) {
+          return response;
+        } else {
+          console.error('La réponse de l\'API n\'est pas valide:', response);
+          return { activities: [], types: [], domaines: [] };
+        }
+      })
+    );
   }
 
   getUserActivities(): Observable<any> {
