@@ -381,9 +381,7 @@ export class MesActivitesComponent implements OnInit {
           }
           return;
         }
-        const modalElement = document.getElementById('DlgDemandeService') as HTMLElement;
-        const modalInstance = new bootstrap.Modal(modalElement);
-        modalInstance.show();
+        this.saveModal(); // Appel de la méthode saveModal directement
       },
       error: (err) => {
         console.error('Erreur lors de la vérification de l\'organisation:', err);
@@ -409,7 +407,6 @@ export class MesActivitesComponent implements OnInit {
         this.hasPermission = this.userRoles.includes('Activite') || this.userRoles.includes('Admin');
         this.showConfirmationToast = true;
         this.loadUtilisateurInfo();
-        this.closeModal();
         setTimeout(() => this.showConfirmationToast = false, 4000);
       },
       error: (err: any) => {
