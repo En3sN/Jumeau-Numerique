@@ -37,6 +37,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ModifierServiceComponent } from './infos-perso/mes-activites/modifier-service/modifier-service.component';
 import { SharedModule } from "./Shared/shared.module";
 import { ServiceAssocierComponent } from './service-associer/service-associer.component';
+import { RouterModule } from '@angular/router';
+import { FooterComponent } from './footer/footer.component';
 
 
 
@@ -66,6 +68,7 @@ import { ServiceAssocierComponent } from './service-associer/service-associer.co
     DetailsServiceComponent,
     ModifierServiceComponent,
     ServiceAssocierComponent,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,
@@ -77,7 +80,8 @@ import { ServiceAssocierComponent } from './service-associer/service-associer.co
     BrowserAnimationsModule,
     FullCalendarModule,
     NgbModule,
-    SharedModule
+    SharedModule,
+    RouterModule 
 ],
   providers: [AuthService, CookieService,ToastService,{ provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true }],
   bootstrap: [AppComponent]
