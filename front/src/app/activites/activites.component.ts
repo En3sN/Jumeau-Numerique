@@ -128,7 +128,6 @@ export class ActivitesComponent implements OnInit {
         })
       ),
       tap(response => {
-        console.log('getPublicActivities response:', response);
         this.types = response.types;  
         this.domaines = response.domaines; 
       }),
@@ -144,13 +143,10 @@ export class ActivitesComponent implements OnInit {
   }
   
   processActivities(activities: any[]): any[] {
-    console.log('Processing activities:', activities);
-    // Vérification supplémentaire
     if (!Array.isArray(activities)) {
       console.error('Activities is not an array:', activities);
       activities = [];
     }
-  
     return activities.map((activity: any) => {
       if (activity.logo) {
         this.activiteService.getLogo(activity.id).subscribe(logoBlob => {
@@ -267,7 +263,6 @@ export class ActivitesComponent implements OnInit {
   }
   
   loadPublicActivities(): void {
-    console.log('Applying filters:', this.filters); 
     this.publicActivities$ = this.activiteService.getPublicActivities(this.filters).pipe(
       map((response: { activities: any[] }) => {
         return response.activities.map(activity => {
@@ -337,14 +332,12 @@ export class ActivitesComponent implements OnInit {
   removeFilter(filterName: string, value: any) {
     if (Array.isArray(this.filters[filterName])) {
       this.filters[filterName] = this.filters[filterName].filter((item: any) => item !== value);
-      // Décoche la case correspondante
       const checkbox = document.querySelector(`input[type="checkbox"][id="${filterName}-${value}"]`) as HTMLInputElement;
       if (checkbox) {
         checkbox.checked = false;
       }
     } else {
       this.filters[filterName] = '';
-      // Réinitialise la barre de recherche
       if (filterName === 'nom') {
         this.nomFilter.setValue('');
         const inputField = document.getElementById('inputFiltreNom') as HTMLInputElement;

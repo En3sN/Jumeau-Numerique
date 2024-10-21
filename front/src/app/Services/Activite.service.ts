@@ -24,7 +24,6 @@ export class ActiviteService {
     }
     return this.http.get<{ activities: any[], types: string[], domaines: string[] }>(`${this.apiUrl}/activite`, { params }).pipe(
       map(response => {
-        // Vérification de la réponse
         if (response && Array.isArray(response.activities)) {
           return response;
         } else {
